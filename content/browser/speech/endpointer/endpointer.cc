@@ -5,7 +5,7 @@
 #include "content/browser/speech/endpointer/endpointer.h"
 
 #include "base/time/time.h"
-#include "content/browser/speech/audio_buffer.h"
+#include "components/speech/audio_buffer.h"
 
 namespace {
 const int64_t kMicrosecondsPerSecond = base::Time::kMicrosecondsPerSecond;

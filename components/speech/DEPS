@@ -1,4 +1,5 @@
 include_rules = [
   "+mojo/public/cpp",
   "+services/network/public",
+  "+third_party/flac",
 ]

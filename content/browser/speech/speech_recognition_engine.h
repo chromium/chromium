@@ -14,18 +14,20 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
+#include "components/speech/audio_encoder.h"
 #include "components/speech/chunked_byte_buffer.h"
 #include "components/speech/downstream_loader.h"
 #include "components/speech/downstream_loader_client.h"
 #include "components/speech/upstream_loader.h"
 #include "components/speech/upstream_loader_client.h"
-#include "content/browser/speech/audio_encoder.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/speech_recognition_session_preamble.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_grammar.mojom.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_result.mojom.h"
+
+class AudioChunk;
 
 namespace base {
 class TimeDelta;
@@ -37,7 +39,6 @@ class SharedURLLoaderFactory;
 
 namespace content {
 
-class AudioChunk;
 struct SpeechRecognitionError;
 
 // A speech recognition engine supporting continuous recognition by means of

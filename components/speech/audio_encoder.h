@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_SPEECH_AUDIO_ENCODER_H_
-#define CONTENT_BROWSER_SPEECH_AUDIO_ENCODER_H_
+#ifndef COMPONENTS_SPEECH_AUDIO_ENCODER_H_
+#define COMPONENTS_SPEECH_AUDIO_ENCODER_H_
 
 #include <memory>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "content/browser/speech/audio_buffer.h"
+#include "components/speech/audio_buffer.h"
 #include "third_party/flac/include/FLAC/stream_encoder.h"
 
-namespace content{
 class AudioChunk;
 
 class FlacStreamEncoderDeleter {
@@ -54,6 +53,4 @@ class AudioEncoder {
   bool is_encoder_initialized_;
 };
 
-}  // namespace content
-
-#endif  // CONTENT_BROWSER_SPEECH_AUDIO_ENCODER_H_
+#endif  // COMPONENTS_SPEECH_AUDIO_ENCODER_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_SPEECH_AUDIO_BUFFER_H_
-#define CONTENT_BROWSER_SPEECH_AUDIO_BUFFER_H_
+#ifndef COMPONENTS_SPEECH_AUDIO_BUFFER_H_
+#define COMPONENTS_SPEECH_AUDIO_BUFFER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -12,13 +12,9 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/ref_counted.h"
-#include "content/common/content_export.h"
-
-namespace content {
 
 // Models a chunk derived from an AudioBuffer.
-class CONTENT_EXPORT AudioChunk :
-    public base::RefCountedThreadSafe<AudioChunk> {
+class AudioChunk : public base::RefCountedThreadSafe<AudioChunk> {
  public:
   explicit AudioChunk(int bytes_per_sample);
   // Creates a chunk of |length| bytes, initialized to zeros.
@@ -81,6 +77,4 @@ class AudioBuffer {
   const int bytes_per_sample_;
 };
 
-}  // namespace content
-
-#endif  // CONTENT_BROWSER_SPEECH_AUDIO_BUFFER_H_
+#endif  // COMPONENTS_SPEECH_AUDIO_BUFFER_H_

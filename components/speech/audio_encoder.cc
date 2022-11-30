@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/speech/audio_encoder.h"
+#include "components/speech/audio_encoder.h"
 
 #include <stddef.h>
 
@@ -10,22 +10,19 @@
 
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
-#include "content/browser/speech/audio_buffer.h"
-
-namespace content {
+#include "components/speech/audio_buffer.h"
 
 namespace {
 
 const char kContentTypeFLAC[] = "audio/x-flac; rate=";
 const int kFLACCompressionLevel = 0;  // 0 for speed
 
-FLAC__StreamEncoderWriteStatus WriteCallback(
-    const FLAC__StreamEncoder* encoder,
-    const FLAC__byte buffer[],
-    size_t bytes,
-    unsigned samples,
-    unsigned current_frame,
-    void* client_data) {
+FLAC__StreamEncoderWriteStatus WriteCallback(const FLAC__StreamEncoder* encoder,
+                                             const FLAC__byte buffer[],
+                                             size_t bytes,
+                                             unsigned samples,
+                                             unsigned current_frame,
+                                             void* client_data) {
   AudioBuffer* encoded_audio_buffer = static_cast<AudioBuffer*>(client_data);
   encoded_audio_buffer->Enqueue(buffer, bytes);
   return FLAC__STREAM_ENCODER_WRITE_STATUS_OK;
@@ -88,5 +85,3 @@ std::string AudioEncoder::GetMimeType() {
 int AudioEncoder::GetBitsPerSample() {
   return FLAC__stream_encoder_get_bits_per_sample(encoder_.get());
 }
-
-}  // namespace content

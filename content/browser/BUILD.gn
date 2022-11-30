@@ -3095,10 +3095,6 @@ source_set("browser") {
       "serial/serial_service.h",
 
       # Most speech code is non-Android.
-      "speech/audio_buffer.cc",
-      "speech/audio_buffer.h",
-      "speech/audio_encoder.cc",
-      "speech/audio_encoder.h",
       "speech/endpointer/endpointer.cc",
       "speech/endpointer/endpointer.h",
       "speech/endpointer/energy_endpointer.cc",
@@ -3137,11 +3133,10 @@ source_set("browser") {
     ]
 
     deps += [
-      "//components/speech",
+      "//components/speech:speech",
       "//components/vector_icons",
       "//content/browser/devtools:devtools_resources_extern",
       "//content/browser/tracing:resources",
-      "//third_party/flac",
     ]
   }
 

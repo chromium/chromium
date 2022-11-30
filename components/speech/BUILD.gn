@@ -4,6 +4,10 @@
 
 source_set("speech") {
   sources = [
+    "audio_buffer.cc",
+    "audio_buffer.h",
+    "audio_encoder.cc",
+    "audio_encoder.h",
     "chunked_byte_buffer.cc",
     "chunked_byte_buffer.h",
     "downstream_loader.cc",
@@ -20,6 +24,7 @@ source_set("speech") {
     "//mojo/public/cpp/system",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//third_party/flac",
   ]
 }
 

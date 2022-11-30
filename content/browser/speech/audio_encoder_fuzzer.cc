@@ -7,9 +7,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
-#include "content/browser/speech/audio_encoder.h"
-
-using content::AudioChunk;
+#include "components/speech/audio_encoder.h"
 
 // Copied from speech_recognition_engine.cc.
 const int kDefaultConfigSampleRate = 8000;
@@ -21,8 +19,7 @@ const int kDefaultConfigBytesPerSample = kDefaultConfigBitsPerSample / 8;
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider provider(data, size);
-  content::AudioEncoder encoder(kDefaultConfigSampleRate,
-                                kDefaultConfigBitsPerSample);
+  AudioEncoder encoder(kDefaultConfigSampleRate, kDefaultConfigBitsPerSample);
 
   while (provider.remaining_bytes()) {
     std::string chunk_str =

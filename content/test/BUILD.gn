@@ -2991,6 +2991,7 @@ test("content_unittests") {
       "../browser/speech/speech_recognizer_impl_unittest.cc",
       "../browser/tracing/tracing_ui_unittest.cc",
     ]
+    deps += [ "//components/speech:speech" ]
   }
 
   # HID support is not available without udev.
