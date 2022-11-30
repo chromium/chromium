@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/keyboard_accessory_metrics_logger.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -69,15 +70,15 @@
 #error "This file requires ARC support."
 #endif
 
-using base::NumberToString;
-using base::SysNSStringToUTF8;
-using base::SysNSStringToUTF16;
-using base::SysUTF16ToNSString;
-using autofill::FormGlobalId;
-using autofill::FormRendererId;
 using autofill::FieldDataManager;
 using autofill::FieldRendererId;
+using autofill::FormGlobalId;
+using autofill::FormRendererId;
 using autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger;
+using base::NumberToString;
+using base::SysNSStringToUTF16;
+using base::SysNSStringToUTF8;
+using base::SysUTF16ToNSString;
 
 namespace {
 
@@ -483,6 +484,11 @@ void GetFormField(autofill::FormFieldData* field,
 
 - (SuggestionProviderType)type {
   return SuggestionProviderTypeAutofill;
+}
+
+- (autofill::PopupType)suggestionType {
+  return _popupDelegate ? _popupDelegate->GetPopupType()
+                        : autofill::PopupType::kUnspecified;
 }
 
 #pragma mark - AutofillDriverIOSBridge

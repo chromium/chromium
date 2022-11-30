@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
@@ -558,6 +559,10 @@ BOOL canProcessCrossOriginIframes() {
 
 - (SuggestionProviderType)type {
   return SuggestionProviderTypePassword;
+}
+
+- (autofill::PopupType)suggestionType {
+  return autofill::PopupType::kPasswords;
 }
 
 #pragma mark - PasswordManagerDriverDelegate

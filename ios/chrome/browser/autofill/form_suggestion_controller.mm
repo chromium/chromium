@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#import "components/autofill/core/browser/ui/popup_types.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
@@ -25,8 +26,8 @@
 #error "This file requires ARC support."
 #endif
 
-using autofill::FormRendererId;
 using autofill::FieldRendererId;
+using autofill::FormRendererId;
 
 namespace {
 
@@ -334,6 +335,11 @@ AutofillSuggestionState::AutofillSuggestionState(
 
 - (SuggestionProviderType)type {
   return _provider ? _provider.type : SuggestionProviderTypeUnknown;
+}
+
+- (autofill::PopupType)suggestionType {
+  return _provider ? _provider.suggestionType
+                   : autofill::PopupType::kUnspecified;
 }
 
 @end

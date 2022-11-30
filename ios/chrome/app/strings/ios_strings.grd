@@ -3889,6 +3889,26 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_OVERFLOW_MENU_CAROUSEL_TIP_VOICEOVER" desc="The VoiceOver announcement for the tip explaining to the user they can use the carousel in the overflow menu.">
         Your saved bookmarks, passwords, settings, and more are available from this screen.
       </message>
+      <message name="IDS_IOS_AUTOFILL_ADDRESS_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of address suggestions available to the user above the keyboard. This announcement is triggered when the user enters edit mode in a form field that has address suggestions available for autofill purposes. According to the number of available addresses, the string goes from singular to plural. [iOS only]">
+        {count, plural,
+           =1 {{count} saved address available above your keyboard.}
+           other {{count} saved addresses available above your keyboard.}}
+      </message>
+      <message name="IDS_IOS_AUTOFILL_PASSWORD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of password suggestions available to the user above the keyboard. This announcement is triggered when the user enters edit mode in a form field that has password suggestions available for autofill purposes. According to the number of available passwords, the string goes from singular to plural. [iOS only]">
+        {count, plural,
+           =1 {{count} saved password available above your keyboard.}
+           other {{count} saved passwords available above your keyboard.}}
+      </message>
+      <message name="IDS_IOS_AUTOFILL_PAYMENT_METHOD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of payment method suggestions available to the user above the keyboard. This announcement is triggered when the user enters edit mode in a form field that has payment method suggestions available for autofill purposes. According to the number of available payment methods, the string goes from singular to plural. [iOS only]">
+        {count, plural,
+           =1 {{count} saved payment method available above your keyboard.}
+           other {{count} saved payment methods available above your keyboard.}}
+      </message>
+      <message name="IDS_IOS_AUTOFILL_PROFILE_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of profile suggestions available to the user above the keyboard. This announcement is triggered when the user enters edit mode in a form field that has profile suggestions available for autofill purposes. According to the number of available profiles, the string goes from singular to plural. [iOS only]">
+        {count, plural,
+           =1 {{count} saved profile available above your keyboard.}
+           other {{count} saved profiles available above your keyboard.}}
+      </message>
     </messages>
   </release>
 </grit>

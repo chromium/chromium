@@ -10,6 +10,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/path_service.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/autofill/core/browser/ui/popup_types.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
@@ -35,8 +36,9 @@
 #error "This file requires ARC support."
 #endif
 
-using autofill::FormRendererId;
 using autofill::FieldRendererId;
+using autofill::FormRendererId;
+using autofill::PopupType;
 
 // Test provider that records invocations of its interface methods.
 @interface TestSuggestionProvider : NSObject<FormSuggestionProvider>
@@ -49,6 +51,7 @@ using autofill::FieldRendererId;
 @property(nonatomic, assign) BOOL askedIfSuggestionsAvailable;
 @property(nonatomic, assign) BOOL askedForSuggestions;
 @property(nonatomic, assign) SuggestionProviderType type;
+@property(nonatomic, readonly) PopupType suggestionType;
 
 // Creates a test provider with default suggesstions.
 + (instancetype)providerWithSuggestions;

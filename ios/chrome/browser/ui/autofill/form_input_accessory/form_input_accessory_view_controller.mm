@@ -7,6 +7,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/form_suggestion_client.h"
 #import "ios/chrome/browser/ui/autofill/features.h"
@@ -15,7 +16,9 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -49,6 +52,9 @@
     id<ManualFillAccessoryViewControllerDelegate>
         manualFillAccessoryViewControllerDelegate;
 
+// The ID of the field that was last announced by VoiceOver.
+@property(nonatomic, assign) autofill::FieldRendererId lastAnnouncedFieldId;
+
 @end
 
 @implementation FormInputAccessoryViewController
@@ -59,6 +65,8 @@
 @synthesize formInputPreviousButtonEnabled = _formInputPreviousButtonEnabled;
 @synthesize navigationDelegate = _navigationDelegate;
 @synthesize passwordButtonHidden = _passwordButtonHidden;
+@synthesize suggestionType = _suggestionType;
+@synthesize currentFieldId = _currentFieldId;
 
 #pragma mark - Life Cycle
 
@@ -131,6 +139,7 @@
   [self createFormSuggestionViewIfNeeded];
   [self.formSuggestionView updateSuggestions:suggestions];
   [self updateBrandingVisibility];
+  [self announceVoiceOverMessageIfNeeded:[suggestions count]];
 }
 
 - (void)animateSuggestionLabel {
@@ -215,7 +224,7 @@
   [self updateBrandingVisibility];
 }
 
-// Create formSuggestionView if not done yet.
+// Creates formSuggestionView if not done yet.
 - (void)createFormSuggestionViewIfNeeded {
   if (!self.formSuggestionView) {
     self.formSuggestionView = [[FormSuggestionView alloc] init];
@@ -225,7 +234,8 @@
   }
 }
 
-// Show or hide branding when the number of suggestions and/or buttons changes.
+// Shows or hides branding when the number of suggestions and/or buttons
+// changes.
 - (void)updateBrandingVisibility {
   if (self.brandingVisible) {
     self.brandingViewController.delegate = self.brandingViewControllerDelegate;
@@ -243,6 +253,55 @@
     [branding removeFromSuperview];
     [self.brandingViewController removeFromParentViewController];
   }
+}
+
+// Sets up and posts the VoiceOver message that announces the presence of
+// suggestions above the keyboard. The message should be announced when a new
+// field enters edit mode and has suggestions available.
+- (void)announceVoiceOverMessageIfNeeded:(int)suggestionCount {
+  if (UIAccessibilityIsVoiceOverRunning() && suggestionCount > 0 &&
+      self.lastAnnouncedFieldId != _currentFieldId) {
+    std::u16string suggestionTypeString;
+    switch (_suggestionType) {
+      case autofill::PopupType::kAddresses:
+        suggestionTypeString = l10n_util::GetPluralStringFUTF16(
+            IDS_IOS_AUTOFILL_ADDRESS_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
+            suggestionCount);
+        break;
+      case autofill::PopupType::kPasswords:
+        suggestionTypeString = l10n_util::GetPluralStringFUTF16(
+            IDS_IOS_AUTOFILL_PASSWORD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
+            suggestionCount);
+        break;
+      case autofill::PopupType::kCreditCards:
+        suggestionTypeString = l10n_util::GetPluralStringFUTF16(
+            IDS_IOS_AUTOFILL_PAYMENT_METHOD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
+            suggestionCount);
+        break;
+      case autofill::PopupType::kPersonalInformation:
+        suggestionTypeString = l10n_util::GetPluralStringFUTF16(
+            IDS_IOS_AUTOFILL_PROFILE_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
+            suggestionCount);
+        break;
+      case autofill::PopupType::kUnspecified:
+        return;
+    }
+
+    // VoiceOver message setup with
+    // UIAccessibilitySpeechAttributeQueueAnnouncement attribute so it doesn't
+    // interrupt another message.
+    NSMutableDictionary* attributes = [NSMutableDictionary dictionary];
+    [attributes setObject:@YES
+                   forKey:UIAccessibilitySpeechAttributeQueueAnnouncement];
+    NSMutableAttributedString* suggestionsVoiceOverMessage =
+        [[NSMutableAttributedString alloc]
+            initWithString:base::SysUTF16ToNSString(suggestionTypeString)
+                attributes:attributes];
+
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                    suggestionsVoiceOverMessage);
+  }
+  self.lastAnnouncedFieldId = _currentFieldId;
 }
 
 #pragma mark - ManualFillAccessoryViewControllerDelegate
