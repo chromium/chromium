@@ -278,13 +278,7 @@ bool ComServerApp::SwapInNewVersion() {
       SignalShutdownEvent(updater_scope()));
   StopGoogleUpdateProcesses(updater_scope());
 
-  if (list->Do()) {
-    CheckComInterfaceTypeLib(updater_scope(), true);
-    CheckComInterfaceTypeLib(updater_scope(), false);
-    return true;
-  }
-
-  return false;
+  return list->Do();
 }
 
 bool ComServerApp::MigrateLegacyUpdaters(

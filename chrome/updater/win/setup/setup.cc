@@ -167,9 +167,6 @@ int Setup(UpdaterScope scope) {
 
   VLOG(1) << "Setup succeeded.";
 
-  CheckComInterfaceTypeLib(scope, true);
-  MarshalInterface<IUpdaterInternal, UpdaterInternalImpl>();
-
   return 0;
 }
 

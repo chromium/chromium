@@ -70,9 +70,11 @@ class ProxyImplBase {
     Microsoft::WRL::ComPtr<Interface> server_interface;
     hr = server.As(&server_interface);
 
-    // TODO(crbug.com/1341471) - revert the CL that introduced the check after
-    // the bug is resolved.
-    CHECK(SUCCEEDED(hr)) << "Failed to query the interface: " << std::hex << hr;
+    if (FAILED(hr)) {
+      VLOG(2) << "Failed to query the interface: " << std::hex << hr;
+      return base::unexpected(hr);
+    }
+
     return server_interface;
   }
 
