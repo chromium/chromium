@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/multi_capture/multi_capture_service_client.h"
+#include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
 
 namespace url {
@@ -36,6 +37,10 @@ class MultiCaptureNotification : public MultiCaptureServiceClient::Observer {
   void MultiCaptureServiceClientDestroyed() override;
 
  private:
+  // Maps the multi capture label (as received in `MultiCaptureStarted` and
+  // `MultiCaptureStopped`) to the notification id.
+  base::flat_map<std::string, std::string> notification_ids_;
+
   base::ScopedObservation<MultiCaptureServiceClient,
                           MultiCaptureServiceClient::Observer>
       multi_capture_service_client_observation_{this};

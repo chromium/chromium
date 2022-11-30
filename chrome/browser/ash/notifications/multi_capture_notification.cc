@@ -72,15 +72,30 @@ void MultiCaptureNotification::MultiCaptureStarted(const std::string& label,
                                                    const url::Origin& origin) {
   std::unique_ptr<message_center::Notification> notification =
       CreateNotification(origin);
+  notification_ids_[label] = notification->id();
   // TODO(crbug.com/1356102): Make sure the notification does not disappear
   // automatically after some time.
   SystemNotificationHelper::GetInstance()->Display(*notification);
 }
 
-void MultiCaptureNotification::MultiCaptureStopped(const std::string& label) {}
+void MultiCaptureNotification::MultiCaptureStopped(const std::string& label) {
+  const auto notification_id_iterator = notification_ids_.find(label);
+  if (notification_id_iterator == notification_ids_.end()) {
+    LOG(ERROR) << "Label could not be found";
+    return;
+  }
+  // TODO(crbug.com/1394023): Make sure the notification does not disappear
+  // within five seconds of its creation.
+  SystemNotificationHelper::GetInstance()->Close(
+      /*notification_id=*/notification_id_iterator->second);
+}
 
 void MultiCaptureNotification::MultiCaptureServiceClientDestroyed() {
   multi_capture_service_client_observation_.Reset();
+  for (const auto& notification_id : notification_ids_) {
+    MultiCaptureStopped(notification_id.first);
+  }
+  notification_ids_.clear();
 }
 
 }  // namespace ash
