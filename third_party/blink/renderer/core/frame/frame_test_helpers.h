@@ -513,6 +513,7 @@ class TestWebFrameClient : public WebLocalFrameClient {
       const WebFrameOwnerProperties&,
       FrameOwnerElementType,
       WebPolicyContainerBindParams policy_container_bind_params,
+      ukm::SourceId document_ukm_source_id,
       FinishChildFrameCreationFn finish_creation) override;
   void DidStartLoading() override;
   void DidStopLoading() override;

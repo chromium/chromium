@@ -41,6 +41,7 @@
 #include "media/base/audio_processing.h"
 #include "media/base/speech_recognition_client.h"
 #include "media/mojo/mojom/audio_processing.mojom-shared.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
@@ -239,6 +240,10 @@ class BLINK_EXPORT WebLocalFrameClient {
   //
   // `complete_creation` takes the newly-created `WebLocalFrame` and the
   // `DocumentToken` to use for its initial empty document as arguments.
+  //
+  // `document_ukm_source_id` is the UKM source id to be used for the new
+  // document in the frame. If `ukm::kInvalidSourceId` is passed, a new UKM
+  // source id will be generated.
   using FinishChildFrameCreationFn =
       base::FunctionRef<void(WebLocalFrame*, const DocumentToken&)>;
   virtual WebLocalFrame* CreateChildFrame(
@@ -249,6 +254,7 @@ class BLINK_EXPORT WebLocalFrameClient {
       const WebFrameOwnerProperties&,
       FrameOwnerElementType,
       WebPolicyContainerBindParams policy_container_bind_params,
+      ukm::SourceId document_ukm_source_id,
       FinishChildFrameCreationFn complete_creation) {
     return nullptr;
   }

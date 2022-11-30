@@ -203,7 +203,8 @@ void FrameLoader::Trace(Visitor* visitor) const {
 
 void FrameLoader::Init(const DocumentToken& document_token,
                        std::unique_ptr<PolicyContainer> policy_container,
-                       const StorageKey& storage_key) {
+                       const StorageKey& storage_key,
+                       ukm::SourceId document_ukm_source_id) {
   DCHECK(policy_container);
   ScriptForbiddenScope forbid_scripts;
 
@@ -214,6 +215,7 @@ void FrameLoader::Init(const DocumentToken& document_token,
   navigation_params->document_token = document_token;
   navigation_params->frame_policy =
       frame_->Owner() ? frame_->Owner()->GetFramePolicy() : FramePolicy();
+  navigation_params->document_ukm_source_id = document_ukm_source_id;
 
   DocumentLoader* new_document_loader = MakeGarbageCollected<DocumentLoader>(
       frame_, kWebNavigationTypeOther, std::move(navigation_params),

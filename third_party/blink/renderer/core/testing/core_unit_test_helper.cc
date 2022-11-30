@@ -57,7 +57,8 @@ LocalFrame* SingleChildLocalFrameClient::CreateFrame(
       dummy_host.Unbind(), std::move(policy_container_data));
 
   child->Init(/*opener=*/nullptr, DocumentToken(), std::move(policy_container),
-              parent_frame->DomWindow()->GetStorageKey());
+              parent_frame->DomWindow()->GetStorageKey(),
+              /*document_ukm_source_id=*/ukm::kInvalidSourceId);
 
   return child;
 }

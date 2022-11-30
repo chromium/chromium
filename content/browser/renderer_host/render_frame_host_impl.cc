@@ -203,6 +203,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/net_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "render_frame_host_impl.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
@@ -3611,7 +3612,8 @@ void RenderFrameHostImpl::OnCreateChildFrame(
     const blink::DocumentToken& document_token,
     const blink::FramePolicy& frame_policy,
     const blink::mojom::FrameOwnerProperties& frame_owner_properties,
-    blink::FrameOwnerElementType owner_type) {
+    blink::FrameOwnerElementType owner_type,
+    ukm::SourceId document_ukm_source_id) {
   // TODO(lukasza): Call ReceivedBadMessage when |frame_unique_name| is empty.
   DCHECK(!frame_unique_name.empty());
   DCHECK(browser_interface_broker_receiver.is_valid());
@@ -3639,7 +3641,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
   // `new_routing_id`, `frame_token`, `devtools_frame_token` and
   // `document_token` were generated on the browser's IO thread and not taken
   // from the renderer process.
-  frame_tree_->AddFrame(
+  FrameTreeNode* new_frame_tree_node = frame_tree_->AddFrame(
       this, GetProcess()->GetID(), new_routing_id, std::move(frame_remote),
       std::move(browser_interface_broker_receiver),
       std::move(policy_container_bind_params),
@@ -3648,6 +3650,16 @@ void RenderFrameHostImpl::OnCreateChildFrame(
       devtools_frame_token, document_token, frame_policy,
       frame_owner_properties, was_discarded_, owner_type,
       /*is_dummy_frame_for_inner_tree=*/false);
+
+  // Record the DocumentCreated identifiability metric for initial empty
+  // documents in child frames (other cases are taken care of by the
+  // NavigationRequest).
+  //
+  // Note: We do not want to record the corresponding DocumentCreated UKM event
+  // here, see https://crbug.com/1326431.
+  new_frame_tree_node->current_frame_host()->RecordDocumentCreatedUkmEvent(
+      GetLastCommittedOrigin(), document_ukm_source_id, ukm::UkmRecorder::Get(),
+      /*only_record_identifiability_metric=*/true);
 }
 
 void RenderFrameHostImpl::CreateChildFrame(
@@ -3664,7 +3676,8 @@ void RenderFrameHostImpl::CreateChildFrame(
     bool is_created_by_script,
     const blink::FramePolicy& frame_policy,
     blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
-    blink::FrameOwnerElementType owner_type) {
+    blink::FrameOwnerElementType owner_type,
+    ukm::SourceId document_ukm_source_id) {
   blink::LocalFrameToken frame_token;
   base::UnguessableToken devtools_frame_token;
   blink::DocumentToken document_token;
@@ -3695,7 +3708,8 @@ void RenderFrameHostImpl::CreateChildFrame(
                      std::move(associated_interface_provider_receiver), scope,
                      frame_name, frame_unique_name, is_created_by_script,
                      frame_token, devtools_frame_token, document_token,
-                     frame_policy, *frame_owner_properties, owner_type);
+                     frame_policy, *frame_owner_properties, owner_type,
+                     document_ukm_source_id);
 }
 
 void RenderFrameHostImpl::DidNavigate(
@@ -13761,7 +13775,8 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
 void RenderFrameHostImpl::RecordDocumentCreatedUkmEvent(
     const url::Origin& origin,
     const ukm::SourceId document_ukm_source_id,
-    ukm::UkmRecorder* ukm_recorder) {
+    ukm::UkmRecorder* ukm_recorder,
+    bool only_record_identifiability_metric) {
   DCHECK(ukm_recorder);
   if (document_ukm_source_id == ukm::kInvalidSourceId)
     return;
@@ -13784,16 +13799,23 @@ void RenderFrameHostImpl::RecordDocumentCreatedUkmEvent(
       (net::SchemefulSite(origin) !=
        net::SchemefulSite(GetOutermostMainFrame()->GetLastCommittedOrigin()));
 
+  bool is_main_frame = IsOutermostMainFrame();
+
+  ukm::SourceId navigation_ukm_source_id = GetPageUkmSourceId();
+
+  RecordIdentifiabilityDocumentCreatedMetrics(
+      document_ukm_source_id, ukm_recorder, navigation_ukm_source_id,
+      is_cross_origin_frame, is_cross_site_frame, is_main_frame);
+
+  if (only_record_identifiability_metric)
+    return;
+
   ukm::builders::DocumentCreated(document_ukm_source_id)
-      .SetNavigationSourceId(GetPageUkmSourceId())
-      .SetIsMainFrame(IsOutermostMainFrame())
+      .SetNavigationSourceId(navigation_ukm_source_id)
+      .SetIsMainFrame(is_main_frame)
       .SetIsCrossOriginFrame(is_cross_origin_frame)
       .SetIsCrossSiteFrame(is_cross_site_frame)
       .Record(ukm_recorder);
-
-  RecordIdentifiabilityDocumentCreatedMetrics(
-      document_ukm_source_id, ukm_recorder, GetPageUkmSourceId(),
-      is_cross_origin_frame, is_cross_site_frame, IsOutermostMainFrame());
 }
 
 void RenderFrameHostImpl::BindReportingObserver(

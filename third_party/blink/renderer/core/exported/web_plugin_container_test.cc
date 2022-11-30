@@ -204,6 +204,7 @@ class TestPluginWebFrameClient : public frame_test_helpers::TestWebFrameClient {
       const WebFrameOwnerProperties&,
       FrameOwnerElementType owner_type,
       WebPolicyContainerBindParams policy_container_bind_params,
+      ukm::SourceId document_ukm_source_id,
       FinishChildFrameCreationFn finish_creation) override {
     return CreateLocalChild(
         *Frame(), scope, std::make_unique<TestPluginWebFrameClient>(),

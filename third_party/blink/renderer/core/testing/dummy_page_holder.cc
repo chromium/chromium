@@ -33,6 +33,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
@@ -105,7 +106,8 @@ DummyPageHolder::DummyPageHolder(
       MakeGarbageCollected<LocalFrameView>(*frame_, initial_view_size));
   frame_->View()->GetPage()->GetVisualViewport().SetSize(initial_view_size);
   frame_->Init(/*opener=*/nullptr, DocumentToken(),
-               /*policy_container=*/nullptr, StorageKey());
+               /*policy_container=*/nullptr, StorageKey(),
+               /*document_ukm_source_id=*/ukm::kInvalidSourceId);
 
   CoreInitializer::GetInstance().ProvideModulesToPage(GetPage(),
                                                       base::EmptyString());

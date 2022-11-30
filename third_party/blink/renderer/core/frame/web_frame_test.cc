@@ -4831,6 +4831,7 @@ class ContextLifetimeTestWebFrameClient
       const WebFrameOwnerProperties&,
       FrameOwnerElementType,
       WebPolicyContainerBindParams policy_container_bind_params,
+      ukm::SourceId document_ukm_source_id,
       FinishChildFrameCreationFn finish_creation) override {
     return CreateLocalChild(*Frame(), scope,
                             std::make_unique<ContextLifetimeTestWebFrameClient>(
@@ -7775,6 +7776,7 @@ class TestCachePolicyWebFrameClient
       const WebFrameOwnerProperties& frame_owner_properties,
       FrameOwnerElementType,
       WebPolicyContainerBindParams policy_container_bind_params,
+      ukm::SourceId document_ukm_source_id,
       FinishChildFrameCreationFn finish_creation) override {
     auto child = std::make_unique<TestCachePolicyWebFrameClient>();
     auto* child_ptr = child.get();
@@ -8214,6 +8216,7 @@ class FailCreateChildFrame : public frame_test_helpers::TestWebFrameClient {
       const WebFrameOwnerProperties& frame_owner_properties,
       FrameOwnerElementType,
       WebPolicyContainerBindParams policy_container_bind_params,
+      ukm::SourceId document_ukm_source_id,
       FinishChildFrameCreationFn finish_creation) override {
     ++call_count_;
     return nullptr;
@@ -9231,6 +9234,7 @@ class WebFrameSwapTestClient : public frame_test_helpers::TestWebFrameClient {
       const WebFrameOwnerProperties&,
       FrameOwnerElementType,
       WebPolicyContainerBindParams policy_container_bind_params,
+      ukm::SourceId document_ukm_source_id,
       FinishChildFrameCreationFn finish_creation) override {
     return CreateLocalChild(
         *Frame(), scope, std::make_unique<WebFrameSwapTestClient>(this),
@@ -11400,6 +11404,7 @@ class WebLocalFrameVisibilityChangeTest
       const WebFrameOwnerProperties&,
       FrameOwnerElementType,
       WebPolicyContainerBindParams policy_container_bind_params,
+      ukm::SourceId document_ukm_source_id,
       FinishChildFrameCreationFn finish_creation) override {
     return CreateLocalChild(*Frame(), scope, &child_client_,
                             std::move(policy_container_bind_params),
@@ -13156,6 +13161,7 @@ TEST_F(WebFrameTest, NoLoadingCompletionCallbacksInDetach) {
         const WebFrameOwnerProperties&,
         FrameOwnerElementType,
         WebPolicyContainerBindParams policy_container_bind_params,
+        ukm::SourceId document_ukm_source_id,
         FinishChildFrameCreationFn finish_creation) override {
       return CreateLocalChild(*Frame(), scope, &child_client_,
                               std::move(policy_container_bind_params),

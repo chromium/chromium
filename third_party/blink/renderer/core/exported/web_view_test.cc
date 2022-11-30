@@ -4098,6 +4098,7 @@ class CreateChildCounterFrameClient
       const WebFrameOwnerProperties&,
       FrameOwnerElementType,
       WebPolicyContainerBindParams policy_container_bind_params,
+      ukm::SourceId document_ukm_source_id,
       base::FunctionRef<void(WebLocalFrame*, const DocumentToken&)>
           complete_initialization) override;
 
@@ -4115,13 +4116,14 @@ WebLocalFrame* CreateChildCounterFrameClient::CreateChildFrame(
     const WebFrameOwnerProperties& frame_owner_properties,
     FrameOwnerElementType frame_owner_element_type,
     WebPolicyContainerBindParams policy_container_bind_params,
+    ukm::SourceId document_ukm_source_id,
     base::FunctionRef<void(WebLocalFrame*, const DocumentToken&)>
         complete_initialization) {
   ++count_;
   return TestWebFrameClient::CreateChildFrame(
       scope, name, fallback_name, frame_policy, frame_owner_properties,
       frame_owner_element_type, std::move(policy_container_bind_params),
-      complete_initialization);
+      document_ukm_source_id, complete_initialization);
 }
 
 TEST_F(WebViewTest, ChangeDisplayMode) {

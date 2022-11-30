@@ -97,6 +97,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_params_builder.h"
@@ -2209,12 +2210,12 @@ void WebLocalFrameImpl::InitializeCoreFrame(
     std::unique_ptr<blink::WebPolicyContainer> policy_container,
     const StorageKey& storage_key,
     network::mojom::blink::WebSandboxFlags sandbox_flags) {
-  InitializeCoreFrameInternal(page, owner, parent, previous_sibling,
-                              insert_type, name, window_agent_factory, opener,
-                              document_token,
-                              PolicyContainer::CreateFromWebPolicyContainer(
-                                  std::move(policy_container)),
-                              storage_key, sandbox_flags);
+  InitializeCoreFrameInternal(
+      page, owner, parent, previous_sibling, insert_type, name,
+      window_agent_factory, opener, document_token,
+      PolicyContainer::CreateFromWebPolicyContainer(
+          std::move(policy_container)),
+      storage_key, ukm::kInvalidSourceId, sandbox_flags);
 }
 
 void WebLocalFrameImpl::InitializeCoreFrameInternal(
@@ -2229,6 +2230,7 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
     const DocumentToken& document_token,
     std::unique_ptr<PolicyContainer> policy_container,
     const StorageKey& storage_key,
+    ukm::SourceId document_ukm_source_id,
     network::mojom::blink::WebSandboxFlags sandbox_flags) {
   Frame* parent_frame = parent ? ToCoreFrame(*parent) : nullptr;
   Frame* previous_sibling_frame =
@@ -2266,7 +2268,7 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
   // We must call init() after frame_ is assigned because it is referenced
   // during init().
   frame_->Init(opener_frame, document_token, std::move(policy_container),
-               storage_key);
+               storage_key, document_ukm_source_id);
 
   if (!owner) {
     // This trace event is needed to detect the main frame of the
@@ -2315,10 +2317,13 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
   policy_container_data->sandbox_flags |= frame_policy.sandbox_flags;
   frame_policy.sandbox_flags = policy_container_data->sandbox_flags;
 
+  ukm::SourceId document_ukm_source_id = ukm::UkmRecorder::GetNewSourceID();
+
   auto complete_initialization = [this, owner_element, &policy_container_remote,
-                                  &policy_container_data,
-                                  &name](WebLocalFrame* new_child_frame,
-                                         const DocumentToken& document_token) {
+                                  &policy_container_data, &name,
+                                  document_ukm_source_id](
+                                     WebLocalFrame* new_child_frame,
+                                     const DocumentToken& document_token) {
     // The initial empty document's credentialless bit is the union of:
     // - its parent's credentialless bit.
     // - its frame's credentialless attribute.
@@ -2334,7 +2339,7 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
             FrameInsertType::kInsertInConstructor, name,
             &GetFrame()->window_agent_factory(), nullptr, document_token,
             std::move(policy_container),
-            GetFrame()->DomWindow()->GetStorageKey());
+            GetFrame()->DomWindow()->GetStorageKey(), document_ukm_source_id);
   };
 
   // FIXME: Using subResourceAttributeName as fallback is not a perfect
@@ -2348,7 +2353,7 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
               owner_element->SubResourceAttributeName()),
           std::move(frame_policy), owner_properties, owner_element->OwnerType(),
           WebPolicyContainerBindParams{std::move(policy_container_receiver)},
-          complete_initialization));
+          document_ukm_source_id, complete_initialization));
   if (!webframe_child)
     return nullptr;
 
@@ -2645,6 +2650,8 @@ void WebLocalFrameImpl::CommitNavigation(
   if (navigation_params->is_synchronous_commit_for_bug_778318) {
     DCHECK(WebDocumentLoader::WillLoadUrlAsEmpty(navigation_params->url));
     navigation_params->storage_key = GetFrame()->DomWindow()->GetStorageKey();
+    navigation_params->document_ukm_source_id =
+        GetFrame()->DomWindow()->UkmSourceID();
   }
   if (GetTextFinder())
     GetTextFinder()->ClearActiveFindMatch();

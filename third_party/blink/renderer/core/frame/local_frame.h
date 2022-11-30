@@ -39,6 +39,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/device_posture_provider.mojom-blink-forward.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/frame/transient_allow_fullscreen.h"
@@ -202,6 +203,8 @@ class CORE_EXPORT LocalFrame final
   //   corresponding RenderFrameHost.
   // - |storage_key| is the key used to partition access to storage API like DOM
   //   storage, IndexedDB, BroadcastChannel, etc...
+  // - |document_ukm_source_id| is the ukm source id for the new document. If
+  //   you pass ukm::kInvalidSourceId, a new ukm source id will be generated.
   //
   // Note: Usually, the initial empty document inherits its |policy_container|
   // and |storage_key| from the parent or the opener. The inheritance operation
@@ -211,7 +214,8 @@ class CORE_EXPORT LocalFrame final
   void Init(Frame* opener,
             const DocumentToken& document_token,
             std::unique_ptr<PolicyContainer> policy_container,
-            const StorageKey& storage_key);
+            const StorageKey& storage_key,
+            ukm::SourceId document_ukm_source_id);
   void SetView(LocalFrameView*);
   void CreateView(const gfx::Size&, const Color&);
 

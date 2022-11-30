@@ -405,7 +405,7 @@ WebPagePopupImpl::WebPagePopupImpl(
 
   // TODO(https://crbug.com/1355751) Initialize `storage_key`.
   frame->Init(/*opener=*/nullptr, DocumentToken(), /*policy_container=*/nullptr,
-              StorageKey());
+              StorageKey(), /*document_ukm_source_id=*/ukm::kInvalidSourceId);
   frame->View()->SetParentVisible(true);
   frame->View()->SetSelfVisible(true);
 

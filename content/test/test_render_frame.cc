@@ -151,7 +151,8 @@ class MockFrameHost : public mojom::FrameHost {
       bool is_created_by_script,
       const blink::FramePolicy& frame_policy,
       blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
-      blink::FrameOwnerElementType owner_type) override {
+      blink::FrameOwnerElementType owner_type,
+      ukm::SourceId document_ukm_source_id) override {
     // If we get here, then the remote end of
     // `associated_interface_provider_receiver` is expected to be usable even
     // though we don't pass this receiver over an existing mojo pipe. Simulate

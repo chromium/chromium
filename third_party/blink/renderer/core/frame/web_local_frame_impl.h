@@ -615,6 +615,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       const DocumentToken& document_token,
       std::unique_ptr<PolicyContainer> policy_container,
       const StorageKey& storage_key,
+      ukm::SourceId document_ukm_source_id,
       network::mojom::blink::WebSandboxFlags sandbox_flags =
           network::mojom::blink::WebSandboxFlags::kNone);
 

@@ -758,6 +758,7 @@ WebLocalFrame* TestWebFrameClient::CreateChildFrame(
     const WebFrameOwnerProperties&,
     FrameOwnerElementType,
     WebPolicyContainerBindParams policy_container_bind_params,
+    ukm::SourceId document_ukm_source_id,
     FinishChildFrameCreationFn finish_creation) {
   MockPolicyContainerHost mock_policy_container_host;
   mock_policy_container_host.BindWithNewEndpoint(

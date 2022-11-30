@@ -699,7 +699,8 @@ interface FrameHost {
                    bool is_created_by_script,
                    blink.mojom.FramePolicy frame_policy,
                    blink.mojom.FrameOwnerProperties frame_owner_properties,
-                   ChildFrameOwnerElementType child_frame_owner_element_type);
+                   ChildFrameOwnerElementType child_frame_owner_element_type,
+                   int64 document_ukm_source_id);
 
   // Sent by the renderer when a navigation commits in the frame.
 
