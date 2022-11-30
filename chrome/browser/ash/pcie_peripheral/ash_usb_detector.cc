@@ -6,21 +6,23 @@
 
 #include <memory>
 
-#include "ash/components/fwupd/firmware_update_manager.h"
 #include "ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
+#include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 #include "content/public/browser/device_service.h"
 
 namespace ash {
 
 namespace {
+
 static AshUsbDetector* g_ash_usb_detector = nullptr;
 
 constexpr int kRequestUpdatesIntervalInSeconds = 5;
 constexpr int kMaxNumRequestUpdatesRetries = 3;
+
 }  // namespace
 
 AshUsbDetector::AshUsbDetector() {
@@ -143,4 +145,5 @@ void AshUsbDetector::SetFetchUpdatesTimerForTesting(
     std::unique_ptr<base::RepeatingTimer> timer) {
   fetch_updates_repeating_timer_ = std::move(timer);
 }
+
 }  // namespace ash

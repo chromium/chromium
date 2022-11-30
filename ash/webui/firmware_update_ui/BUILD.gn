@@ -15,10 +15,10 @@ static_library("firmware_update_ui") {
   ]
 
   deps = [
-    "//ash/components/fwupd:fwupd",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/webui/firmware_update_ui/mojom",
     "//ash/webui/resources:firmware_update_app_resources",
+    "//chromeos/ash/components/fwupd",
     "//chromeos/strings/",
     "//content/public/browser",
     "//dbus",

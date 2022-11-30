@@ -7,7 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 
 component("fwupd") {
-  defines = [ "IS_ASH_FIRMWARE_UPDATE_MANAGER_IMPL" ]
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_FWUPD_IMPL" ]
 
   deps = [
     "//ash/public/cpp",
@@ -30,21 +30,27 @@ component("fwupd") {
 source_set("unit_tests") {
   testonly = true
 
+  public_deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//services/network:test_support",
+  ]
+
   deps = [
     ":fwupd",
     "//ash",
-    "//ash:test_support",
     "//ash/constants",
-    "//ash/public/cpp",
-    "//ash/public/mojom",
     "//ash/webui/firmware_update_ui/mojom",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/fwupd",
+    "//dbus",
     "//dbus:test_support",
-    "//services/network:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net/traffic_annotation",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/message_center",
     "//ui/message_center:test_support",
   ]
 

@@ -7,12 +7,12 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/fwupd/firmware_update_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "ash/webui/firmware_update_ui/url_constants.h"
 #include "ash/webui/grit/ash_firmware_update_app_resources.h"
 #include "ash/webui/grit/ash_firmware_update_app_resources_map.h"
+#include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"

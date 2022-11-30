@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_FWUPD_FIRMWARE_UPDATE_MANAGER_H_
-#define ASH_COMPONENTS_FWUPD_FIRMWARE_UPDATE_MANAGER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_FWUPD_FIRMWARE_UPDATE_MANAGER_H_
+#define CHROMEOS_ASH_COMPONENTS_FWUPD_FIRMWARE_UPDATE_MANAGER_H_
 
 #include <string>
 
@@ -35,7 +35,7 @@ class SimpleURLLoader;
 
 namespace ash {
 // FirmwareUpdateManager contains all logic that runs the firmware update SWA.
-class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
     : public FwupdClient::Observer,
       public firmware_update::mojom::UpdateProvider,
       public firmware_update::mojom::InstallController {
@@ -247,4 +247,4 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_FWUPD_FIRMWARE_UPDATE_MANAGER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_FWUPD_FIRMWARE_UPDATE_MANAGER_H_

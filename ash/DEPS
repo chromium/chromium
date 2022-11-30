@@ -129,7 +129,8 @@ specific_include_rules = {
     "+ash/host"
   ],
   "shell.cc": [
-    "+ash/host/ash_window_tree_host_init_params.h"
+    "+ash/host/ash_window_tree_host_init_params.h",
+    "+chromeos/ash/components/fwupd",
   ],
   "window_manager.cc": [
     "+ash/host/ash_window_tree_host.h"

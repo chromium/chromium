@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_FWUPD_HISTOGRAM_UTIL_H_
-#define ASH_COMPONENTS_FWUPD_HISTOGRAM_UTIL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_FWUPD_HISTOGRAM_UTIL_H_
+#define CHROMEOS_ASH_COMPONENTS_FWUPD_HISTOGRAM_UTIL_H_
 
 #include <cstdint>
 #include <string>
@@ -39,4 +39,4 @@ std::string GetSourceStr(bool is_startup);
 }  // namespace firmware_update
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_FWUPD_HISTOGRAM_UTIL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_FWUPD_HISTOGRAM_UTIL_H_

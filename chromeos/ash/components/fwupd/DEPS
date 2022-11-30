@@ -1,0 +1,14 @@
+include_rules = [
+  "+ash/public/cpp",
+  "+ash/webui/firmware_update_ui/mojom",
+  "+chromeos/ash/components/dbus/fwupd",
+  "+dbus",
+]
+
+specific_include_rules = {
+  ".*test\.cc|fake.*": [
+    "+ash/system/firmware_update",
+    "+services/network/test",
+    "+ui/message_center",
+  ]
+}

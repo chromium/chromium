@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/fwupd/fake_fwupd_download_client.h"
+#include "chromeos/ash/components/fwupd/fake_fwupd_download_client.h"
 
 #include <memory>
 #include <utility>

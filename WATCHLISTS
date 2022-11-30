@@ -1109,9 +1109,9 @@
                   'ui/file_manager'
     },
     'firmware_update': {
-      'filepath': 'ash/components/fwupd/|' \
-                  'ash/webui/firmware_update_ui/|' \
-                  'chromeos/ash/components/dbus/fwupd/'
+      'filepath': 'ash/webui/firmware_update_ui/|' \
+                  'chromeos/ash/components/dbus/fwupd/|' \
+                  'chromeos/ash/components/fwupd/',
     },
     'freetype_update': {
       'filepath': 'third_party/freetype/README.chromium',

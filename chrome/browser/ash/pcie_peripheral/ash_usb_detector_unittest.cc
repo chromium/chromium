@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/fwupd/firmware_update_manager.h"
 #include "ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "base/timer/mock_timer.h"
 #include "base/timer/timer.h"

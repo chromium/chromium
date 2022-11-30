@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_FIRMWARE_UPDATE_FIRMWARE_UPDATE_NOTIFICATION_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "ash/components/fwupd/firmware_update_manager.h"
+#include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 
 namespace message_center {
 class MessageCenter;

@@ -2,19 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/fwupd/firmware_update_manager.h"
+#include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 
 #include <deque>
 #include <map>
 #include <memory>
 #include <string>
 
-#include "ash/components/fwupd/fake_fwupd_download_client.h"
-#include "ash/components/fwupd/histogram_util.h"
 #include "ash/constants/ash_features.h"
-#include "ash/shell.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
-#include "ash/test/ash_test_base.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom-test-utils.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "base/files/file.h"
@@ -26,7 +22,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
-#include "components/user_manager/user_type.h"
+#include "chromeos/ash/components/fwupd/fake_fwupd_download_client.h"
+#include "chromeos/ash/components/fwupd/histogram_util.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -39,13 +36,11 @@
 #include "ui/message_center/fake_message_center.h"
 #include "ui/message_center/message_center.h"
 
-using message_center::MessageCenter;
-using message_center::Notification;
+namespace {
+
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
-
-namespace {
 
 const char kFakeDeviceIdForTesting[] = "Fake_Device_ID";
 const char kFakeInternalDeviceIdForTesting[] = "Fake_Internal_Device_ID";
@@ -1020,98 +1015,6 @@ TEST_F(FirmwareUpdateManagerTest, UpdateCountMetric) {
       "ChromeOS.FirmwareUpdateUi.OnRefresh.UpdateCount", 1, 1);
 }
 
-class FirmwareUpdateStartupNotificationTest : public NoSessionAshTestBase {
- public:
-  FirmwareUpdateStartupNotificationTest() = default;
-
-  ~FirmwareUpdateStartupNotificationTest() override = default;
-
-  void SetUp() override {
-    FwupdClient::InitializeFake();
-    dbus_client_ = FwupdClient::Get();
-    firmware_update_manager_ = std::make_unique<FirmwareUpdateManager>();
-    EXPECT_TRUE(FirmwareUpdateManager::IsInitialized());
-    SetShouldShowNotificationForTest(true);
-    NoSessionAshTestBase::SetUp();
-  }
-
-  void TearDown() override {
-    firmware_update_notification_controller_.reset();
-    firmware_update_manager_.reset();
-    FwupdClient::Shutdown();
-    NoSessionAshTestBase::TearDown();
-  }
-
- protected:
-  void InitializeNotificationController() {
-    firmware_update_notification_controller_ =
-        std::make_unique<FirmwareUpdateNotificationController>(
-            message_center());
-  }
-
-  message_center::MessageCenter* message_center() const {
-    return message_center::MessageCenter::Get();
-  }
-
-  message_center::Notification* FindShortcutsChangedNotification() {
-    return message_center::MessageCenter::Get()->FindVisibleNotificationById(
-        kFirmwareUpdateNotificationId);
-  }
-
-  void SetShouldShowNotificationForTest(bool show_notification) {
-    FirmwareUpdateManager::Get()->set_should_show_notification_for_test(
-        show_notification);
-  }
-
-  void SimulateFetchingUpdates() {
-    FirmwareUpdateManager::Get()->RequestAllUpdates();
-  }
-
-  FwupdClient* dbus_client_ = nullptr;
-  std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
-  std::unique_ptr<FirmwareUpdateNotificationController>
-      firmware_update_notification_controller_;
-};
-
-TEST_F(FirmwareUpdateStartupNotificationTest,
-       StartupNotificationShownRegularUser) {
-  // Notification should be shown at login.
-  SimulateUserLogin("user1@email.com");
-  InitializeNotificationController();
-  SimulateFetchingUpdates();
-  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
-      kFirmwareUpdateNotificationId));
-}
-
-TEST_F(FirmwareUpdateStartupNotificationTest,
-       StartupNotificationShownGuestUser) {
-  // Notification should not be shown at login if the user is a guest.
-  SimulateUserLogin("user1@email.com", user_manager::USER_TYPE_GUEST);
-  InitializeNotificationController();
-  SimulateFetchingUpdates();
-  EXPECT_FALSE(message_center()->FindVisibleNotificationById(
-      kFirmwareUpdateNotificationId));
-}
-
-TEST_F(FirmwareUpdateStartupNotificationTest, StartupNotificationShownKiosk) {
-  // Notification should not be shown at login if the user is in kiosk mode.
-  SimulateUserLogin("user1@email.com", user_manager::USER_TYPE_KIOSK_APP);
-  InitializeNotificationController();
-  SimulateFetchingUpdates();
-  EXPECT_FALSE(message_center()->FindVisibleNotificationById(
-      kFirmwareUpdateNotificationId));
-}
-
-TEST_F(FirmwareUpdateStartupNotificationTest,
-       StartupNotificationShownKioskPWA) {
-  // Notification should not be shown at login if the user is in kiosk mode.
-  SimulateUserLogin("user1@email.com", user_manager::USER_TYPE_WEB_KIOSK_APP);
-  InitializeNotificationController();
-  SimulateFetchingUpdates();
-  EXPECT_FALSE(message_center()->FindVisibleNotificationById(
-      kFirmwareUpdateNotificationId));
-}
-
 TEST_F(FirmwareUpdateManagerTest, InternalDeviceFiltered) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
@@ -1130,4 +1033,5 @@ TEST_F(FirmwareUpdateManagerTest, InternalDeviceFiltered) {
   ASSERT_EQ(1U, updates.size());
   EXPECT_EQ(kFakeDeviceIdForTesting, updates[0]->device_id);
 }
+
 }  // namespace ash

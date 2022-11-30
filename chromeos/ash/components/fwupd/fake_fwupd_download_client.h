@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_FWUPD_FAKE_FWUPD_DOWNLOAD_CLIENT_H_
-#define ASH_COMPONENTS_FWUPD_FAKE_FWUPD_DOWNLOAD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_FWUPD_FAKE_FWUPD_DOWNLOAD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_FWUPD_FAKE_FWUPD_DOWNLOAD_CLIENT_H_
 
 #include "ash/public/cpp/fwupd_download_client.h"
 #include "base/component_export.h"
@@ -16,7 +16,7 @@ class SharedURLLoaderFactory;
 namespace ash {
 
 // A fake implementation of FwupdDownloadClient used for testing.
-class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FakeFwupdDownloadClient
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FakeFwupdDownloadClient
     : public ash::FwupdDownloadClient {
  public:
   FakeFwupdDownloadClient();
@@ -35,4 +35,4 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FakeFwupdDownloadClient
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_FWUPD_FAKE_FWUPD_DOWNLOAD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_FWUPD_FAKE_FWUPD_DOWNLOAD_CLIENT_H_

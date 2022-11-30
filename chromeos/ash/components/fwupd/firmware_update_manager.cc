@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/fwupd/firmware_update_manager.h"
+#include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 
 #include <algorithm>
 #include <utility>
 
-#include "ash/components/fwupd/histogram_util.h"
 #include "ash/public/cpp/fwupd_download_client.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "base/base_paths.h"
@@ -25,6 +24,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
+#include "chromeos/ash/components/fwupd/histogram_util.h"
 #include "crypto/sha2.h"
 #include "dbus/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
