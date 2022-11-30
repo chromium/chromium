@@ -9,8 +9,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:108-
 items:
 - caption: Trash is enabled for the user.
   value: true
