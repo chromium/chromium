@@ -228,7 +228,7 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
       num_frames = frames_per_buffer_;
 
     auto audio_bus = AudioBus::Create(options_.channels, num_frames);
-    audio_source_.OnMoreData(base::TimeDelta(), timestamp, 0, audio_bus.get());
+    audio_source_.OnMoreData(base::TimeDelta(), timestamp, {}, audio_bus.get());
 
     DoEncode(std::move(audio_bus), timestamp, std::move(done_cb));
 
@@ -848,7 +848,7 @@ TEST_P(AudioOpusEncoderTest, VariableChannelCounts) {
                             base::TimeTicks current_timestamp) {
     auto audio_bus = AudioBus::Create(channel_count, num_frames);
     sources[channel_count - 1].OnMoreData(base::TimeDelta(), current_timestamp,
-                                          0, audio_bus.get());
+                                          {}, audio_bus.get());
     return audio_bus;
   };
 

@@ -188,7 +188,7 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
     std::unique_ptr<media::AudioBus> bus(media::AudioBus::Create(
         kTestAudioChannels,
         kTestAudioSampleRate * kTestAudioBufferDurationMs / 1000));
-    audio_source_.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
+    audio_source_.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                              bus.get());
     return bus;
   }

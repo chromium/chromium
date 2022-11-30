@@ -325,7 +325,7 @@ uint32_t CrasUnifiedStream::WriteAudio(size_t frames,
       std::max(base::TimeDelta::FromTimeSpec(*latency_ts), base::TimeDelta());
 
   int frames_filled = source_callback_->OnMoreData(
-      delay, base::TimeTicks::Now(), 0, output_bus_.get());
+      delay, base::TimeTicks::Now(), {}, output_bus_.get());
 
   // Note: If this ever changes to output raw float the data must be clipped and
   // sanitized since it may come from an untrusted source such as NaCl.

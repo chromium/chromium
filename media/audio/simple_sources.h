@@ -47,7 +47,7 @@ class MEDIA_EXPORT SineWaveAudioSource
   // Implementation of AudioSourceCallback.
   int OnMoreData(base::TimeDelta delay,
                  base::TimeTicks timestamp,
-                 int prior_frames_skipped,
+                 const AudioGlitchInfo& glitch_info,
                  AudioBus* dest) override;
   void OnError(ErrorType type) override;
 
@@ -86,7 +86,7 @@ class MEDIA_EXPORT FileSource : public AudioOutputStream::AudioSourceCallback,
   // Implementation of AudioSourceCallback.
   int OnMoreData(base::TimeDelta delay,
                  base::TimeTicks delay_timestamp,
-                 int prior_frames_skipped,
+                 const AudioGlitchInfo& glitch_info,
                  AudioBus* dest) override;
   void OnError(ErrorType type) override;
 
@@ -125,11 +125,12 @@ class BeepingSource : public AudioOutputStream::AudioSourceCallback {
   // Implementation of AudioSourceCallback.
   int OnMoreData(base::TimeDelta delay,
                  base::TimeTicks delay_timestamp,
-                 int prior_frames_skipped,
+                 const AudioGlitchInfo& glitch_info,
                  AudioBus* dest) override;
   void OnError(ErrorType type) override;
 
   static void BeepOnce();
+
  private:
   int buffer_size_;
   std::unique_ptr<uint8_t[]> buffer_;

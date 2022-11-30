@@ -174,11 +174,6 @@ class AUHALStream : public AudioOutputStream {
   // Current playout time.  Set by Render().
   base::TimeTicks current_playout_time_;
 
-  // Lost frames not yet reported to the provider. Increased in
-  // UpdatePlayoutTimestamp() if any lost frame since last time. Forwarded to
-  // the provider and reset in ProvideInput().
-  uint32_t current_lost_frames_;
-
   // Stores the timestamp of the previous audio buffer requested by the OS.
   // We use this in combination with |last_number_of_frames_| to detect when
   // the OS has decided to skip rendering frames (i.e. a glitch).
@@ -199,6 +194,8 @@ class AUHALStream : public AudioOutputStream {
 
   // Callback to send statistics info.
   AudioManager::LogCallback log_callback_;
+
+  AudioGlitchInfo::Accumulator glitch_info_accumulator_;
 
   // Used to make sure control functions (Start(), Stop() etc) are called on the
   // right thread.

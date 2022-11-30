@@ -791,7 +791,7 @@ int AlsaPcmOutputStream::RunDataCallback(base::TimeDelta delay,
   TRACE_EVENT0("audio", "AlsaPcmOutputStream::RunDataCallback");
 
   if (source_callback_)
-    return source_callback_->OnMoreData(delay, delay_timestamp, 0, audio_bus);
+    return source_callback_->OnMoreData(delay, delay_timestamp, {}, audio_bus);
 
   return 0;
 }

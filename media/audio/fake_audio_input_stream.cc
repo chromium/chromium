@@ -170,7 +170,7 @@ void FakeAudioInputStream::ReadAudioFromSource(base::TimeTicks ideal_time,
   {
     base::AutoLock lock(callback_lock_);
     if (audio_bus_ && callback_) {
-      audio_source_->OnMoreData(base::TimeDelta(), ideal_time, 0,
+      audio_source_->OnMoreData(base::TimeDelta(), ideal_time, {},
                                 audio_bus_.get());
       callback_->OnData(audio_bus_.get(), ideal_time, 1.0);
     }

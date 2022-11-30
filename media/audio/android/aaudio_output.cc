@@ -311,7 +311,7 @@ aaudio_data_callback_result_t AAudioOutputStream::OnAudioDataRequested(
   const base::TimeDelta delay = GetDelay(delay_timestamp);
 
   const int frames_filled =
-      callback_->OnMoreData(delay, delay_timestamp, 0, audio_bus_.get());
+      callback_->OnMoreData(delay, delay_timestamp, {}, audio_bus_.get());
 
   audio_bus_->Scale(muted_ ? 0.0 : volume_);
   audio_bus_->ToInterleaved<Float32SampleTypeTraits>(

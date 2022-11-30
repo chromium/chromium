@@ -44,7 +44,7 @@ namespace media {
 
 static int ClearData(base::TimeDelta /* delay */,
                      base::TimeTicks /* delay_timestamp */,
-                     int /* prior_frames_skipped */,
+                     const AudioGlitchInfo& /* glitch_info */,
                      AudioBus* dest) {
   dest->Zero();
   return dest->frames();
@@ -61,7 +61,7 @@ class TestSourceBasic : public AudioOutputStream::AudioSourceCallback {
   // AudioSourceCallback::OnMoreData implementation:
   int OnMoreData(base::TimeDelta /* delay */,
                  base::TimeTicks /* delay_timestamp */,
-                 int /* prior_frames_skipped */,
+                 const AudioGlitchInfo& /* glitch_info */,
                  AudioBus* dest) override {
     ++callback_count_;
     // Touch the channel memory value to make sure memory is good.
@@ -98,16 +98,16 @@ class TestSourceLaggy : public TestSourceBasic {
   }
   int OnMoreData(base::TimeDelta delay,
                  base::TimeTicks delay_timestamp,
-                 int prior_frames_skipped,
+                 const AudioGlitchInfo& glitch_info,
                  AudioBus* dest) override {
     // Call the base, which increments the callback_count_.
-    TestSourceBasic::OnMoreData(delay, delay_timestamp, prior_frames_skipped,
-                                dest);
+    TestSourceBasic::OnMoreData(delay, delay_timestamp, glitch_info, dest);
     if (callback_count() > kMaxNumBuffers) {
       ::Sleep(lag_in_ms_);
     }
     return dest->frames();
   }
+
  private:
   int lag_in_ms_;
 };
@@ -450,22 +450,24 @@ TEST_F(WinAudioTest, PCMWaveStreamPendingBytes) {
   // pending bytes will go down and eventually read zero.
   InSequence s;
 
-  EXPECT_CALL(source, OnMoreData(base::TimeDelta(), _, 0, NotNull()))
+  EXPECT_CALL(source,
+              OnMoreData(base::TimeDelta(), _, AudioGlitchInfo(), NotNull()))
       .WillOnce(Invoke(ClearData));
 
   // Note: If AudioManagerWin::NumberOfWaveOutBuffers() ever changes, or if this
   // test is run on Vista, these expectations will fail.
-  EXPECT_CALL(source, OnMoreData(delay_100_ms, _, 0, NotNull()))
+  EXPECT_CALL(source, OnMoreData(delay_100_ms, _, AudioGlitchInfo(), NotNull()))
       .WillOnce(Invoke(ClearData));
-  EXPECT_CALL(source, OnMoreData(delay_200_ms, _, 0, NotNull()))
+  EXPECT_CALL(source, OnMoreData(delay_200_ms, _, AudioGlitchInfo(), NotNull()))
       .WillOnce(Invoke(ClearData));
-  EXPECT_CALL(source, OnMoreData(delay_200_ms, _, 0, NotNull()))
+  EXPECT_CALL(source, OnMoreData(delay_200_ms, _, AudioGlitchInfo(), NotNull()))
       .Times(AnyNumber())
       .WillRepeatedly(Return(0));
-  EXPECT_CALL(source, OnMoreData(delay_100_ms, _, 0, NotNull()))
+  EXPECT_CALL(source, OnMoreData(delay_100_ms, _, AudioGlitchInfo(), NotNull()))
       .Times(AnyNumber())
       .WillRepeatedly(Return(0));
-  EXPECT_CALL(source, OnMoreData(base::TimeDelta(), _, 0, NotNull()))
+  EXPECT_CALL(source,
+              OnMoreData(base::TimeDelta(), _, AudioGlitchInfo(), NotNull()))
       .Times(AnyNumber())
       .WillRepeatedly(Return(0));
 
@@ -497,7 +499,7 @@ class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
   // AudioSourceCallback::OnMoreData implementation:
   int OnMoreData(base::TimeDelta delay,
                  base::TimeTicks delay_timestamp,
-                 int /* prior_frames_skipped */,
+                 const AudioGlitchInfo& glitch_info,
                  AudioBus* dest) override {
     // If we ask for more data once the producer has shutdown, we will hang
     // on |socket_->Receive()|.
@@ -579,7 +581,7 @@ DWORD __stdcall SyncSocketThread(void* context) {
     base::TimeTicks delay_timestamp =
         base::TimeTicks() +
         base::Microseconds(ctx.buffer->params.delay_timestamp_us);
-    sine.OnMoreData(delay, delay_timestamp, 0, audio_bus.get());
+    sine.OnMoreData(delay, delay_timestamp, {}, audio_bus.get());
 
     // Send the audio data to the Audio Stream.
     ctx.socket->Send(data.get(), ctx.packet_size_bytes);

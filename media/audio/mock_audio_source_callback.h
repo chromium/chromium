@@ -23,7 +23,10 @@ class MockAudioSourceCallback : public AudioOutputStream::AudioSourceCallback {
   ~MockAudioSourceCallback() override;
 
   MOCK_METHOD4(OnMoreData,
-               int(base::TimeDelta, base::TimeTicks, int, AudioBus*));
+               int(base::TimeDelta,
+                   base::TimeTicks,
+                   const AudioGlitchInfo& glitch_info,
+                   AudioBus*));
   MOCK_METHOD1(OnError, void(ErrorType));
 };
 

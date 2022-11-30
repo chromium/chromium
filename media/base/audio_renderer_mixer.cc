@@ -140,7 +140,7 @@ int AudioRendererMixer::Render(base::TimeDelta delay,
 
   uint32_t frames_delayed =
       AudioTimestampHelper::TimeToFrames(delay, output_params_.sample_rate());
-  aggregate_converter_.ConvertWithDelay(frames_delayed, audio_bus);
+  aggregate_converter_.ConvertWithInfo(frames_delayed, {}, audio_bus);
   return audio_bus->frames();
 }
 

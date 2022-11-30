@@ -31,7 +31,7 @@ TEST(SimpleSources, SineWaveAudioSource) {
 
   SineWaveAudioSource source(1, freq, params.sample_rate());
   std::unique_ptr<AudioBus> audio_bus = AudioBus::Create(params);
-  source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
+  source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                     audio_bus.get());
   EXPECT_EQ(1, source.callbacks());
   EXPECT_EQ(0, source.errors());
@@ -61,16 +61,16 @@ TEST(SimpleSources, SineWaveAudioCapped) {
   source.CapSamples(kSampleCap);
 
   std::unique_ptr<AudioBus> audio_bus = AudioBus::Create(1, 2 * kSampleCap);
-  EXPECT_EQ(source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
+  EXPECT_EQ(source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                               audio_bus.get()),
             kSampleCap);
   EXPECT_EQ(1, source.callbacks());
-  EXPECT_EQ(source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
+  EXPECT_EQ(source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                               audio_bus.get()),
             0);
   EXPECT_EQ(2, source.callbacks());
   source.Reset();
-  EXPECT_EQ(source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
+  EXPECT_EQ(source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                               audio_bus.get()),
             kSampleCap);
   EXPECT_EQ(3, source.callbacks());
@@ -132,14 +132,14 @@ TEST(SimpleSources, FileSourceTestDataWithoutLooping) {
   bool loop = false;
   FileSource source(params, temp_path, loop);
   EXPECT_EQ(kNumFrames,
-            source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
+            source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                               audio_bus.get()));
 
   VerifyContainsTestFile(audio_bus.get());
 
   // We should not play any more audio after the file reaches its end.
   audio_bus->Zero();
-  source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
+  source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                     audio_bus.get());
   for (int channel = 0; channel < audio_bus->channels(); ++channel) {
     for (int frame = 0; frame < audio_bus->frames(); ++frame) {
@@ -170,10 +170,10 @@ TEST(SimpleSources, FileSourceTestDataWithLooping) {
   FileSource source(params, temp_path, loop);
 
   // Verify that we keep reading in the file when looping.
-  source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
+  source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                     audio_bus.get());
   audio_bus->Zero();
-  source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
+  source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                     audio_bus.get());
 
   VerifyContainsTestFile(audio_bus.get());
@@ -192,7 +192,7 @@ TEST(SimpleSources, BadFilePathFails) {
              .Append(FILE_PATH_LITERAL("exist"));
   bool loop = false;
   FileSource source(params, path, loop);
-  EXPECT_EQ(0, source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
+  EXPECT_EQ(0, source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                                  audio_bus.get()));
 
   // Confirm all frames are zero-padded.
@@ -228,7 +228,7 @@ TEST(SimpleSources, FileSourceCorruptTestDataFails) {
   // Create a FileSource that reads this file.
   bool loop = false;
   FileSource source(params, temp_path, loop);
-  EXPECT_EQ(0, source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
+  EXPECT_EQ(0, source.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                                  audio_bus.get()));
 
   // Confirm all frames are zero-padded.

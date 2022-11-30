@@ -41,7 +41,7 @@ class MixingGraphImpl : public MixingGraph {
   // media::AudioOutputStream::AudioSourceCallback
   int OnMoreData(base::TimeDelta delay,
                  base::TimeTicks delay_timestamp,
-                 int prior_frames_skipped,
+                 const media::AudioGlitchInfo& glitch_info,
                  media::AudioBus* dest) final;
 
   void OnError(ErrorType type) final;
@@ -125,14 +125,15 @@ class MixingGraphImpl : public MixingGraph {
   // and resampling are handled by converters. The tree is constructed to
   // minimize the use of resampling, which is the most complex operation.
   // 1. For inputs with a channel layout different from the output channel
-  // layout: All inputs of the same sample rate and channel layout are combined
-  // and channel mixed to produce new inputs with the output channel layout.
-  // 2. For inputs with a sample rate different from the output sample rate: All
-  // inputs of the same sample rate (and after channel mixing the same channel
-  // layout) are combined and resampled to produce new inputs of the
+  // layout: All inputs of the same sample rate and channel layout are
+  // combined and channel mixed to produce new inputs with the output
+  // channel layout.
+  // 2. For inputs with a sample rate different from the output sample rate:
+  // All inputs of the same sample rate (and after channel mixing the same
+  // channel layout) are combined and resampled to produce new inputs of the
   // output sample rate (and channel layout).
-  // 3. All inputs of the output sample rate and channel layout are combined by
-  // the main converter to produce a single output.
+  // 3. All inputs of the output sample rate and channel layout are combined
+  // by the main converter to produce a single output.
   AudioConverters converters_;
   media::AudioConverter main_converter_;
 };

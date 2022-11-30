@@ -78,21 +78,24 @@ void DeviceListenerOutputStream::OnDeviceChange() {
   // Close() must have been called and |this| deleted at this point.
 }
 
-int DeviceListenerOutputStream::OnMoreData(base::TimeDelta delay,
-                                           base::TimeTicks delay_timestamp,
-                                           int prior_frames_skipped,
-                                           media::AudioBus* dest) {
-  return source_callback_->OnMoreData(delay, delay_timestamp,
-                                      prior_frames_skipped, dest);
+int DeviceListenerOutputStream::OnMoreData(
+    base::TimeDelta delay,
+    base::TimeTicks delay_timestamp,
+    const media::AudioGlitchInfo& glitch_info,
+
+    media::AudioBus* dest) {
+  return source_callback_->OnMoreData(delay, delay_timestamp, glitch_info,
+                                      dest);
 }
 
-int DeviceListenerOutputStream::OnMoreData(base::TimeDelta delay,
-                                           base::TimeTicks delay_timestamp,
-                                           int prior_frames_skipped,
-                                           media::AudioBus* dest,
-                                           bool is_mixing) {
-  return source_callback_->OnMoreData(delay, delay_timestamp,
-                                      prior_frames_skipped, dest, is_mixing);
+int DeviceListenerOutputStream::OnMoreData(
+    base::TimeDelta delay,
+    base::TimeTicks delay_timestamp,
+    const media::AudioGlitchInfo& glitch_info,
+    media::AudioBus* dest,
+    bool is_mixing) {
+  return source_callback_->OnMoreData(delay, delay_timestamp, glitch_info, dest,
+                                      is_mixing);
 }
 
 void DeviceListenerOutputStream::OnError(ErrorType type) {

@@ -59,7 +59,7 @@ const ::media::AudioParameters kAudioParamsInvalidLayout(
 
 int OnMoreData(base::TimeDelta delay,
                base::TimeTicks delay_timestamp,
-               int prior_frames_skipped,
+               const ::media::AudioGlitchInfo& glitch_info,
                ::media::AudioBus* dest) {
   dest->Zero();
   return kDefaultAudioParams.frames_per_buffer();

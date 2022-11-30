@@ -103,15 +103,14 @@ bool AudioOutputStreamSink::CurrentThreadIsRenderingThread() {
 
 int AudioOutputStreamSink::OnMoreData(base::TimeDelta delay,
                                       base::TimeTicks delay_timestamp,
-                                      int prior_frames_skipped,
+                                      const AudioGlitchInfo& glitch_info,
                                       AudioBus* dest) {
   // Note: Runs on the audio thread created by the OS.
   base::AutoLock al(callback_lock_);
   if (!active_render_callback_)
     return 0;
 
-  return active_render_callback_->Render(delay, delay_timestamp,
-                                         prior_frames_skipped, dest);
+  return active_render_callback_->Render(delay, delay_timestamp, 0, dest);
 }
 
 void AudioOutputStreamSink::OnError(ErrorType type) {

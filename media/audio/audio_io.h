@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/media_export.h"
 
 // Low-level audio output support. To make sound there are 3 objects involved:
@@ -67,16 +68,16 @@ class MEDIA_EXPORT AudioOutputStream {
     // when the first sample added to |dest| is expected to be played out can be
     // calculated by adding |delay| to |delay_timestamp|. The accuracy of
     // |delay| and |delay_timestamp| may vary depending on the platform and
-    // implementation. |prior_frames_skipped| is the number of frames skipped by
-    // the consumer.
+    // implementation. |glitch_info| contains information about all
+    // glitches which have occurred since the last call to OnMoreData().
     virtual int OnMoreData(base::TimeDelta delay,
                            base::TimeTicks delay_timestamp,
-                           int prior_frames_skipped,
+                           const AudioGlitchInfo& glitch_info,
                            AudioBus* dest) = 0;
 
     virtual int OnMoreData(base::TimeDelta delay,
                            base::TimeTicks delay_timestamp,
-                           int prior_frames_skipped,
+                           const AudioGlitchInfo& glitch_info,
                            AudioBus* dest,
                            bool is_mixing);
 

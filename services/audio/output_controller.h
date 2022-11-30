@@ -86,7 +86,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
     // source. An ordinary file playout would ignore this.
     virtual void RequestMoreData(base::TimeDelta delay,
                                  base::TimeTicks delay_timestamp,
-                                 int prior_frames_skipped) = 0;
+                                 const media::AudioGlitchInfo& glitch_info) = 0;
 
     // Attempts to completely fill `dest`, zeroing `dest` if the request can not
     // be fulfilled (due to timeout). If `is_mixing` is set, the SyncReader
@@ -173,11 +173,11 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // AudioSourceCallback implementation.
   int OnMoreData(base::TimeDelta delay,
                  base::TimeTicks delay_timestamp,
-                 int prior_frames_skipped,
+                 const media::AudioGlitchInfo& glitch_info,
                  media::AudioBus* dest) override;
   int OnMoreData(base::TimeDelta delay,
                  base::TimeTicks delay_timestamp,
-                 int prior_frames_skipped,
+                 const media::AudioGlitchInfo& glitch_info,
                  media::AudioBus* dest,
                  bool is_mixing) override;
   void OnError(ErrorType type) override;

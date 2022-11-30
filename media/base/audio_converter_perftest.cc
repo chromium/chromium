@@ -46,8 +46,8 @@ void RunConvertBenchmark(const AudioParameters& in_params,
   for (int i = 0; i < kBenchmarkIterations; ++i) {
     converter.Convert(output_bus.get());
   }
-  double runs_per_second = kBenchmarkIterations /
-                           (base::TimeTicks::Now() - start).InSecondsF();
+  double runs_per_second =
+      kBenchmarkIterations / (base::TimeTicks::Now() - start).InSecondsF();
   perf_test::PerfResultReporter reporter("audio_converter", trace_name);
   reporter.RegisterImportantMetric("", "runs/s");
   reporter.AddResult("", runs_per_second);
@@ -80,4 +80,4 @@ TEST(AudioConverterPerfTest, ConvertBenchmarkFIFO) {
                       "convert_pass_through");
 }
 
-} // namespace media
+}  // namespace media

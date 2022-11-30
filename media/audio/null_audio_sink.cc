@@ -114,7 +114,7 @@ void NullAudioSink::CallRender(base::TimeTicks ideal_time,
   // smoothest playback (since video is sync'ed to audio). See
   // content::AudioRendererImpl and media::AudioClock for further details.
   int frames_received =
-      callback_->Render(fixed_data_delay_, ideal_time, 0, audio_bus_.get());
+      callback_->Render(fixed_data_delay_, ideal_time, {}, audio_bus_.get());
   if (!audio_hash_ || frames_received <= 0)
     return;
 

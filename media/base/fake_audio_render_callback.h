@@ -60,6 +60,10 @@ class FakeAudioRenderCallback : public AudioRendererSink::RenderCallback,
 
   int last_channel_count() const { return last_channel_count_; }
 
+  media::AudioGlitchInfo cumulative_glitch_info() const {
+    return cumulative_glitch_info_;
+  }
+
  private:
   int RenderInternal(AudioBus* audio_bus, base::TimeDelta delay, double volume);
 
@@ -71,6 +75,7 @@ class FakeAudioRenderCallback : public AudioRendererSink::RenderCallback,
   double volume_;
   int sample_rate_;
   bool needs_fade_in_ = false;
+  media::AudioGlitchInfo cumulative_glitch_info_;
 };
 
 }  // namespace media

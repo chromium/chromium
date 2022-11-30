@@ -128,7 +128,7 @@ void CheckDeviceDescriptions(
 // We clear the data bus to ensure that the test does not cause noise.
 int RealOnMoreData(base::TimeDelta /* delay */,
                    base::TimeTicks /* delay_timestamp */,
-                   int /* prior_frames_skipped */,
+                   const AudioGlitchInfo& /* glitch_info */,
                    AudioBus* dest) {
   dest->Zero();
   return dest->frames();
@@ -190,7 +190,7 @@ class FileAudioSource : public AudioOutputStream::AudioSourceCallback {
   // provided to us in the callback.
   int OnMoreData(base::TimeDelta /* delay */,
                  base::TimeTicks /* delay_timestamp */,
-                 int /* prior_frames_skipped */,
+                 const AudioGlitchInfo& /* glitch_info */,
                  AudioBus* dest) override {
     bool stop_playing = false;
     int max_size = dest->frames() * dest->channels() * kBytesPerSample;
@@ -372,7 +372,7 @@ class FullDuplexAudioSinkSource
   void OnError(ErrorType type) override {}
   int OnMoreData(base::TimeDelta /* delay */,
                  base::TimeTicks /* delay_timestamp */,
-                 int /* prior_frames_skipped */,
+                 const AudioGlitchInfo& /* glitch_info */,
                  AudioBus* dest) override {
     const int size_in_bytes =
         kBytesPerSample * dest->frames() * dest->channels();
@@ -516,7 +516,7 @@ class AudioAndroidOutputTest : public testing::Test {
     MockAudioSourceCallback source;
 
     base::RunLoop run_loop;
-    EXPECT_CALL(source, OnMoreData(_, _, 0, NotNull()))
+    EXPECT_CALL(source, OnMoreData(_, _, AudioGlitchInfo(), NotNull()))
         .Times(AtLeast(num_callbacks))
         .WillRepeatedly(
             DoAll(CheckCountAndPostQuitTask(
@@ -882,7 +882,7 @@ TEST_P(AudioAndroidInputTest, DISABLED_RunDuplexInputStreamWithFileAsSink) {
   FileAudioSink sink(&event, in_params, file_name);
   MockAudioSourceCallback source;
 
-  EXPECT_CALL(source, OnMoreData(_, _, 0, NotNull()))
+  EXPECT_CALL(source, OnMoreData(_, _, AudioGlitchInfo(), NotNull()))
       .WillRepeatedly(Invoke(RealOnMoreData));
   EXPECT_CALL(source, OnError(_)).Times(0);
 

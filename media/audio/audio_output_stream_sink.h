@@ -50,7 +50,7 @@ class MEDIA_EXPORT AudioOutputStreamSink
   // AudioSourceCallback implementation.
   int OnMoreData(base::TimeDelta delay,
                  base::TimeTicks delay_timestamp,
-                 int prior_frames_skipped,
+                 const AudioGlitchInfo& glitch_info,
                  AudioBus* dest) override;
   void OnError(ErrorType type) override;
   void Flush() override;

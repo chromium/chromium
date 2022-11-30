@@ -107,7 +107,7 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
   // AudioOutputStream::AudioSourceCallback implementation.
   int OnMoreData(base::TimeDelta /* delay */,
                  base::TimeTicks /* delay_timestamp */,
-                 int /* prior_frames_skipped */,
+                 const AudioGlitchInfo& /* glitch_info */,
                  AudioBus* dest) override {
     // Store time difference between two successive callbacks in an array.
     // These values will be written to a file in the destructor.
@@ -372,8 +372,8 @@ TEST_F(WASAPIAudioOutputStreamTest, ValidPacketSize) {
 
   // Wait for the first callback and verify its parameters.  Ignore any
   // subsequent callbacks that might arrive.
-  EXPECT_CALL(source,
-              OnMoreData(HasValidDelay(packet_duration), _, 0, NotNull()))
+  EXPECT_CALL(source, OnMoreData(HasValidDelay(packet_duration), _,
+                                 AudioGlitchInfo(), NotNull()))
       .WillOnce(DoAll(QuitLoop(ThreadTaskRunnerHandle::Get()),
                       Return(aosw.samples_per_packet())))
       .WillRepeatedly(Return(0));
@@ -512,8 +512,8 @@ TEST_F(WASAPIAudioOutputStreamTest,
       static_cast<double>(aosw.samples_per_packet()) / aosw.sample_rate());
 
   // Wait for the first callback and verify its parameters.
-  EXPECT_CALL(source,
-              OnMoreData(HasValidDelay(packet_duration), _, 0, NotNull()))
+  EXPECT_CALL(source, OnMoreData(HasValidDelay(packet_duration), _,
+                                 AudioGlitchInfo(), NotNull()))
       .WillOnce(DoAll(QuitLoop(ThreadTaskRunnerHandle::Get()),
                       Return(aosw.samples_per_packet())))
       .WillRepeatedly(Return(aosw.samples_per_packet()));
@@ -546,8 +546,8 @@ TEST_F(WASAPIAudioOutputStreamTest,
       static_cast<double>(aosw.samples_per_packet()) / aosw.sample_rate());
 
   // Wait for the first callback and verify its parameters.
-  EXPECT_CALL(source,
-              OnMoreData(HasValidDelay(packet_duration), _, 0, NotNull()))
+  EXPECT_CALL(source, OnMoreData(HasValidDelay(packet_duration), _,
+                                 AudioGlitchInfo(), NotNull()))
       .WillOnce(DoAll(QuitLoop(ThreadTaskRunnerHandle::Get()),
                       Return(aosw.samples_per_packet())))
       .WillRepeatedly(Return(aosw.samples_per_packet()));

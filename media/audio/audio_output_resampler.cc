@@ -47,7 +47,7 @@ class OnMoreDataConverter
   // AudioSourceCallback interface.
   int OnMoreData(base::TimeDelta delay,
                  base::TimeTicks delay_timestamp,
-                 int prior_frames_skipped,
+                 const AudioGlitchInfo& glitch_info,
                  AudioBus* dest) override;
   void OnError(ErrorType type) override;
 
@@ -464,13 +464,13 @@ void OnMoreDataConverter::Stop() {
 
 int OnMoreDataConverter::OnMoreData(base::TimeDelta delay,
                                     base::TimeTicks delay_timestamp,
-                                    int /* prior_frames_skipped */,
+                                    const AudioGlitchInfo& glitch_info,
                                     AudioBus* dest) {
   TRACE_EVENT2("audio", "OnMoreDataConverter::OnMoreData", "input buffer size",
                input_buffer_size_, "output buffer size", output_buffer_size_);
   current_delay_ = delay;
   current_delay_timestamp_ = delay_timestamp;
-  audio_converter_.Convert(dest);
+  audio_converter_.ConvertWithInfo(0, glitch_info, dest);
 
   if (debug_recorder_)
     debug_recorder_->OnData(dest);
@@ -488,7 +488,7 @@ double OnMoreDataConverter::ProvideInput(AudioBus* dest,
                            frames_delayed, input_samples_per_second_);
   // Retrieve data from the original callback.
   const int frames = source_callback_->OnMoreData(
-      new_delay, current_delay_timestamp_, 0, dest);
+      new_delay, current_delay_timestamp_, glitch_info, dest);
 
   // Zero any unfilled frames if anything was filled, otherwise we'll just
   // return a volume of zero and let AudioConverter drop the output.

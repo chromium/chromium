@@ -122,7 +122,7 @@ class ProcessingAudioFifoTest : public testing::Test {
   std::unique_ptr<media::AudioBus> CreateAudioData(
       base::TimeTicks timestamp = base::TimeTicks::Now()) {
     auto data = media::AudioBus::Create(params_);
-    audio_source_.OnMoreData(base::TimeDelta(), timestamp, 0, data.get());
+    audio_source_.OnMoreData(base::TimeDelta(), timestamp, {}, data.get());
     return data;
   }
 

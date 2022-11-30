@@ -276,7 +276,7 @@ void AudioOutputStreamFuchsia::PumpSamples() {
   }
 
   // Request more samples from |callback_|.
-  int frames_filled = callback_->OnMoreData(delay, now, 0, audio_bus_.get());
+  int frames_filled = callback_->OnMoreData(delay, now, {}, audio_bus_.get());
   DCHECK_EQ(frames_filled, audio_bus_->frames());
 
   audio_bus_->Scale(volume_);

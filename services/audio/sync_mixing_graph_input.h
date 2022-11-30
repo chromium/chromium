@@ -68,6 +68,10 @@ class SyncMixingGraphInput final : public MixingGraph::Input {
   // input and the output of the mixing graph. Created on-demand.
   std::unique_ptr<media::AudioPullFifo> fifo_;
 
+  // Accumulates glitch info in ProvideInput() and passes it on to
+  // |source_callback_| in Render().
+  media::AudioGlitchInfo::Accumulator glitch_info_accumulator_;
+
   // Used for calculating the playback delay.
   int converter_render_frame_delay_ = 0;
   SEQUENCE_CHECKER(owning_sequence_);

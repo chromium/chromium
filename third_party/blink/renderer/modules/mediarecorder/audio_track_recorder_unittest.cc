@@ -538,7 +538,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     std::unique_ptr<media::AudioBus> bus(media::AudioBus::Create(
         first_params_.channels(),
         FramesPerInputBuffer(first_params_.sample_rate())));
-    first_source_.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
+    first_source_.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                              bus.get());
 
     // Save the samples that we read into the first_source_cache_ if we're using
@@ -563,7 +563,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     std::unique_ptr<media::AudioBus> bus(media::AudioBus::Create(
         second_params_.channels(),
         FramesPerInputBuffer(second_params_.sample_rate())));
-    second_source_.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
+    second_source_.OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                               bus.get());
     return bus;
   }

@@ -218,7 +218,7 @@ void MixingGraphImpl::RemoveInput(Input* input) {
 
 int MixingGraphImpl::OnMoreData(base::TimeDelta delay,
                                 base::TimeTicks delay_timestamp,
-                                int prior_frames_skipped,
+                                const media::AudioGlitchInfo& glitch_info,
                                 media::AudioBus* dest) {
   const base::TimeTicks start_time(base::TimeTicks::Now());
   TRACE_EVENT_BEGIN2(TRACE_DISABLED_BY_DEFAULT("audio"),
@@ -230,7 +230,7 @@ int MixingGraphImpl::OnMoreData(base::TimeDelta delay,
 
   {
     base::AutoLock scoped_lock(lock_);
-    main_converter_.ConvertWithDelay(frames_delayed, dest);
+    main_converter_.ConvertWithInfo(frames_delayed, glitch_info, dest);
   }
 
   SanitizeOutput(dest);

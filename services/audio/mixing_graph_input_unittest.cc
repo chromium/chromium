@@ -30,7 +30,7 @@ class MixingGraphInputTest : public ::testing::Test {
                          float epsilon) {
     float expected_data = expected_first_sample;
     for (int i = 0; i < num_runs; i++) {
-      mixing_graph_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
+      mixing_graph_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                                 dest_.get());
       float* data = dest_.get()->channel(0);
       for (int j = 0; j < dest_.get()->frames(); ++j) {
@@ -58,7 +58,7 @@ class SampleCounter : public media::AudioOutputStream::AudioSourceCallback {
       : counter_(counter), increment_(increment) {}
   int OnMoreData(base::TimeDelta delay,
                  base::TimeTicks delay_timestamp,
-                 int prior_frames_skipped,
+                 const media::AudioGlitchInfo& glitch_info,
                  media::AudioBus* dest) final {
     // Fill the audio bus with a simple, predictable pattern.
     for (int channel = 0; channel < dest->channels(); ++channel) {
@@ -85,7 +85,7 @@ class CallbackCounter : public media::AudioOutputStream::AudioSourceCallback {
       : counter_(counter), increment_(increment) {}
   int OnMoreData(base::TimeDelta delay,
                  base::TimeTicks delay_timestamp,
-                 int prior_frames_skipped,
+                 const media::AudioGlitchInfo& glitch_info,
                  media::AudioBus* dest) final {
     // Fill the audio bus with the counter value.
     for (int channel = 0; channel < dest->channels(); ++channel) {
@@ -110,7 +110,7 @@ class ConstantInput : public media::AudioOutputStream::AudioSourceCallback {
   explicit ConstantInput(float value) : value_(value) {}
   int OnMoreData(base::TimeDelta delay,
                  base::TimeTicks delay_timestamp,
-                 int prior_frames_skipped,
+                 const media::AudioGlitchInfo& glitch_info,
                  media::AudioBus* dest) final {
     // Fill the audio bus with the value specified at construction.
     for (int channel = 0; channel < dest->channels(); ++channel) {
@@ -125,6 +125,26 @@ class ConstantInput : public media::AudioOutputStream::AudioSourceCallback {
 
  private:
   const float value_;
+};
+
+class GlitchInfoCounter : public media::AudioOutputStream::AudioSourceCallback {
+ public:
+  int OnMoreData(base::TimeDelta delay,
+                 base::TimeTicks delay_timestamp,
+                 const media::AudioGlitchInfo& glitch_info,
+                 media::AudioBus* dest) final {
+    cumulative_glitch_info_ += glitch_info;
+    return 0;
+  }
+
+  void OnError(ErrorType type) final {}
+
+  media::AudioGlitchInfo cumulative_glitch_info() const {
+    return cumulative_glitch_info_;
+  }
+
+ private:
+  media::AudioGlitchInfo cumulative_glitch_info_;
 };
 
 // Verifies that the mixing graph outputs zeros when no inputs have been added.
@@ -267,7 +287,7 @@ TEST_F(MixingGraphInputTest, BufferClearedAtRestart) {
   input->Start(&source_callback);
 
   // Get the last sample of the first output.
-  mixing_graph_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
+  mixing_graph_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                             dest_.get());
   float last_sample = dest_.get()->channel(0)[dest_.get()->frames() - 1];
 
@@ -276,7 +296,7 @@ TEST_F(MixingGraphInputTest, BufferClearedAtRestart) {
   input->Start(&source_callback);
 
   // Get the first sample of the second output.
-  mixing_graph_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
+  mixing_graph_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
                             dest_.get());
   float first_sample = dest_.get()->channel(0)[0];
 
@@ -402,5 +422,55 @@ TEST_F(MixingGraphInputTest, InvalidInput) {
         /*expected_sample_increment=*/0.0f, /*epsilon=*/0.0f);
     input->Stop();
   }
+}
+
+// Verifies that the graph propagates glitch info to all inputs.
+TEST_F(MixingGraphInputTest, PropagatesGlitchInfo) {
+  GlitchInfoCounter source_callback1;
+  GlitchInfoCounter source_callback2;
+  GlitchInfoCounter source_callback3;
+  auto input1 = mixing_graph_->CreateInput(output_params_);
+  input1->Start(&source_callback1);
+  auto input2 = mixing_graph_->CreateInput(output_params_);
+  input2->Start(&source_callback2);
+
+  // Add an input that needs resampling to make the graph more interesting.
+  media::AudioParameters different_params(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Mono(), output_params_.sample_rate() * 2,
+      480);
+  auto input3 = mixing_graph_->CreateInput(different_params);
+  input3->Start(&source_callback3);
+
+  // Send empty glitch info.
+  mixing_graph_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
+                            dest_.get());
+  EXPECT_EQ(source_callback1.cumulative_glitch_info(),
+            media::AudioGlitchInfo());
+  EXPECT_EQ(source_callback2.cumulative_glitch_info(),
+            media::AudioGlitchInfo());
+  EXPECT_EQ(source_callback3.cumulative_glitch_info(),
+            media::AudioGlitchInfo());
+
+  // Send some glitch info and expect this to be propagated.
+  media::AudioGlitchInfo glitch_info{.duration = base::Seconds(5),
+                                     .count = 123};
+  mixing_graph_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(),
+                            glitch_info, dest_.get());
+  EXPECT_EQ(source_callback1.cumulative_glitch_info(), glitch_info);
+  EXPECT_EQ(source_callback2.cumulative_glitch_info(), glitch_info);
+  EXPECT_EQ(source_callback3.cumulative_glitch_info(), glitch_info);
+
+  // Send empty glitch info, and expect the cumulative glitch info to remain the
+  // same.
+  mixing_graph_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {},
+                            dest_.get());
+  EXPECT_EQ(source_callback1.cumulative_glitch_info(), glitch_info);
+  EXPECT_EQ(source_callback2.cumulative_glitch_info(), glitch_info);
+  EXPECT_EQ(source_callback3.cumulative_glitch_info(), glitch_info);
+
+  input1->Stop();
+  input2->Stop();
+  input3->Stop();
 }
 }  // namespace audio

@@ -63,7 +63,7 @@ class MockAudioOutputStream : public AudioOutputStream {
 
   void SimulateOnMoreData() {
     DCHECK(provided_callback_);
-    provided_callback_->OnMoreData(base::TimeDelta(), base::TimeTicks(), 0,
+    provided_callback_->OnMoreData(base::TimeDelta(), base::TimeTicks(), {},
                                    nullptr);
   }
 
@@ -85,7 +85,7 @@ class MockAudioSourceCallback : public AudioOutputStream::AudioSourceCallback {
   MOCK_METHOD4(OnMoreData,
                int(base::TimeDelta delay,
                    base::TimeTicks delay_timestamp,
-                   int prior_frames_skipped,
+                   const media::AudioGlitchInfo& glitch_info,
                    media::AudioBus* dest));
 
   MOCK_METHOD1(OnError,
@@ -159,7 +159,7 @@ class MockMixingGraph : public MixingGraph {
   MOCK_METHOD4(OnMoreData,
                int(base::TimeDelta delay,
                    base::TimeTicks delay_timestamp,
-                   int prior_frames_skipped,
+                   const media::AudioGlitchInfo& glitch_info,
                    media::AudioBus* dest));
 
   void OnError(AudioOutputStream::AudioSourceCallback::ErrorType type) final {

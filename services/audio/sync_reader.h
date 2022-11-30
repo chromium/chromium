@@ -64,7 +64,7 @@ class SyncReader : public OutputController::SyncReader {
   // OutputController::SyncReader implementation.
   void RequestMoreData(base::TimeDelta delay,
                        base::TimeTicks delay_timestamp,
-                       int prior_frames_skipped) override;
+                       const media::AudioGlitchInfo& glitch_info) override;
   void Read(media::AudioBus* dest, bool is_mixing) override;
   void Close() override;
 
@@ -107,6 +107,14 @@ class SyncReader : public OutputController::SyncReader {
   // The index of the audio buffer we're expecting to be sent from the renderer;
   // used to block with timeout for audio data.
   uint32_t buffer_index_{0};
+
+  // Tracks the glitch info that we should send over IPC. This is only reset
+  // once we have confirmation that the info has been received by the other
+  // side.
+  media::AudioGlitchInfo pending_glitch_info_;
+
+  // The glitch information of a single read timeout glitch.
+  const media::AudioGlitchInfo read_timeout_glitch_;
 
   std::unique_ptr<OutputGlitchCounter> glitch_counter_;
 };

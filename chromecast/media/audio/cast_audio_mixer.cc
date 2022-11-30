@@ -75,7 +75,7 @@ class CastAudioMixer::MixerProxyStream
                         uint32_t frames_delayed,
                         const ::media::AudioGlitchInfo& glitch_info) override {
       DCHECK_CALLED_ON_VALID_THREAD(backend_thread_checker_);
-      resampler_->ConvertWithDelay(frames_delayed, audio_bus);
+      resampler_->ConvertWithInfo(frames_delayed, glitch_info, audio_bus);
       // Volume multiplier has already been applied by |resampler_|.
       return 1.0;
     }
@@ -169,7 +169,8 @@ class CastAudioMixer::MixerProxyStream
 
     const base::TimeDelta delay = ::media::AudioTimestampHelper::FramesToTime(
         frames_delayed, input_params_.sample_rate());
-    source_callback_->OnMoreData(delay, base::TimeTicks::Now(), 0, audio_bus);
+    source_callback_->OnMoreData(delay, base::TimeTicks::Now(), glitch_info,
+                                 audio_bus);
 
     base::AutoLock auto_lock(volume_lock_);
     return volume_;
@@ -275,14 +276,14 @@ void CastAudioMixer::RemoveInput(
 
 int CastAudioMixer::OnMoreData(base::TimeDelta delay,
                                base::TimeTicks /* delay_timestamp */,
-                               int /* prior_frames_skipped */,
+                               const ::media::AudioGlitchInfo& glitch_info,
                                ::media::AudioBus* dest) {
   // Called on backend thread.
   uint32_t frames_delayed = ::media::AudioTimestampHelper::TimeToFrames(
       delay, output_params_.sample_rate());
 
   base::AutoLock auto_lock(mixer_lock_);
-  mixer_->ConvertWithDelay(frames_delayed, dest);
+  mixer_->ConvertWithInfo(frames_delayed, glitch_info, dest);
   return dest->frames();
 }
 

@@ -56,8 +56,8 @@ AudioConverter::AudioConverter(const AudioParameters& input_params,
   if (input_params.sample_rate() != output_params.sample_rate()) {
     DVLOG(1) << "Resampling from " << input_params.sample_rate() << " to "
              << output_params.sample_rate();
-    const int request_size = disable_fifo ? SincResampler::kDefaultRequestSize :
-        input_params.frames_per_buffer();
+    const int request_size = disable_fifo ? SincResampler::kDefaultRequestSize
+                                          : input_params.frames_per_buffer();
     resampler_ = std::make_unique<MultiChannelResampler>(
         downmix_early_ ? output_params.channels() : input_params.channels(),
         io_sample_rate_ratio_, request_size,
@@ -125,9 +125,11 @@ int AudioConverter::GetMaxInputFramesRequested(int output_frames_requested) {
              : output_frames_requested;
 }
 
-void AudioConverter::ConvertWithDelay(uint32_t initial_frames_delayed,
-                                      AudioBus* dest) {
+void AudioConverter::ConvertWithInfo(uint32_t initial_frames_delayed,
+                                     const AudioGlitchInfo& glitch_info,
+                                     AudioBus* dest) {
   initial_frames_delayed_ = initial_frames_delayed;
+  glitch_info_accumulator_.Add(glitch_info);
 
   if (transform_inputs_.empty()) {
     dest->Zero();
@@ -168,7 +170,7 @@ void AudioConverter::ConvertWithDelay(uint32_t initial_frames_delayed,
 void AudioConverter::Convert(AudioBus* dest) {
   TRACE_EVENT1("audio", "AudioConverter::Convert", "sample rate ratio",
                io_sample_rate_ratio_);
-  ConvertWithDelay(0, dest);
+  ConvertWithInfo(0, {}, dest);
 }
 
 void AudioConverter::SourceCallback(int fifo_frame_delay, AudioBus* dest) {
@@ -214,10 +216,13 @@ void AudioConverter::SourceCallback(int fifo_frame_delay, AudioBus* dest) {
   AudioBus* const provide_input_dest =
       transform_inputs_.size() == 1 ? temp_dest : mixer_input_audio_bus_.get();
 
+  // The glitch info that should be propagated to all inputs.
+  AudioGlitchInfo glitch_info = glitch_info_accumulator_.GetAndReset();
+
   // Have each mixer render its data into an output buffer then mix the result.
   for (auto* input : transform_inputs_) {
-    const float volume =
-        input->ProvideInput(provide_input_dest, total_frames_delayed, {});
+    const float volume = input->ProvideInput(provide_input_dest,
+                                             total_frames_delayed, glitch_info);
     // Optimize the most common single input, full volume case.
     if (input == transform_inputs_.front()) {
       if (volume == 1.0f) {
@@ -225,9 +230,9 @@ void AudioConverter::SourceCallback(int fifo_frame_delay, AudioBus* dest) {
           provide_input_dest->CopyTo(temp_dest);
       } else if (volume > 0) {
         for (int i = 0; i < provide_input_dest->channels(); ++i) {
-          vector_math::FMUL(
-              provide_input_dest->channel(i), volume,
-              provide_input_dest->frames(), temp_dest->channel(i));
+          vector_math::FMUL(provide_input_dest->channel(i), volume,
+                            provide_input_dest->frames(),
+                            temp_dest->channel(i));
         }
       } else {
         // Zero |temp_dest| otherwise, so we're mixing into a clean buffer.
@@ -240,9 +245,9 @@ void AudioConverter::SourceCallback(int fifo_frame_delay, AudioBus* dest) {
     // Volume adjust and mix each mixer input into |temp_dest| after rendering.
     if (volume > 0) {
       for (int i = 0; i < mixer_input_audio_bus_->channels(); ++i) {
-        vector_math::FMAC(
-            mixer_input_audio_bus_->channel(i), volume,
-            mixer_input_audio_bus_->frames(), temp_dest->channel(i));
+        vector_math::FMAC(mixer_input_audio_bus_->channel(i), volume,
+                          mixer_input_audio_bus_->frames(),
+                          temp_dest->channel(i));
       }
     }
   }

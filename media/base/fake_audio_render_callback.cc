@@ -35,6 +35,7 @@ double FakeAudioRenderCallback::ProvideInput(
     AudioBus* audio_bus,
     uint32_t frames_delayed,
     const AudioGlitchInfo& glitch_info) {
+  cumulative_glitch_info_ += glitch_info;
   // Volume should only be applied by the caller to ProvideInput, so don't bake
   // it into the rendered audio.
   auto delay = AudioTimestampHelper::FramesToTime(frames_delayed, sample_rate_);

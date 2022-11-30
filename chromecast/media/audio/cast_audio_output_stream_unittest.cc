@@ -58,7 +58,7 @@ const double kDefaultVolume = 1.0f;
 int on_more_data_call_count_ = 0;
 int OnMoreData(base::TimeDelta /* delay */,
                base::TimeTicks /* delay_timestamp */,
-               int /* prior_frames_skipped */,
+               const ::media::AudioGlitchInfo& /* glitch_info */,
                ::media::AudioBus* dest) {
   on_more_data_call_count_++;
   dest->Zero();

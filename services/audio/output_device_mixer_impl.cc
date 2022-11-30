@@ -236,11 +236,11 @@ class OutputDeviceMixerImpl::MixTrack final
   // error reporting during independent playback.
   int OnMoreData(base::TimeDelta delay,
                  base::TimeTicks delay_timestamp,
-                 int prior_frames_skipped,
+                 const media::AudioGlitchInfo& glitch_info,
                  media::AudioBus* dest) final {
     DCHECK(audio_source_callback_);
     return audio_source_callback_->OnMoreData(delay, delay_timestamp,
-                                              prior_frames_skipped, dest);
+                                              glitch_info, dest);
   }
 
   void OnError(ErrorType type) final {

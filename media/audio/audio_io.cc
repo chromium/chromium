@@ -9,11 +9,11 @@ namespace media {
 int AudioOutputStream::AudioSourceCallback::OnMoreData(
     base::TimeDelta delay,
     base::TimeTicks delay_timestamp,
-    int prior_frames_skipped,
+    const AudioGlitchInfo& glitch_info,
     AudioBus* dest,
     bool is_mixing) {
   // Ignore the `is_mixing` flag by default.
-  return OnMoreData(delay, delay_timestamp, prior_frames_skipped, dest);
+  return OnMoreData(delay, delay_timestamp, glitch_info, dest);
 }
 
 }  // namespace media

@@ -292,7 +292,7 @@ void CastAudioOutputStream::MixerServiceWrapper::FillNextBuffer(
       base::TimeTicks() + base::Microseconds(playout_timestamp);
 
   int frames_filled = source_callback_->OnMoreData(
-      reported_delay, reported_delay_timestamp, 0, audio_bus_.get());
+      reported_delay, reported_delay_timestamp, {}, audio_bus_.get());
   DCHECK_EQ(frames_filled, frames);
   mixer_connection_->SendNextBuffer(frames);
 }

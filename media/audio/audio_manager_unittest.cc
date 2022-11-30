@@ -539,7 +539,7 @@ class TestAudioSourceCallback : public AudioOutputStream::AudioSourceCallback {
 
   int OnMoreData(base::TimeDelta,
                  base::TimeTicks,
-                 int,
+                 const AudioGlitchInfo&,
                  AudioBus* dest) override {
     EXPECT_EQ(dest->frames(), expected_frames_per_buffer_);
     event_->Signal();

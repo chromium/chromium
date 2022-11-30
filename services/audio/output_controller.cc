@@ -285,7 +285,7 @@ void OutputController::StartStream() {
   DCHECK(state_ == kCreated || state_ == kPaused);
 
   // Ask for first packet.
-  sync_reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), 0);
+  sync_reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), {});
 
   state_ = kPlaying;
   SendLogMessage("%s => (state=%s)", __func__, StateToString(state_));
@@ -334,7 +334,7 @@ void OutputController::Pause() {
   // Let the renderer know we've stopped.  Necessary to let PPAPI clients know
   // audio has been shutdown.  TODO(dalecurtis): This stinks.  PPAPI should have
   // a better way to know when it should exit PPB_Audio_Shared::Run().
-  sync_reader_->RequestMoreData(base::TimeDelta::Max(), base::TimeTicks(), 0);
+  sync_reader_->RequestMoreData(base::TimeDelta::Max(), base::TimeTicks(), {});
 
   handler_->OnControllerPaused();
   SendLogMessage("%s => (state=%s)", __func__, StateToString(state_));
@@ -391,18 +391,19 @@ void OutputController::SetVolume(double volume) {
 
 int OutputController::OnMoreData(base::TimeDelta delay,
                                  base::TimeTicks delay_timestamp,
-                                 int prior_frames_skipped,
+                                 const media::AudioGlitchInfo& glitch_info,
                                  media::AudioBus* dest) {
-  return OnMoreData(delay, delay_timestamp, prior_frames_skipped, dest, false);
+  return OnMoreData(delay, delay_timestamp, glitch_info, dest, false);
 }
 
 int OutputController::OnMoreData(base::TimeDelta delay,
                                  base::TimeTicks delay_timestamp,
-                                 int prior_frames_skipped,
+                                 const media::AudioGlitchInfo& glitch_info,
                                  media::AudioBus* dest,
                                  bool is_mixing) {
-  TRACE_EVENT_BEGIN1("audio", "OutputController::OnMoreData", "frames skipped",
-                     prior_frames_skipped);
+  TRACE_EVENT_BEGIN2("audio", "OutputController::OnMoreData", "glitches",
+                     glitch_info.count, "glitch_duration (ms)",
+                     glitch_info.duration.InMillisecondsF());
 
   stats_tracker_->OnMoreDataCalled();
 
@@ -427,7 +428,7 @@ int OutputController::OnMoreData(base::TimeDelta delay,
   delay +=
       media::AudioTimestampHelper::FramesToTime(frames, params_.sample_rate());
 
-  sync_reader_->RequestMoreData(delay, delay_timestamp, prior_frames_skipped);
+  sync_reader_->RequestMoreData(delay, delay_timestamp, glitch_info);
 
 #if !BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   constexpr bool is_bitstream = false;

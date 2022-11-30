@@ -59,6 +59,7 @@ SyncReader::SyncReader(
       output_bus_buffer_size_(
           media::AudioBus::CalculateMemorySize(params.channels(),
                                                params.frames_per_buffer())),
+      read_timeout_glitch_{.duration = params.GetBufferDuration(), .count = 1},
       glitch_counter_(std::move(glitch_counter)) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -135,17 +136,21 @@ base::UnsafeSharedMemoryRegion SyncReader::TakeSharedMemoryRegion() {
 // AudioOutputController::SyncReader implementations.
 void SyncReader::RequestMoreData(base::TimeDelta delay,
                                  base::TimeTicks delay_timestamp,
-                                 int prior_frames_skipped) {
+                                 const media::AudioGlitchInfo& glitch_info) {
   // We don't send arguments over the socket since sending more than 4
   // bytes might lead to being descheduled. The reading side will zero
   // them when consumed.
   auto* const buffer = reinterpret_cast<media::AudioOutputBuffer*>(
       shared_memory_mapping_.memory());
   // Increase the number of skipped frames stored in shared memory.
-  buffer->params.frames_skipped += prior_frames_skipped;
   buffer->params.delay_us = delay.InMicroseconds();
   buffer->params.delay_timestamp_us =
       (delay_timestamp - base::TimeTicks()).InMicroseconds();
+  // Add platform glitches to the accumulated glitch info.
+  pending_glitch_info_ += glitch_info;
+  buffer->params.glitch_duration_us =
+      pending_glitch_info_.duration.InMicroseconds();
+  buffer->params.glitch_count = pending_glitch_info_.count;
 
   // Zero out the entire output buffer to avoid stuttering/repeating-buffers
   // in the anomalous case if the renderer is unable to keep up with real-time.
@@ -174,6 +179,8 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
     }
   } else {
     had_socket_error_ = false;
+    // We have successfully passed on the glitch info, now reset it.
+    pending_glitch_info_ = {};
   }
   ++buffer_index_;
 }
@@ -191,6 +198,8 @@ void SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
         LOG(WARNING) << "(log cap reached, suppressing further logs)";
     }
     dest->Zero();
+    // Add IPC glitch to the accumulated glitch info.
+    pending_glitch_info_ += read_timeout_glitch_;
     return;
   }
 

@@ -33,6 +33,8 @@ double SyncMixingGraphInput::ProvideInput(
                "SyncMixingGraphInput::ProvideInput", "frames_delayed",
                frames_delayed, "bus frames", audio_bus->frames());
 
+  glitch_info_accumulator_.Add(glitch_info);
+
   if (!fifo_ && audio_bus->frames() != params_.frames_per_buffer()) {
     fifo_ = std::make_unique<media::AudioPullFifo>(
         params_.channels(), params_.frames_per_buffer(),
@@ -86,7 +88,9 @@ void SyncMixingGraphInput::Render(int fifo_frame_delay,
 
   base::TimeDelta delay = media::AudioTimestampHelper::FramesToTime(
       converter_render_frame_delay_ + fifo_frame_delay, params_.sample_rate());
-  source_callback_->OnMoreData(delay, base::TimeTicks::Now(), 0, audio_bus,
+  source_callback_->OnMoreData(delay, base::TimeTicks::Now(),
+                               glitch_info_accumulator_.GetAndReset(),
+                               audio_bus,
                                /*is_mixing=*/true);
 
   TRACE_EVENT_END2(TRACE_DISABLED_BY_DEFAULT("audio"),

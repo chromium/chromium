@@ -737,7 +737,7 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
           AudioBus::WrapMemory(params_, audio_data));
       audio_bus_->set_is_bitstream_format(true);
       int frames_filled =
-          source_->OnMoreData(delay, delay_timestamp, 0, audio_bus.get());
+          source_->OnMoreData(delay, delay_timestamp, {}, audio_bus.get());
 
       // During pause/seek, keep the pipeline filled with zero'ed frames.
       if (!frames_filled)
@@ -751,7 +751,7 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
     }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     int frames_filled =
-        source_->OnMoreData(delay, delay_timestamp, 0, audio_bus_.get());
+        source_->OnMoreData(delay, delay_timestamp, {}, audio_bus_.get());
     uint32_t num_filled_bytes = frames_filled * format_.Format.nBlockAlign;
     DCHECK_LE(num_filled_bytes, packet_size_bytes_);
     audio_bus_->Scale(volume_);

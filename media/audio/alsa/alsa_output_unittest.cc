@@ -385,7 +385,8 @@ TEST_F(AlsaPcmOutputStreamTest, StartStop) {
   EXPECT_CALL(mock_alsa_wrapper_, PcmDelay(kFakeHandle, _))
       .WillRepeatedly(DoAll(SetArgPointee<1>(0), Return(0)));
   EXPECT_CALL(mock_callback,
-              OnMoreData(base::TimeDelta(), tick_clock.NowTicks(), 0, _))
+              OnMoreData(base::TimeDelta(), tick_clock.NowTicks(),
+                         AudioGlitchInfo(), _))
       .WillRepeatedly(DoAll(ClearBuffer(), Return(kTestFramesPerPacket)));
   EXPECT_CALL(mock_alsa_wrapper_, PcmWritei(kFakeHandle, _, _))
       .WillRepeatedly(Return(kTestFramesPerPacket));
@@ -548,7 +549,8 @@ TEST_F(AlsaPcmOutputStreamTest, BufferPacket) {
 
   // Return a partially filled packet.
   EXPECT_CALL(mock_callback,
-              OnMoreData(base::TimeDelta(), tick_clock.NowTicks(), 0, _))
+              OnMoreData(base::TimeDelta(), tick_clock.NowTicks(),
+                         AudioGlitchInfo(), _))
       .WillOnce(DoAll(ClearBuffer(), Return(kTestFramesPerPacket / 2)));
 
   bool source_exhausted;
@@ -578,7 +580,8 @@ TEST_F(AlsaPcmOutputStreamTest, BufferPacket_Negative) {
   EXPECT_CALL(mock_alsa_wrapper_, PcmAvailUpdate(_))
       .WillRepeatedly(Return(0));  // Buffer is full.
   EXPECT_CALL(mock_callback,
-              OnMoreData(base::TimeDelta(), tick_clock.NowTicks(), 0, _))
+              OnMoreData(base::TimeDelta(), tick_clock.NowTicks(),
+                         AudioGlitchInfo(), _))
       .WillOnce(DoAll(ClearBuffer(), Return(kTestFramesPerPacket / 2)));
 
   bool source_exhausted;
@@ -606,7 +609,8 @@ TEST_F(AlsaPcmOutputStreamTest, BufferPacket_Underrun) {
   EXPECT_CALL(mock_alsa_wrapper_, PcmAvailUpdate(_))
       .WillRepeatedly(Return(0));  // Buffer is full.
   EXPECT_CALL(mock_callback,
-              OnMoreData(base::TimeDelta(), tick_clock.NowTicks(), 0, _))
+              OnMoreData(base::TimeDelta(), tick_clock.NowTicks(),
+                         AudioGlitchInfo(), _))
       .WillOnce(DoAll(ClearBuffer(), Return(kTestFramesPerPacket / 2)));
 
   bool source_exhausted;

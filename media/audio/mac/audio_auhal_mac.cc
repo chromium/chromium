@@ -172,7 +172,6 @@ AUHALStream::AUHALStream(AudioManagerMac* manager,
       device_(device),
       volume_(1),
       stopped_(true),
-      current_lost_frames_(0),
       last_sample_time_(0.0),
       last_number_of_frames_(0),
       glitch_reporter_(SystemGlitchReporter::StreamType::kRender),
@@ -413,9 +412,8 @@ void AUHALStream::ProvideInput(int frame_delay, AudioBus* dest) {
   const base::TimeDelta delay = playout_time - now;
 
   // Supply the input data and render the output data.
-  source_->OnMoreData(delay, now, current_lost_frames_, dest);
+  source_->OnMoreData(delay, now, glitch_info_accumulator_.GetAndReset(), dest);
   dest->Scale(volume_);
-  current_lost_frames_ = 0;
 }
 
 // AUHAL callback.
@@ -461,10 +459,13 @@ void AUHALStream::UpdatePlayoutTimestamp(const AudioTimeStamp* timestamp) {
         static_cast<UInt32>(timestamp->mSampleTime - last_sample_time_);
     DCHECK_GE(sample_time_diff, last_number_of_frames_);
     UInt32 lost_frames = sample_time_diff - last_number_of_frames_;
-    current_lost_frames_ += lost_frames;
     base::TimeDelta lost_audio_duration =
         AudioTimestampHelper::FramesToTime(lost_frames, params_.sample_rate());
     glitch_reporter_.UpdateStats(lost_audio_duration);
+    if (!lost_audio_duration.is_zero()) {
+      glitch_info_accumulator_.Add(
+          AudioGlitchInfo{.duration = lost_audio_duration, .count = 1});
+    }
   }
 
   // Store the last sample time for use next time we get called back.

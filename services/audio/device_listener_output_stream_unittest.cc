@@ -49,11 +49,11 @@ class MockAudioOutputStream : public AudioOutputStream {
 
   int SimulateOnMoreData(base::TimeDelta delay,
                          base::TimeTicks delay_timestamp,
-                         int prior_frames_skipped,
+                         const media::AudioGlitchInfo& glitch_info,
                          AudioBus* dest) {
     DCHECK(provided_callback_);
-    return provided_callback_->OnMoreData(delay, delay_timestamp,
-                                          prior_frames_skipped, dest);
+    return provided_callback_->OnMoreData(delay, delay_timestamp, glitch_info,
+                                          dest);
   }
 
   void SimulateError(AudioSourceCallback::ErrorType error) {
@@ -112,7 +112,8 @@ TEST_F(DeviceListenerOutputStreamTest, DelegatesCallsToWrappedStream) {
   base::TimeDelta delay = base::Milliseconds(30);
   base::TimeTicks delay_timestamp =
       base::TimeTicks() + base::Milliseconds(21);
-  int prior_frames_skipped = 44;
+  media::AudioGlitchInfo glitch_info{.duration = base::Seconds(5),
+                                     .count = 123};
   std::unique_ptr<media::AudioBus> dest = media::AudioBus::Create(1, 128);
 
   InSequence sequence;
@@ -120,8 +121,8 @@ TEST_F(DeviceListenerOutputStreamTest, DelegatesCallsToWrappedStream) {
       .Times(1);
   EXPECT_CALL(mock_stream, Open()).Times(1);
   EXPECT_CALL(mock_stream, StartCalled(_)).Times(1);
-  EXPECT_CALL(mock_callback, OnMoreData(delay, delay_timestamp,
-                                        prior_frames_skipped, dest.get()));
+  EXPECT_CALL(mock_callback,
+              OnMoreData(delay, delay_timestamp, glitch_info, dest.get()));
   EXPECT_CALL(mock_stream, SetVolume(volume)).Times(1);
   EXPECT_CALL(mock_stream, GetVolume(&volume)).Times(1);
   EXPECT_CALL(mock_stream, Stop()).Times(1);
@@ -140,7 +141,7 @@ TEST_F(DeviceListenerOutputStreamTest, DelegatesCallsToWrappedStream) {
 
   stream_under_test->Open();
   stream_under_test->Start(&mock_callback);
-  mock_stream.SimulateOnMoreData(delay, delay_timestamp, prior_frames_skipped,
+  mock_stream.SimulateOnMoreData(delay, delay_timestamp, glitch_info,
                                  dest.get());
   stream_under_test->SetVolume(volume);
   stream_under_test->GetVolume(&volume);

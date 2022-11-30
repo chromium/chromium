@@ -49,7 +49,8 @@ struct MEDIA_SHMEM_EXPORT ALIGNAS(kParametersAlignment)
     AudioOutputBufferParameters {
   int64_t delay_us;            // base::TimeDelta in microseconds.
   int64_t delay_timestamp_us;  // base::TimeTicks in microseconds.
-  uint32_t frames_skipped;
+  int64_t glitch_duration_us;  // base::TimeDelta in microseconds.
+  uint32_t glitch_count;
   uint32_t bitstream_data_size;
   uint32_t bitstream_frames;
 };
@@ -347,12 +348,12 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
   static AudioParameters UnavailableDeviceParams();
 
  private:
-  Format format_;                 // Format of the stream.
+  Format format_;                              // Format of the stream.
   ChannelLayoutConfig channel_layout_config_;  // The channel layout and the
                                                // number of channels.
-  int sample_rate_;               // Sampling frequency/rate.
-  int frames_per_buffer_;         // Number of frames in a buffer.
-  int effects_;                   // Bitmask using PlatformEffectsMask.
+  int sample_rate_;                            // Sampling frequency/rate.
+  int frames_per_buffer_;                      // Number of frames in a buffer.
+  int effects_;  // Bitmask using PlatformEffectsMask.
 
   // Microphone positions using Cartesian coordinates:
   // x: the horizontal dimension, with positive to the right from the camera's

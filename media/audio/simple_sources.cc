@@ -26,8 +26,8 @@ namespace {
 // in |read_length|.
 std::unique_ptr<char[]> ReadWavFile(const base::FilePath& wav_filename,
                                     size_t* read_length) {
-  base::File wav_file(
-      wav_filename, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  base::File wav_file(wav_filename,
+                      base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!wav_file.IsValid()) {
     LOG(ERROR) << "Failed to read " << wav_filename.value()
                << " as input to the fake device."
@@ -116,7 +116,7 @@ SineWaveAudioSource::~SineWaveAudioSource() = default;
 // but it is efficient enough for our simple needs.
 int SineWaveAudioSource::OnMoreData(base::TimeDelta /* delay */,
                                     base::TimeTicks /* delay_timestamp */,
-                                    int /* prior_frames_skipped */,
+                                    const AudioGlitchInfo& /* glitch_info */,
                                     AudioBus* dest) {
   int max_frames;
 
@@ -209,7 +209,7 @@ void FileSource::LoadWavFile(const base::FilePath& path_to_wav_file) {
 
 int FileSource::OnMoreData(base::TimeDelta /* delay */,
                            base::TimeTicks /* delay_timestamp */,
-                           int /* prior_frames_skipped */,
+                           const AudioGlitchInfo& /* glitch_info */,
                            AudioBus* dest) {
   // Load the file if we haven't already. This load needs to happen on the
   // audio thread, otherwise we'll run on the UI thread on Mac for instance.
@@ -239,7 +239,7 @@ void FileSource::Rewind() {
 
 double FileSource::ProvideInput(AudioBus* audio_bus_into_converter,
                                 uint32_t frames_delayed,
-                                const AudioGlitchInfo& glitch_info) {
+                                const AudioGlitchInfo&) {
   // Unfilled frames will be zeroed by CopyTo.
   size_t bytes_written;
   wav_audio_handler_->CopyTo(audio_bus_into_converter, wav_file_read_pos_,
@@ -265,7 +265,7 @@ BeepingSource::~BeepingSource() = default;
 
 int BeepingSource::OnMoreData(base::TimeDelta /* delay */,
                               base::TimeTicks /* delay_timestamp */,
-                              int /* prior_frames_skipped */,
+                              const AudioGlitchInfo& /* glitch_info */,
                               AudioBus* dest) {
   // Accumulate the time from the last beep.
   interval_from_last_beep_ += base::TimeTicks::Now() - last_callback_time_;

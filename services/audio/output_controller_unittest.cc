@@ -98,7 +98,7 @@ class MockOutputControllerSyncReader : public OutputController::SyncReader {
   MOCK_METHOD3(RequestMoreData,
                void(base::TimeDelta delay,
                     base::TimeTicks delay_timestamp,
-                    int prior_frames_skipped));
+                    const media::AudioGlitchInfo& glitch_info));
   MOCK_METHOD2(Read, void(AudioBus* dest, bool is_mixing));
   MOCK_METHOD0(Close, void());
 };
@@ -199,7 +199,7 @@ class MockAudioOutputStream : public AudioOutputStream,
   // Calls OnMoreData() and then posts a delayed task to call itself again soon.
   void RunDataLoop(scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     auto bus = AudioBus::Create(GetTestParams());
-    OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0, bus.get());
+    OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), {}, bus.get());
     task_runner->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&MockAudioOutputStream::RunDataLoop,
@@ -209,10 +209,9 @@ class MockAudioOutputStream : public AudioOutputStream,
 
   int OnMoreData(base::TimeDelta delay,
                  base::TimeTicks delay_timestamp,
-                 int prior_frames_skipped,
+                 const media::AudioGlitchInfo& glitch_info,
                  AudioBus* dest) override {
-    int res = callback_->OnMoreData(delay, delay_timestamp,
-                                    prior_frames_skipped, dest);
+    int res = callback_->OnMoreData(delay, delay_timestamp, glitch_info, dest);
     EXPECT_EQ(dest->channel(0)[0], kBufferNonZeroData);
     return res;
   }
@@ -756,11 +755,13 @@ class MockAudioOutputStreamForMixing : public AudioOutputStream {
     DidStart();
   }
 
-  void SimulateOnMoreDataCalled(const AudioParameters& params, bool is_mixing) {
+  void SimulateOnMoreDataCalled(const AudioParameters& params,
+                                media::AudioGlitchInfo glitch_info,
+                                bool is_mixing) {
     DCHECK(callback_);
     auto audio_bus = media::AudioBus::Create(params);
-    callback_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
-                          audio_bus.get(), is_mixing);
+    callback_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(),
+                          glitch_info, audio_bus.get(), is_mixing);
   }
 
  private:
@@ -854,7 +855,8 @@ TEST(OutputControllerMixingTest,
   audio_manager.Shutdown();
 }
 
-TEST(OutputControllerMixingTest, ControllerForwardsMixingFlagToSyncReader) {
+TEST(OutputControllerMixingTest,
+     ControllerForwardsMixingFlagAndGlitchesToSyncReader) {
   base::TestMessageLoop message_loop_;
   // Controller creation parameters.
   AudioManagerForControllerTest audio_manager;
@@ -906,14 +908,24 @@ TEST(OutputControllerMixingTest, ControllerForwardsMixingFlagToSyncReader) {
   // Verify OutputController forwards the mixing flag from OnMoreDataCalled when
   // it is true.
   EXPECT_CALL(mock_sync_reader, Read(_, /*is_mixing=*/true)).Times(1);
-  mock_output_stream.SimulateOnMoreDataCalled(controller_params, true);
+  mock_output_stream.SimulateOnMoreDataCalled(controller_params, {}, true);
 
   Mock::VerifyAndClearExpectations(&mock_sync_reader);
 
   // Verify OutputController forwards the mixing flag from OnMoreDataCalled when
   // it is false.
   EXPECT_CALL(mock_sync_reader, Read(_, /*is_mixing=*/false)).Times(1);
-  mock_output_stream.SimulateOnMoreDataCalled(controller_params, false);
+  mock_output_stream.SimulateOnMoreDataCalled(controller_params, {}, false);
+
+  Mock::VerifyAndClearExpectations(&mock_sync_reader);
+
+  // Verify OutputController forwards glitch info.
+  media::AudioGlitchInfo glitch_info{.duration = base::Seconds(5),
+                                     .count = 123};
+  EXPECT_CALL(mock_sync_reader, Read(_, /*is_mixing=*/false)).Times(1);
+  EXPECT_CALL(mock_sync_reader, RequestMoreData(_, _, glitch_info)).Times(1);
+  mock_output_stream.SimulateOnMoreDataCalled(controller_params, glitch_info,
+                                              false);
 
   Mock::VerifyAndClearExpectations(&mock_sync_reader);
 

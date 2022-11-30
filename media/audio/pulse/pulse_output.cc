@@ -169,7 +169,7 @@ void PulseAudioOutputStream::FulfillWriteRequest(size_t requested_bytes) {
 
     size_t unwritten_frames_in_bus = audio_bus_->frames();
     size_t frames_filled = source_callback_->OnMoreData(
-        pulse::GetHardwareLatency(pa_stream_), base::TimeTicks::Now(), 0,
+        pulse::GetHardwareLatency(pa_stream_), base::TimeTicks::Now(), {},
         audio_bus_.get());
 
     // Zero any unfilled data so it plays back as silence.

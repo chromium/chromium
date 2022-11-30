@@ -218,7 +218,7 @@ void CmaAudioOutputStream::PushBuffer() {
   }
   last_rendering_delay_ = delay;
 
-  int frame_count = source_callback_->OnMoreData(delay, base::TimeTicks(), 0,
+  int frame_count = source_callback_->OnMoreData(delay, base::TimeTicks(), {},
                                                  audio_bus_.get());
 
   DVLOG(3) << "frames_filled=" << frame_count << " with latency=" << delay;

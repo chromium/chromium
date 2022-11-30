@@ -5,10 +5,44 @@
 #ifndef MEDIA_BASE_AUDIO_GLITCH_INFO_H_
 #define MEDIA_BASE_AUDIO_GLITCH_INFO_H_
 
+#include "base/time/time.h"
+#include "media/base/media_export.h"
+
 namespace media {
 
 // Audio glitch info.
-struct AudioGlitchInfo {};
+struct MEDIA_EXPORT AudioGlitchInfo {
+  // Total glitch duration. For playout this is the duration of inserted
+  // silence.
+  base::TimeDelta duration;
+
+  // Number of glitches.
+  unsigned int count = 0;
+
+  AudioGlitchInfo& operator+=(const AudioGlitchInfo& other);
+
+  class MEDIA_EXPORT Accumulator;
+};
+
+MEDIA_EXPORT bool operator==(const AudioGlitchInfo& lhs,
+                             const AudioGlitchInfo& rhs);
+
+// Helper class used to accumulate pending AudioGlitchInfo, and reset it when
+// the accumulated info is read.
+class AudioGlitchInfo::Accumulator {
+ public:
+  Accumulator(const Accumulator&) = delete;
+  Accumulator& operator=(const Accumulator&) = delete;
+  Accumulator();
+  ~Accumulator();
+
+  void Add(const AudioGlitchInfo& info);
+
+  AudioGlitchInfo GetAndReset();
+
+ private:
+  AudioGlitchInfo pending_info_;
+};
 
 }  // namespace media
 

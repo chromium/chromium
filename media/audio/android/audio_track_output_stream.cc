@@ -167,7 +167,7 @@ ScopedJavaLocalRef<jobject> AudioTrackOutputStream::OnMoreData(
         AudioBus::WrapMemory(params_, native_buffer));
     audio_bus->set_is_bitstream_format(true);
 
-    callback_->OnMoreData(delay, tick_clock_->NowTicks(), 0, audio_bus.get());
+    callback_->OnMoreData(delay, tick_clock_->NowTicks(), {}, audio_bus.get());
 
     if (audio_bus->GetBitstreamDataSize() <= 0)
       return nullptr;
@@ -180,7 +180,7 @@ ScopedJavaLocalRef<jobject> AudioTrackOutputStream::OnMoreData(
   // For PCM format, we need extra memory to convert planar float32 into
   // interleaved int16.
 
-  callback_->OnMoreData(delay, tick_clock_->NowTicks(), 0, audio_bus_.get());
+  callback_->OnMoreData(delay, tick_clock_->NowTicks(), {}, audio_bus_.get());
 
   int16_t* native_bus = reinterpret_cast<int16_t*>(native_buffer);
   audio_bus_->ToInterleaved<SignedInt16SampleTypeTraits>(audio_bus_->frames(),
