@@ -7,19 +7,14 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 declare_args() {
   # Allow individual projects to remove the warning suppression
   # by overriding this in their .gn file or through custom args.gn
-  # See crbug.com/983223
-  jsoncpp_no_deprecated_declarations = true
+  # TODO(crbug.com/983223): Set this to false on all platforms, then remove it.
+  jsoncpp_no_deprecated_declarations = !is_apple && (!is_win || is_clang)
 }
 
 config("jsoncpp_config") {
   include_dirs = [ "source/include" ]
 
-  # TODO(crbug.com/983223): Update JsonCpp BUILD.gn to remove deprecated
-  # declaration flag.
-  # This temporary flag allowing clients to update to the new version, and then
-  # update to the new StreamWriter and CharReader classes.
-  if (jsoncpp_no_deprecated_declarations &&
-      (!is_win || (is_clang && !is_ios))) {
+  if (jsoncpp_no_deprecated_declarations) {
     cflags_cc = [ "-Wno-deprecated-declarations" ]
   }
 }
