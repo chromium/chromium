@@ -30,7 +30,6 @@ class ArcIconCacheDelegateProvider;
 class ArcPlayStoreEnabledPreferenceHandler;
 class ArcServiceManager;
 class ArcSessionManager;
-class ArcVmDataMigrationNotifier;
 
 // Detects ARC availability and launches ARC bridge service.
 class ArcServiceLauncher {
@@ -98,8 +97,6 @@ class ArcServiceLauncher {
   std::unique_ptr<ArcDiskSpaceMonitor> arc_disk_space_monitor_;
   std::unique_ptr<ArcIconCacheDelegateProvider>
       arc_icon_cache_delegate_provider_;
-  std::unique_ptr<ArcVmDataMigrationNotifier> arc_vm_data_migration_notifier_;
-
   // |scheduler_configuration_manager_| outlives |this|.
   chromeos::SchedulerConfigurationManagerBase* const
       scheduler_configuration_manager_;
