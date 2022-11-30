@@ -220,7 +220,7 @@ TEST_P(TrustStoreMacImplTest, MultiRootNotTrusted) {
 }
 
 // Test against all the certificates in the default keychains. Confirms that
-// the computed trust value matches that of SecTrustEvaluate.
+// the computed trust value matches that of SecTrustEvaluateWithError.
 TEST_P(TrustStoreMacImplTest, SystemCerts) {
   // Get the list of all certificates in the user & system keychains.
   // This may include both trusted and untrusted certificates.
@@ -323,12 +323,18 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
         // Cert is only in the system domain. It should be untrusted.
         EXPECT_FALSE(is_trust_anchor);
       } else {
-        SecTrustResultType trust_result;
-        ASSERT_EQ(noErr, SecTrustEvaluate(trust, &trust_result));
+        bool trusted;
+        if (__builtin_available(macOS 10.14, *)) {
+          trusted = SecTrustEvaluateWithError(trust, nullptr);
+        } else {
+          SecTrustResultType trust_result;
+          ASSERT_EQ(noErr, SecTrustEvaluate(trust, &trust_result));
+          trusted = (trust_result == kSecTrustResultProceed) ||
+                    (trust_result == kSecTrustResultUnspecified);
+        }
+
         bool expected_trust_anchor =
-            ((trust_result == kSecTrustResultProceed) ||
-             (trust_result == kSecTrustResultUnspecified)) &&
-            (SecTrustGetCertificateCount(trust) == 1);
+            trusted && (SecTrustGetCertificateCount(trust) == 1);
         EXPECT_EQ(expected_trust_anchor, is_trust_anchor);
       }
       auto* trust_debug_data = TrustStoreMac::ResultDebugData::Get(&debug_data);
