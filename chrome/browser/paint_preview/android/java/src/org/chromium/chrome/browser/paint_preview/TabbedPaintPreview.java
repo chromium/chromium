@@ -216,6 +216,8 @@ public class TabbedPaintPreview implements UserData {
                         mFadingOut = false;
                     }
                 });
+        // Ensure the progress update occur during the animation.
+        setProgressPreventionNeeded(false);
 
         if (mProgressSimulatorNeededCallback != null) mProgressSimulatorNeededCallback.run();
         TraceEvent.end("TabbedPaintPreview.remove");
