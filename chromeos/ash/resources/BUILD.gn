@@ -34,6 +34,7 @@ grit("resources") {
     "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_js",
     "//chromeos/ash/services/cellular_setup/public/mojom:mojom_js",
     "//chromeos/ash/services/device_sync/public/mojom:mojom_js",
+    "//chromeos/ash/services/hotspot_config/public/mojom:mojom_js",
     "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_js",
   ]
 }
