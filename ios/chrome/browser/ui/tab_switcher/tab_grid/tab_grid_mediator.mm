@@ -754,6 +754,11 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   // asynchronous drops.
   if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
+    // If the tab has been removed, cancel the drop operation.
+    if (GetIndexOfTabWithId(self.webStateList, tabInfo.tabID) ==
+        WebStateList::kInvalidIndex) {
+      return UIDropOperationCancel;
+    }
     if (self.browserState->IsOffTheRecord() && tabInfo.incognito) {
       return UIDropOperationMove;
     }
