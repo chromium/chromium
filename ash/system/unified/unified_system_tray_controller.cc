@@ -203,11 +203,14 @@ UnifiedSystemTrayController::CreateQuickSettingsView() {
 
   volume_slider_controller_ =
       std::make_unique<UnifiedVolumeSliderController>(this);
-  qs_view->AddSliderView(volume_slider_controller_->CreateView());
+  unified_volume_view_ = volume_slider_controller_->CreateView();
+  qs_view->AddSliderView(unified_volume_view_);
 
   brightness_slider_controller_ =
       std::make_unique<UnifiedBrightnessSliderController>(model_);
-  qs_view->AddSliderView(brightness_slider_controller_->CreateView());
+  unified_brightness_view_ = brightness_slider_controller_->CreateView();
+  qs_view->AddSliderView(unified_brightness_view_);
+
   return qs_view;
 }
 

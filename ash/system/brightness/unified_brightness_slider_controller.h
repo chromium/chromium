@@ -34,6 +34,12 @@ class UnifiedBrightnessSliderController : public UnifiedSliderListener {
                           float old_value,
                           views::SliderChangeReason reason) override;
 
+  // We don't let the screen brightness go lower than this when it's being
+  // adjusted via the slider.  Otherwise, if the user doesn't know about the
+  // brightness keys, they may turn the backlight off and not know how to turn
+  // it back on.
+  static constexpr double kMinBrightnessPercent = 5.0;
+
  private:
   scoped_refptr<UnifiedSystemTrayModel> model_;
   UnifiedSliderView* slider_ = nullptr;

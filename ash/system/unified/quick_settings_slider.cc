@@ -192,7 +192,8 @@ void QuickSettingsSlider::OnPaint(gfx::Canvas* canvas) {
     canvas->DrawRoundRect(gfx::Rect(x - kFocusOffset, y - kFocusOffset,
                                     full_width + 2 * kFocusOffset,
                                     kFullSliderThickness + 2 * kFocusOffset),
-                          kFullSliderRoundedRadius, highlight_border);
+                          kFullSliderRoundedRadius + kFocusOffset,
+                          highlight_border);
   }
 }
 

@@ -200,7 +200,10 @@ void StatusAreaWidget::Initialize() {
 
 StatusAreaWidget::~StatusAreaWidget() {
   Shell::Get()->session_controller()->RemoveObserver(this);
-  if (features::IsQsRevampEnabled())
+  // If QsRevamp flag is enabled, `notification_center_tray_` may be null in
+  // some unittests. During the test environment tear-down, removing the
+  // observer will lead to a crash.
+  if (features::IsQsRevampEnabled() && notification_center_tray_)
     notification_center_tray_->RemoveObserver(this);
   status_area_widget_delegate_->Shutdown();
 }

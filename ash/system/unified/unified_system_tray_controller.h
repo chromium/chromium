@@ -29,6 +29,10 @@ namespace gfx {
 class SlideAnimation;
 }  // namespace gfx
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace ash {
 
 class DetailedViewController;
@@ -198,8 +202,10 @@ class ASH_EXPORT UnifiedSystemTrayController
 
  private:
   friend class SystemTrayTestApi;
-  friend class UnifiedSystemTrayControllerTest;
+  friend class UnifiedBrightnessViewTest;
   friend class UnifiedMessageCenterBubbleTest;
+  friend class UnifiedSystemTrayControllerTest;
+  friend class UnifiedVolumeViewTest;
 
   // How the expanded state is toggled. The enum is used to back an UMA
   // histogram and should be treated as append-only.
@@ -284,10 +290,12 @@ class ASH_EXPORT UnifiedSystemTrayController
 
   // Controller of volume slider. Owned.
   std::unique_ptr<UnifiedVolumeSliderController> volume_slider_controller_;
+  views::View* unified_volume_view_ = nullptr;
 
   // Controller of brightness slider. Owned.
   std::unique_ptr<UnifiedBrightnessSliderController>
       brightness_slider_controller_;
+  views::View* unified_brightness_view_ = nullptr;
 
   // If the previous state is expanded or not. Only valid during dragging (from
   // BeginDrag to EndDrag).

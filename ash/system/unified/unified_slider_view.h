@@ -8,6 +8,8 @@
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/style/icon_button.h"
 #include "quick_settings_slider.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/image_view.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -25,8 +27,9 @@ class UnifiedSliderListener : public views::SliderListener {
  public:
   ~UnifiedSliderListener() override = default;
 
-  // Instantiates UnifiedSliderView. The view will be onwed by views hierarchy.
-  // The view should be always deleted after the controller is destructed.
+  // Instantiates `UnifiedSliderView`. The view will be owned by views
+  // hierarchy. The view should be always deleted after the controller is
+  // destructed.
   virtual views::View* CreateView() = 0;
 
   // Returns the slider catalog name which is used for UMA tracking. Please
@@ -44,37 +47,39 @@ class UnifiedSliderListener : public views::SliderListener {
   void TrackValueChangeUMA(bool going_up);
 };
 
-// Base view class of a slider row in UnifiedSystemTray. It has a button on the
-// left side and a slider on the right side.
+// Base view class of a slider row in `UnifiedSystemTray`. It has a button on
+// the left side and a slider on the right side.
+// For QsRevamp: the slider has an `ImageView` icon on top of the slider.
 class UnifiedSliderView : public views::View {
  public:
-  // If |read_only| is set, the slider will not accept any user events.
+  METADATA_HEADER(UnifiedSliderView);
+
+  // If `read_only` is set, the slider will not accept any user events.
+  // `slider_style` is `kDefaultSliderStyle` by default. `kRadioSliderStyle`
+  // should be set explicitly.
   UnifiedSliderView(views::Button::PressedCallback callback,
                     UnifiedSliderListener* listener,
                     const gfx::VectorIcon& icon,
                     int accessible_name_id,
-                    bool read_only = false);
+                    bool read_only = false,
+                    QuickSettingsSlider::Style slider_style =
+                        QuickSettingsSlider::Style::kDefault);
 
   UnifiedSliderView(const UnifiedSliderView&) = delete;
   UnifiedSliderView& operator=(const UnifiedSliderView&) = delete;
 
   ~UnifiedSliderView() override;
 
-  std::unique_ptr<views::Slider> CreateSlider(
-      UnifiedSliderListener* listener,
-      bool read_only,
-      QuickSettingsSlider::Style slider_style);
-
   IconButton* button() { return button_; }
   views::Slider* slider() { return slider_; }
   views::Label* toast_label() { return toast_label_; }
+  views::ImageView* slider_icon() { return slider_icon_; }
 
-  // Sets a slider value. If |by_user| is false, accessibility events will not
+  // Sets a slider value. If `by_user` is false, accessibility events will not
   // be triggered.
   void SetSliderValue(float value, bool by_user);
 
   // views::View:
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
 
  protected:
@@ -82,9 +87,10 @@ class UnifiedSliderView : public views::View {
 
  private:
   // Unowned. Owned by views hierarchy.
-  IconButton* const button_;
-  views::Slider* const slider_;
+  IconButton* button_ = nullptr;
+  views::Slider* slider_ = nullptr;
   views::Label* toast_label_ = nullptr;
+  views::ImageView* slider_icon_ = nullptr;
 };
 
 }  // namespace ash

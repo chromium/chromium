@@ -7,6 +7,7 @@
 
 #include "ash/system/unified/unified_slider_view.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -15,6 +16,8 @@ class MicGainSliderController;
 class MicGainSliderView : public UnifiedSliderView,
                           public CrasAudioHandler::AudioObserver {
  public:
+  METADATA_HEADER(MicGainSliderView);
+
   explicit MicGainSliderView(MicGainSliderController* controller);
   MicGainSliderView(MicGainSliderController* controller,
                     uint64_t device_id,
@@ -30,9 +33,6 @@ class MicGainSliderView : public UnifiedSliderView,
       CrasAudioHandler::InputMuteChangeMethod method) override;
   void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) override;
   void OnActiveInputNodeChanged() override;
-
-  // views::View:
-  const char* GetClassName() const override;
 
  private:
   void Update(bool by_user);

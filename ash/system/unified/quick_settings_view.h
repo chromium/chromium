@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/system/brightness/unified_brightness_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -99,6 +100,8 @@ class ASH_EXPORT QuickSettingsView : public views::View {
 
  private:
   class SystemTrayContainer;
+  friend class UnifiedBrightnessViewTest;
+  friend class UnifiedVolumeViewTest;
 
   // Adds buttons that load some of the tray detailed pages.
   // TODO(b/255993869): Delete this when feature tiles are working.

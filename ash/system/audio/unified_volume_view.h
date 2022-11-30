@@ -5,17 +5,22 @@
 #ifndef ASH_SYSTEM_AUDIO_UNIFIED_VOLUME_VIEW_H_
 #define ASH_SYSTEM_AUDIO_UNIFIED_VOLUME_VIEW_H_
 
+#include "ash/ash_export.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/unified/unified_slider_view.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 class IconButton;
 
 // View of a slider that can change audio volume.
-class UnifiedVolumeView : public UnifiedSliderView,
-                          public CrasAudioHandler::AudioObserver {
+class ASH_EXPORT UnifiedVolumeView : public UnifiedSliderView,
+                                     public CrasAudioHandler::AudioObserver {
  public:
+  METADATA_HEADER(UnifiedVolumeView);
+
   UnifiedVolumeView(UnifiedVolumeSliderController* controller,
                     UnifiedVolumeSliderController::Delegate* delegate);
 
@@ -24,8 +29,13 @@ class UnifiedVolumeView : public UnifiedSliderView,
 
   ~UnifiedVolumeView() override;
 
-  // views::View:
-  const char* GetClassName() const override;
+  // References to the icons that correspond to different volume levels used in
+  // the `QuickSettingsSlider`. Defined as a public member to be used in tests.
+  static constexpr const gfx::VectorIcon* kQsVolumeLevelIcons[] = {
+      &kUnifiedMenuVolumeMuteIcon,    // Mute volume.
+      &kUnifiedMenuVolumeMediumIcon,  // Medium volume.
+      &kUnifiedMenuVolumeHighIcon,    // High volume.
+  };
 
  private:
   void Update(bool by_user);

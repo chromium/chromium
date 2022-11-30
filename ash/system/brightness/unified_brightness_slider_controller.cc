@@ -12,15 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 
 namespace ash {
-namespace {
-
-// We don't let the screen brightness go lower than this when it's being
-// adjusted via the slider.  Otherwise, if the user doesn't know about the
-// brightness keys, they may turn the backlight off and not know how to turn it
-// back on.
-constexpr double kMinBrightnessPercent = 5.0;
-
-}  // namespace
 
 UnifiedBrightnessSliderController::UnifiedBrightnessSliderController(
     scoped_refptr<UnifiedSystemTrayModel> model)
@@ -57,6 +48,9 @@ void UnifiedBrightnessSliderController::SliderValueChanged(
   // we don't update the actual brightness.
   if (percent < kMinBrightnessPercent &&
       previous_percent_ < kMinBrightnessPercent) {
+    // We still need to call `OnDisplayBrightnessChanged()` to update the icon
+    // of the slider, we just don't update the brightness value.
+    brightness_control_delegate->SetBrightnessPercent(previous_percent_, true);
     return;
   }
 
