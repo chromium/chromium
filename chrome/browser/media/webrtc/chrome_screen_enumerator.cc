@@ -27,12 +27,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
-std::vector<aura::Window*>* root_windows_for_testing = nullptr;
+base::LazyInstance<std::vector<aura::Window*>>::DestructorAtExit
+    root_windows_for_testing_ = LAZY_INSTANCE_INITIALIZER;
 }  // namespace
-
-void SetRootWindowsForTesting(std::vector<aura::Window*>* root_windows) {
-  root_windows_for_testing = root_windows;
-}
 
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace {
@@ -49,8 +46,9 @@ blink::mojom::StreamDevicesSetPtr EnumerateScreens(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   aura::Window::Windows root_windows =
-      (root_windows_for_testing) ? std::move(*root_windows_for_testing)
-                                 : ash::Shell::GetAllRootWindows();
+      (root_windows_for_testing_.IsCreated())
+          ? std::move(root_windows_for_testing_.Get())
+          : ash::Shell::GetAllRootWindows();
 
   display::Screen* screen = display::Screen::GetScreen();
   blink::mojom::StreamDevicesSetPtr stream_devices_set =
@@ -124,7 +122,13 @@ ChromeScreenEnumerator::ChromeScreenEnumerator() = default;
 
 ChromeScreenEnumerator::~ChromeScreenEnumerator() = default;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ChromeScreenEnumerator::SetRootWindowsForTesting(
+    std::vector<aura::Window*> root_windows) {
+  root_windows_for_testing_.Get() = std::move(root_windows);
+}
+
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
 void ChromeScreenEnumerator::SetDesktopCapturerForTesting(
     std::unique_ptr<webrtc::DesktopCapturer> capturer) {
   g_desktop_capturer_for_testing.Get() = std::move(capturer);

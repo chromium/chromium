@@ -21,8 +21,6 @@ namespace aura {
 class Window;
 }
 
-void SetRootWindowsForTesting(std::vector<aura::Window*>* root_windows);
-
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace webrtc {
 class DesktopCapturer;
@@ -42,7 +40,9 @@ class ChromeScreenEnumerator : public media::ScreenEnumerator {
       const blink::mojom::StreamDevicesSet& stream_devices_set,
       blink::mojom::MediaStreamRequestResult result)>;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  static void SetRootWindowsForTesting(std::vector<aura::Window*> root_windows);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
   static void SetDesktopCapturerForTesting(
       std::unique_ptr<webrtc::DesktopCapturer> capturer);
 #endif

@@ -58,8 +58,7 @@ class ChromeScreenEnumeratorTest : public ChromeAshTestBase {
 };
 
 TEST_F(ChromeScreenEnumeratorTest, NoScreen) {
-  std::vector<aura::Window*> screens_list;
-  SetRootWindowsForTesting(&screens_list);
+  ChromeScreenEnumerator::SetRootWindowsForTesting(/*root_windows=*/{});
   base::RunLoop run_loop;
   blink::mojom::StreamDevicesSetPtr actual_stream_devices_set;
   blink::mojom::MediaStreamRequestResult actual_result;
@@ -80,9 +79,8 @@ TEST_F(ChromeScreenEnumeratorTest, NoScreen) {
 
 // TODO(crbug.com/1392777): Fix these tests for lacros.
 TEST_F(ChromeScreenEnumeratorTest, SingleScreen) {
-  std::vector<aura::Window*> screens_list =
-      GenerateScreensList(/*number_of_screens=*/1u);
-  SetRootWindowsForTesting(&screens_list);
+  ChromeScreenEnumerator::SetRootWindowsForTesting(
+      GenerateScreensList(/*number_of_screens=*/1u));
 
   base::RunLoop run_loop;
   blink::mojom::StreamDevicesSetPtr actual_stream_devices_set;
@@ -103,9 +101,8 @@ TEST_F(ChromeScreenEnumeratorTest, SingleScreen) {
 }
 
 TEST_F(ChromeScreenEnumeratorTest, MultipleScreens) {
-  std::vector<aura::Window*> screens_list =
-      GenerateScreensList(/*number_of_screens=*/6u);
-  SetRootWindowsForTesting(&screens_list);
+  ChromeScreenEnumerator::SetRootWindowsForTesting(
+      GenerateScreensList(/*number_of_screens=*/6u));
 
   base::RunLoop run_loop;
   blink::mojom::StreamDevicesSetPtr actual_stream_devices_set;
