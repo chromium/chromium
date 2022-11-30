@@ -35,8 +35,10 @@ scoped_refptr<Importer> CreateImporterByType(ImporterType type) {
 #endif
     case TYPE_BOOKMARKS_FILE:
       return new BookmarksFileImporter();
+#if !BUILDFLAG(IS_CHROMEOS)
     case TYPE_FIREFOX:
       return new FirefoxImporter();
+#endif
 #if BUILDFLAG(IS_MAC)
     case TYPE_SAFARI:
       return new SafariImporter(base::mac::GetUserLibraryPath());

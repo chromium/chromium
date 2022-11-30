@@ -97,8 +97,6 @@ static_library("utility") {
       "importer/external_process_importer_bridge.h",
       "importer/favicon_reencode.cc",
       "importer/favicon_reencode.h",
-      "importer/firefox_importer.cc",
-      "importer/firefox_importer.h",
       "importer/importer.cc",
       "importer/importer.h",
       "importer/importer_creator.cc",
@@ -106,15 +104,21 @@ static_library("utility") {
       "importer/profile_import_impl.cc",
       "importer/profile_import_impl.h",
     ]
+    if (!is_chromeos) {
+      sources += [
+        "importer/firefox_importer.cc",
+        "importer/firefox_importer.h",
+      ]
+    }
     if (is_mac) {
       sources += [
         "importer/safari_importer.h",
         "importer/safari_importer.mm",
       ]
     }
-    if (!is_mac && !is_fuchsia) {
-      # NSS decryptor depends on system NSS that is not available on MacOS or
-      # Fuchsia.
+    if (!is_mac && !is_fuchsia && !is_chromeos) {
+      # NSS decryptor is not needed on ChromeOS. Additionally, it depends on
+      # system NSS that is unavailable on MacOS/Fuchsia.
       sources += [
         "importer/nss_decryptor.cc",
         "importer/nss_decryptor.h",
@@ -215,7 +219,8 @@ static_library("utility") {
     ]
   }
 
-  if (use_nss_certs) {
+  # NSS decryptor is not needed on ChromeOS.
+  if (!is_chromeos && use_nss_certs) {
     sources += [
       "importer/nss_decryptor_system_nss.cc",
       "importer/nss_decryptor_system_nss.h",
