@@ -19,8 +19,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/strings/strcat.h"
-#include "build/build_config.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
@@ -51,6 +51,11 @@ class HoldingSpaceItemViewsSectionTest
  public:
   HoldingSpaceSectionId section_id() const { return GetParam().first; }
   HoldingSpaceItem::Type item_type() const { return GetParam().second; }
+
+  void set_tear_down_asynchronously(bool tear_down_asynchronously) {
+    tear_down_asynchronously_ = tear_down_asynchronously;
+  }
+
   HoldingSpaceItemViewsSection* item_views_section() {
     return item_views_section_;
   }
@@ -75,6 +80,9 @@ class HoldingSpaceItemViewsSectionTest
   }
 
   void TearDown() override {
+    if (!tear_down_asynchronously_)
+      widget_->CloseNow();
+
     widget_.reset();
     view_delegate_.reset();
 
@@ -92,8 +100,13 @@ class HoldingSpaceItemViewsSectionTest
     return sections;
   }
 
-  std::unique_ptr<HoldingSpaceViewDelegate> view_delegate_;
+  // When this option is true, the test's teardown procedure mimics the one in
+  // production code, where widgets are closed asynchronously. Otherwise,
+  // teardown is synchronous for simplicity.
+  bool tear_down_asynchronously_ = false;
+
   views::UniqueWidgetPtr widget_;
+  std::unique_ptr<HoldingSpaceViewDelegate> view_delegate_;
 
   TestHoldingSpaceItemViewsSection* item_views_section_ = nullptr;
 };
@@ -103,13 +116,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(GetSectionIdItemTypePairs()));
 
 // Verifies the items are ordered as expected.
-// https://crbug.com/1392609.
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
-#define MAYBE_ItemOrder DISABLED_ItemOrder
-#else
-#define MAYBE_ItemOrder ItemOrder
-#endif
-TEST_P(HoldingSpaceItemViewsSectionTest, MAYBE_ItemOrder) {
+TEST_P(HoldingSpaceItemViewsSectionTest, ItemOrder) {
   const absl::optional<size_t> section_max_views =
       GetHoldingSpaceSection(section_id())->max_visible_item_count;
 
@@ -145,16 +152,7 @@ TEST_P(HoldingSpaceItemViewsSectionTest, MAYBE_ItemOrder) {
 
 // Verifies that partially initialized items will not show until they are fully
 // initialized.
-// https://crbug.com/1392609.
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
-#define MAYBE_PartiallyInitializedItemsDontShow \
-  DISABLED_PartiallyInitializedItemsDontShow
-#else
-#define MAYBE_PartiallyInitializedItemsDontShow \
-  PartiallyInitializedItemsDontShow
-#endif
-TEST_P(HoldingSpaceItemViewsSectionTest,
-       MAYBE_PartiallyInitializedItemsDontShow) {
+TEST_P(HoldingSpaceItemViewsSectionTest, PartiallyInitializedItemsDontShow) {
   auto* partially_initialized_item =
       AddPartiallyInitializedItem(item_type(), base::FilePath("/tmp/fake1"));
   auto views = item_views_section()->GetHoldingSpaceItemViews();
@@ -176,6 +174,28 @@ TEST_P(HoldingSpaceItemViewsSectionTest,
   views = item_views_section()->GetHoldingSpaceItemViews();
   ASSERT_EQ(views.size(), 2u);
   EXPECT_EQ(views[1]->item(), partially_initialized_item);
+}
+
+// Verifies that resetting a section allows it to be destroyed asynchronously.
+TEST_P(HoldingSpaceItemViewsSectionTest, ResetForAsyncDestruction) {
+  const absl::optional<size_t> section_max_views =
+      GetHoldingSpaceSection(section_id())->max_visible_item_count;
+
+  // Add items to the section.
+  for (size_t i = 0; i <= section_max_views.value_or(10); ++i) {
+    base::FilePath file_path("/tmp/fake_" + base::NumberToString(i));
+    AddItem(item_type(), file_path);
+  }
+
+  // In production, each `HoldingSpaceSection` is `Reset()` when the
+  // `HoldingSpaceBubble` is destroyed. Because this test creates a
+  // `TestHoldingSpaceChildBubble` owned by the standalone `widget_` rather
+  // than a `HoldingSpaceBubble`, `item_views_section_` must be `Reset()`
+  // directly. Otherwise, when `item_views_section_` is cleaned up as part of
+  // `widget_`'s deferred destruction, it would try to access a stale
+  // reference to the already-destroyed `view_delegate_`.
+  item_views_section()->Reset();
+  set_tear_down_asynchronously(true);
 }
 
 }  // namespace ash
