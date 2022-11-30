@@ -209,7 +209,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
           child_tree_root_(parent->PlatformGetRootOfChildTree()) {}
     AllChildrenRange(const AllChildrenRange&) = default;
 
-    class Iterator final {
+    class CONTENT_EXPORT Iterator final {
      public:
       using iterator_category = std::input_iterator_tag;
       using value_type = BrowserAccessibility*;

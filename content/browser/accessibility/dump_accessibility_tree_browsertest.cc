@@ -2232,9 +2232,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInPageLinks) {
   RunHtmlTest(FILE_PATH_LITERAL("in-page-links.html"));
 }
 
-// TODO(crbug.com/1367886): This test is flaky.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestWithIgnoredNodes,
-                       DISABLED_InertAttribute) {
+                       InertAttribute) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kEnableBlinkFeatures, "InertAttribute");
   RunHtmlTest(FILE_PATH_LITERAL("inert-attribute.html"));
@@ -2694,9 +2693,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 */
 
-// TODO(crbug.com/1367886): This test is flaky.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestWithIgnoredNodes,
-                       DISABLED_AccessibilityModalDialogAndIframes) {
+                       AccessibilityModalDialogAndIframes) {
   RunHtmlTest(FILE_PATH_LITERAL("modal-dialog-and-iframes.html"));
 }
 
@@ -3005,29 +3003,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySvg) {
   RunHtmlTest(FILE_PATH_LITERAL("svg.html"));
 }
 
-// TODO: fails on android, the test hangs in WaitForAllFramesLoaded while
-// waiting for AccessibilityNotificationWaiter::WaitForNotification.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AccessibilitySvgAsEmbedSource \
-  DISABLED_AccessibilitySvgAsEmbedSource
-#else
-#define MAYBE_AccessibilitySvgAsEmbedSource AccessibilitySvgAsEmbedSource
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilitySvgAsEmbedSource) {
+                       AccessibilitySvgAsEmbedSource) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-as-embed-source.html"));
 }
 
-// TODO: fails on android, the test hangs in WaitForAllFramesLoaded while
-// waiting for AccessibilityNotificationWaiter::WaitForNotification.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AccessibilitySvgAsObjectSource \
-  DISABLED_AccessibilitySvgAsObjectSource
-#else
-#define MAYBE_AccessibilitySvgAsObjectSource AccessibilitySvgAsObjectSource
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilitySvgAsObjectSource) {
+                       AccessibilitySvgAsObjectSource) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-as-object-source.html"));
 }
 

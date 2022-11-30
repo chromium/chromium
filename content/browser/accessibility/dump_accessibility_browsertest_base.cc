@@ -82,25 +82,39 @@ bool AccessibilityTreeContainsAllChildTrees(const ui::AXNode& node) {
   return true;
 }
 
-// Searches recursively and returns true if an accessibility node is found
-// that represents a fully loaded web document with the given url.
-bool AccessibilityTreeContainsLoadedDocWithUrl(BrowserAccessibility* node,
-                                               const std::string& url) {
-  if (node->GetRole() == ax::mojom::Role::kRootWebArea &&
-      node->GetStringAttribute(ax::mojom::StringAttribute::kUrl) == url) {
-    // Ensure the doc has finished loading and has a non-zero size.
-    return node->manager()->GetTreeData().loaded &&
-           (node->GetData().relative_bounds.bounds.width() > 0 &&
-            node->GetData().relative_bounds.bounds.height() > 0);
+bool IsLoadedDocWithUrl(const BrowserAccessibility* node,
+                        const std::string& url) {
+  return node->GetRole() == ax::mojom::Role::kRootWebArea &&
+         node->GetStringAttribute(ax::mojom::StringAttribute::kUrl) == url &&
+         node->manager()->GetTreeData().loaded &&
+         node->GetData().relative_bounds.bounds.width() > 0 &&
+         node->GetData().relative_bounds.bounds.height() > 0;
+}
+
+// Recursively searches accessibility nodes in the subtree of |node| that
+// represent a fully loaded web document with the given |url|. If less than
+// |num_expected| occurrences are found, it returns the remainder. Otherwise,
+// it stops searching when reaching |num_expected| occurrences, and returns 0.
+unsigned SearchLoadedDocsWithUrlInAccessibilityTree(
+    const BrowserAccessibility* node,
+    const std::string& url,
+    unsigned num_expected) {
+  if (!num_expected)
+    return 0;
+
+  if (IsLoadedDocWithUrl(node, url)) {
+    num_expected -= 1;
+    if (!num_expected)
+      return 0;
   }
 
-  for (unsigned i = 0; i < node->PlatformChildCount(); i++) {
-    if (AccessibilityTreeContainsLoadedDocWithUrl(node->PlatformGetChild(i),
-                                                  url)) {
-      return true;
-    }
+  for (const auto* child : node->AllChildren()) {
+    num_expected =
+        SearchLoadedDocsWithUrlInAccessibilityTree(child, url, num_expected);
+    if (!num_expected)
+      return 0;
   }
-  return false;
+  return num_expected;
 }
 
 }  // namespace
@@ -404,9 +418,9 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     OnDiffFailed();
 }
 
-std::vector<std::string> DumpAccessibilityTestBase::CollectAllFrameUrls(
+std::map<std::string, unsigned> DumpAccessibilityTestBase::CollectAllFrameUrls(
     const std::vector<std::string>& skip_urls) {
-  std::vector<std::string> all_frame_urls;
+  std::map<std::string, unsigned> all_frame_urls;
   // Get the url of every frame in the frame tree.
   for (FrameTreeNode* node : GetWebContents()->GetPrimaryFrameTree().Nodes()) {
     // Ignore about:blank urls because of the case where a parent frame A
@@ -432,7 +446,7 @@ std::vector<std::string> DumpAccessibilityTestBase::CollectAllFrameUrls(
     if (!skip_url && url != url::kAboutBlankURL && !url.empty() &&
         node->frame_owner_element_type() !=
             blink::FrameOwnerElementType::kPortal) {
-      all_frame_urls.push_back(url);
+      all_frame_urls[url] += 1;
     }
   }
   return all_frame_urls;
@@ -441,11 +455,9 @@ std::vector<std::string> DumpAccessibilityTestBase::CollectAllFrameUrls(
 void DumpAccessibilityTestBase::WaitForAllFramesLoaded() {
   // Wait for the accessibility tree to fully load for all frames,
   // by searching for the WEB_AREA node in the accessibility tree
-  // with the url of each frame in our frame tree. Note that this
-  // doesn't support cases where there are two iframes with the
-  // exact same url. If all frames haven't loaded yet, set up a
-  // listener for accessibility events on any frame and block
-  // until the next one is received.
+  // with the url of each frame in our frame tree. If all frames
+  // haven't loaded yet, set up a listener for accessibility events
+  // on any frame and block until the next one is received.
   WebContentsImpl* web_contents = GetWebContents();
   for (;;) {
     VLOG(1) << "Top of WaitForAllFramesLoaded() loop";
@@ -469,12 +481,13 @@ void DumpAccessibilityTestBase::WaitForAllFramesLoaded() {
       bool all_frames_loaded = true;
       // A test may change the url for a frame, for example by setting
       // window.location.href, so collect the current list of urls.
-      const std::vector<std::string> all_frame_urls =
+      const std::map<std::string, unsigned> all_frame_urls =
           CollectAllFrameUrls(scenario_.no_load_expected);
-      for (const auto& url : all_frame_urls) {
-        if (!AccessibilityTreeContainsLoadedDocWithUrl(accessibility_root,
-                                                       url)) {
-          VLOG(1) << "Still waiting on this frame to load: " << url;
+      for (const auto& [url, num_expected] : all_frame_urls) {
+        if (unsigned num_remaining = SearchLoadedDocsWithUrlInAccessibilityTree(
+                accessibility_root, url, num_expected)) {
+          VLOG(1) << "Still waiting on " << num_remaining
+                  << " frame(s) to load: " << url;
           all_frames_loaded = false;
           break;
         }

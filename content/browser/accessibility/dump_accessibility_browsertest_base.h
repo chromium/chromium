@@ -211,7 +211,7 @@ class DumpAccessibilityTestBase
       const char* attr,
       const std::string& value) const;
 
-  std::vector<std::string> CollectAllFrameUrls(
+  std::map<std::string, unsigned> CollectAllFrameUrls(
       const std::vector<std::string>& skip_urls);
 
   // Wait until all initial content is completely loaded, included within
