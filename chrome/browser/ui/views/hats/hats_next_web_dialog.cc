@@ -10,6 +10,7 @@
 #include "base/base64url.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
@@ -226,11 +227,11 @@ GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
 
   // Append any Product Specific Data to the query. This will be interpreted
   // by the wrapper website and provided to the HaTS backend service.
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   for (const auto& field_value : product_specific_bits_data_)
-    dict.SetStringKey(field_value.first, field_value.second ? "true" : "false");
+    dict.Set(field_value.first, field_value.second ? "true" : "false");
   for (const auto& field_value : product_specific_string_data_)
-    dict.SetStringKey(field_value.first, field_value.second);
+    dict.Set(field_value.first, field_value.second);
 
   std::string product_specific_data_json;
   base::JSONWriter::Write(dict, &product_specific_data_json);
