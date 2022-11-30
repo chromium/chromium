@@ -35,11 +35,6 @@
 
 namespace blink {
 
-enum {
-  kMaxPendingCompositorFrames = 2,
-  kMaxUnreclaimedPlaceholderFrames = 3,
-};
-
 struct CanvasResourceDispatcher::FrameResource {
   FrameResource() = default;
   ~FrameResource() {
@@ -336,7 +331,7 @@ void CanvasResourceDispatcher::DidReceiveCompositorFrameAck(
     WTF::Vector<viz::ReturnedResource> resources) {
   ReclaimResources(std::move(resources));
   pending_compositor_frames_--;
-  DCHECK_GE(pending_compositor_frames_, 0);
+  DCHECK_GE(pending_compositor_frames_, 0u);
 }
 
 void CanvasResourceDispatcher::SetNeedsBeginFrame(bool needs_begin_frame) {
