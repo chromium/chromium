@@ -238,21 +238,6 @@ id<GREYMatcher> CarouselMatcher() {
       assertWithMatcher:grey_nil()];
 }
 
-// Tests the "Open in New Window" action of carousel context menu.
-- (void)testMostVisitedOpenInNewWindow {
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
-    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
-
-  [self addNumberOfMostVisitedTiles:1];
-  Page page1 = Page(1);
-  id<GREYMatcher> tile1 = TileWithTitle(PageTitle(page1));
-
-  [self focusOmniboxFromWebPageZero];
-  [self longPressMostVisitedTile:tile1];
-
-  [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:PageContent(page1)];
-}
-
 // Tests the "Copy URL" action of carousel context menu.
 - (void)testMostVisitedTileCopyURL {
   [self addNumberOfMostVisitedTiles:1];
