@@ -67,6 +67,10 @@ const double kMinimumReportingInterval = 250.0;
 const char kRecordModeParam[] = "record_mode";
 const char kTraceBufferSizeInKb[] = "trace_buffer_size_in_kb";
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+const char kTrackEventDataSourceName[] = "track_event";
+#endif
+
 // Frames need to be at least 1x1, otherwise nothing would be captured.
 constexpr gfx::Size kMinFrameSize = gfx::Size(1, 1);
 
@@ -223,9 +227,14 @@ StringToMemoryDumpLevelOfDetail(const std::string& str) {
 void AddPidsToProcessFilter(
     const std::unordered_set<base::ProcessId>& included_process_ids,
     perfetto::TraceConfig& trace_config) {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  const std::string kDataSourceName = kTrackEventDataSourceName;
+#else
+  const std::string kDataSourceName = tracing::mojom::kTraceEventDataSourceName;
+#endif
   for (auto& data_source : *(trace_config.mutable_data_sources())) {
     auto* source_config = data_source.mutable_config();
-    if (source_config->name() == tracing::mojom::kTraceEventDataSourceName) {
+    if (source_config->name() == kDataSourceName) {
       for (auto& enabled_pid : included_process_ids) {
         *data_source.add_producer_name_filter() = base::StrCat(
             {tracing::mojom::kPerfettoProducerNamePrefix,
@@ -276,7 +285,7 @@ void ConvertToTrackEventConfigIfNeeded(perfetto::TraceConfig& trace_config) {
     if (data_source.config().name() ==
             tracing::mojom::kTraceEventDataSourceName &&
         data_source.config().has_chrome_config()) {
-      data_source.mutable_config()->set_name("track_event");
+      data_source.mutable_config()->set_name(kTrackEventDataSourceName);
       base::trace_event::TraceConfig base_config(
           data_source.config().chrome_config().trace_config());
       bool privacy_filtering_enabled =
