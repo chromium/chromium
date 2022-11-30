@@ -84,6 +84,8 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::OnDialogClosed(
     bool user_closed_dialog,
     bool server_success) {
   if (user_closed_dialog) {
+    // `user_closed_dialog` is only true when the user clicked cancel on the
+    // dialog.
     AutofillMetrics::LogCardUnmaskAuthenticationSelectionDialogResultMetric(
         challenge_option_selected_
             ? AutofillMetrics::
@@ -97,6 +99,13 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::OnDialogClosed(
       std::move(cancel_unmasking_closure_).Run();
   } else if (selected_challenge_option_type_ ==
              CardUnmaskChallengeOptionType::kSmsOtp) {
+    // If we have an SMS OTP challenge selected and `user_closed_dialog` is
+    // false, that means that the user accepted the dialog after selecting the
+    // SMS OTP challenge option, and we have a server response returned since we
+    // immediately send a SelectChallengeOption request to the server and only
+    // close the dialog once a response is returned. The SelectChallengeOption
+    // request is sent to the payments server to generate an SMS OTP with the
+    // bank or issuer and send it to the user.
     AutofillMetrics::LogCardUnmaskAuthenticationSelectionDialogResultMetric(
         server_success
             ? AutofillMetrics::
@@ -105,9 +114,18 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::OnDialogClosed(
             : AutofillMetrics::
                   CardUnmaskAuthenticationSelectionDialogResultMetric::
                       kDismissedByServerRequestFailure);
+  } else if (selected_challenge_option_type_ ==
+             CardUnmaskChallengeOptionType::kCvc) {
+    // If we have a CVC challenge selected and `user_closed_dialog` is false,
+    // that means that the user accepted the dialog after selecting the CVC
+    // challenge option. `server_success` is not used in this case because we do
+    // not send a SelectChallengeOption request in the case of a CVC challenge
+    // selected, since we do not need to send the user any type of OTP. Thus, we
+    // immediately render the CVC input dialog.
+    AutofillMetrics::LogCardUnmaskAuthenticationSelectionDialogResultMetric(
+        AutofillMetrics::CardUnmaskAuthenticationSelectionDialogResultMetric::
+            kDismissedByUserAcceptanceNoServerRequestNeeded);
   }
-  // TODO(crbug.com/1381892): Add OnDialogClosed metrics for Card Unmask Auth
-  // Select Dialog flow for CVC.
 
   challenge_option_selected_ = false;
   dialog_view_ = nullptr;

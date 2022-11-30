@@ -6403,6 +6403,9 @@ others/histograms.xml -->
       label="A challenge option was selected and the server returned success"/>
   <int value="4"
       label="A challenge option was selected and the server returned failure"/>
+  <int value="5"
+      label="A challenge option was selected and the user clicked accept. No
+             server call is necessary."/>
 </enum>
 
 <enum name="AutofillCardUploadDecision">

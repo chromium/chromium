@@ -213,7 +213,13 @@ class AutofillMetrics {
     // requested the issuer to send an OTP, and we can not move on to the next
     // step in this flow.
     kDismissedByServerRequestFailure = 4,
-    kMaxValue = kDismissedByServerRequestFailure,
+    // User accepted a challenge option in the
+    // CardUnmaskAuthenticationSelectionDialog that does not require a server
+    // call to get to the next step in this flow. For instance, in the CVC case,
+    // we can go directly to the CVC input dialog after the user selects the
+    // challenge option.
+    kDismissedByUserAcceptanceNoServerRequestNeeded = 5,
+    kMaxValue = kDismissedByUserAcceptanceNoServerRequestNeeded,
   };
 
   enum CreditCardUploadFeedbackMetric {

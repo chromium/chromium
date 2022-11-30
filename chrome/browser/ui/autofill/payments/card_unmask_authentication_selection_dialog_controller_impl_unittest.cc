@@ -61,7 +61,6 @@ TEST_F(CardUnmaskAuthenticationSelectionDialogControllerImplTest,
        DialogCanceledByUserBeforeConfirmation) {
   base::HistogramTester histogram_tester;
 
-  DCHECK(controller());
   controller()->SetSelectedChallengeOptionsForTesting(
       test::GetCardUnmaskChallengeOptions(
           {CardUnmaskChallengeOptionType::kSmsOtp,
@@ -83,7 +82,6 @@ TEST_F(CardUnmaskAuthenticationSelectionDialogControllerImplTest,
        DialogCanceledByUserAfterConfirmation) {
   base::HistogramTester histogram_tester;
 
-  DCHECK(controller());
   controller()->SetSelectedChallengeOptionsForTesting(
       test::GetCardUnmaskChallengeOptions(
           {CardUnmaskChallengeOptionType::kSmsOtp,
@@ -107,7 +105,6 @@ TEST_F(CardUnmaskAuthenticationSelectionDialogControllerImplTest,
        ServerRequestSucceeded) {
   base::HistogramTester histogram_tester;
 
-  DCHECK(controller());
   controller()->SetSelectedChallengeOptionsForTesting(
       test::GetCardUnmaskChallengeOptions(
           {CardUnmaskChallengeOptionType::kSmsOtp,
@@ -131,7 +128,6 @@ TEST_F(CardUnmaskAuthenticationSelectionDialogControllerImplTest,
        ServerRequestFailed) {
   base::HistogramTester histogram_tester;
 
-  DCHECK(controller());
   controller()->SetSelectedChallengeOptionsForTesting(
       test::GetCardUnmaskChallengeOptions(
           {CardUnmaskChallengeOptionType::kSmsOtp,
@@ -149,6 +145,29 @@ TEST_F(CardUnmaskAuthenticationSelectionDialogControllerImplTest,
       "Autofill.CardUnmaskAuthenticationSelectionDialog.Result",
       AutofillMetrics::CardUnmaskAuthenticationSelectionDialogResultMetric::
           kDismissedByServerRequestFailure,
+      1);
+}
+
+TEST_F(CardUnmaskAuthenticationSelectionDialogControllerImplTest,
+       AcceptedNoServerRequestNecessary) {
+  base::HistogramTester histogram_tester;
+
+  controller()->SetSelectedChallengeOptionsForTesting(
+      test::GetCardUnmaskChallengeOptions(
+          {CardUnmaskChallengeOptionType::kCvc}));
+  controller()->SetSelectedChallengeOptionId(
+      controller()->GetChallengeOptions()[0].id);
+  EXPECT_EQ(controller()->GetChallengeOptions()[0].id,
+            controller()->GetSelectedChallengeOptionIdForTesting());
+
+  controller()->OnOkButtonClicked();
+  controller()->OnDialogClosed(/*user_closed_dialog=*/false,
+                               /*server_success=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardUnmaskAuthenticationSelectionDialog.Result",
+      AutofillMetrics::CardUnmaskAuthenticationSelectionDialogResultMetric::
+          kDismissedByUserAcceptanceNoServerRequestNeeded,
       1);
 }
 
