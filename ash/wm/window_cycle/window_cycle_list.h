@@ -37,7 +37,7 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
  public:
   using WindowList = std::vector<aura::Window*>;
 
-  explicit WindowCycleList(const WindowList& windows);
+  WindowCycleList(const WindowList& windows, bool same_app_only);
   WindowCycleList(const WindowCycleList&) = delete;
   WindowCycleList& operator=(const WindowCycleList&) = delete;
   ~WindowCycleList() override;

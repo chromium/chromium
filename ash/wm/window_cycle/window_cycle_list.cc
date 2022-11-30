@@ -90,12 +90,28 @@ aura::Window* GetRootWindowForCycleView() {
 
 }  // namespace
 
-WindowCycleList::WindowCycleList(const WindowList& windows)
+WindowCycleList::WindowCycleList(const WindowList& windows, bool same_app_only)
     : windows_(windows) {
   if (!ShouldShowUi())
     Shell::Get()->mru_window_tracker()->SetIgnoreActivations(true);
 
   active_window_before_window_cycle_ = window_util::GetActiveWindow();
+
+  if (same_app_only && windows_.size() > 1) {
+    WindowCycleController::WindowList same_app_window_list;
+    const std::string* const mru_window_app_id =
+        windows_.front()->GetProperty(kAppIDKey);
+    if (mru_window_app_id) {
+      windows_.erase(base::ranges::remove_if(
+                         windows_.begin(), windows_.end(),
+                         [&mru_window_app_id](aura::Window* window) {
+                           const auto* const app_id =
+                               window->GetProperty(kAppIDKey);
+                           return !app_id || *app_id != *mru_window_app_id;
+                         }),
+                     windows_.end());
+    }
+  }
 
   for (auto* window : windows_)
     window->AddObserver(this);

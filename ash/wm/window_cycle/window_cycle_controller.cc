@@ -13,6 +13,7 @@
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -122,14 +123,14 @@ void WindowCycleController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kAltTabPerDesk, DesksMruType::kAllDesks);
 }
 
-void WindowCycleController::HandleCycleWindow(
-    WindowCyclingDirection direction) {
+void WindowCycleController::HandleCycleWindow(WindowCyclingDirection direction,
+                                              bool same_app_only) {
   if (!CanCycle())
     return;
 
   const bool should_start_alt_tab = !IsCycling();
   if (should_start_alt_tab)
-    StartCycling();
+    StartCycling(same_app_only);
 
   Step(direction, /*starting_alt_tab_or_switching_mode=*/should_start_alt_tab);
 }
@@ -205,7 +206,7 @@ void WindowCycleController::StartFling(float velocity_x) {
   window_cycle_list_->StartFling(velocity_x);
 }
 
-void WindowCycleController::StartCycling() {
+void WindowCycleController::StartCycling(bool same_app_only) {
   Shell* shell = Shell::Get();
 
   // Close the wallpaper preview if it is open to prevent visual glitches where
@@ -220,8 +221,8 @@ void WindowCycleController::StartCycling() {
 
   WindowCycleController::WindowList window_list = CreateWindowList();
   SaveCurrentActiveDeskAndWindow(window_list);
-
-  window_cycle_list_ = std::make_unique<WindowCycleList>(window_list);
+  window_cycle_list_ =
+      std::make_unique<WindowCycleList>(window_list, same_app_only);
   event_filter_ = std::make_unique<WindowCycleEventFilter>();
   base::RecordAction(base::UserMetricsAction("WindowCycleController_Cycle"));
   base::UmaHistogramCounts100(kAltTabItemsHistogramName, window_list.size());
@@ -384,6 +385,7 @@ WindowCycleController::WindowList WindowCycleController::CreateWindowList() {
   WindowCycleController::WindowList window_list =
       Shell::Get()->mru_window_tracker()->BuildWindowForCycleWithPipList(
           IsAltTabPerActiveDesk() ? kActiveDesk : kAllDesks);
+
   // Window cycle list windows will handle showing their transient related
   // windows, so if a window in |window_list| has a transient root also in
   // |window_list|, we can remove it as the transient root will handle showing
