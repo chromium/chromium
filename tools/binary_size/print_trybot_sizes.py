@@ -115,6 +115,20 @@ def _query_size(review_url, internal):
   return '<unknown>'
 
 
+def _maybe_rewrite_crrev(git_log_args):
+  if len(git_log_args) != 1:
+    return
+  values = git_log_args[0].split('..')
+  if len(values) != 2 or not values[0].isdigit() or not values[1].isdigit():
+    return
+  values = [
+      subprocess.check_output(['git-crrev-parse', v], text=True).rstrip()
+      for v in values
+  ]
+  git_log_args[0] = '..'.join(values)
+  print(f'Converted crrev to commits: {git_log_args[0]}')
+
+
 def main():
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument('--csv', action='store_true', help='Print as CSV')
@@ -130,6 +144,8 @@ def main():
   if result.returncode:
     sys.stderr.write('First run: bb auth-login\n')
     sys.exit(1)
+
+  _maybe_rewrite_crrev(git_log_args)
 
   commit_infos = _git_log(git_log_args)
   if not commit_infos:
