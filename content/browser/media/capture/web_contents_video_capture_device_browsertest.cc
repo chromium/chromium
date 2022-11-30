@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/shell/browser/shell.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
@@ -80,7 +81,10 @@ class WebContentsVideoCaptureDeviceBrowserTest
     : public ContentCaptureDeviceBrowserTestBase,
       public FrameTestUtil {
  public:
-  WebContentsVideoCaptureDeviceBrowserTest() = default;
+  WebContentsVideoCaptureDeviceBrowserTest() {
+    // TODO(https://crbug.com/1324757): tests should work with HiDPI enabled.
+    scoped_feature_list_.InitAndDisableFeature(media::kWebContentsCaptureHiDpi);
+  }
 
   WebContentsVideoCaptureDeviceBrowserTest(
       const WebContentsVideoCaptureDeviceBrowserTest&) = delete;
@@ -281,6 +285,9 @@ class WebContentsVideoCaptureDeviceBrowserTest
   }
 
   void WaitForFirstFrame() final { WaitForFrameWithColor(SK_ColorBLACK); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the device refuses to start if the WebContents target was

@@ -962,7 +962,9 @@ class GetDisplayMediaHiDpiBrowserTest
 
   void SetUpInProcessBrowserTestFixture() override {
     if (enable_hidpi()) {
-      feature_list_.InitWithFeatures({media::kWebContentsCaptureHiDpi}, {});
+      feature_list_.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
+    } else {
+      feature_list_.InitAndDisableFeature(media::kWebContentsCaptureHiDpi);
     }
 
     WebRtcTestBase::SetUpInProcessBrowserTestFixture();
