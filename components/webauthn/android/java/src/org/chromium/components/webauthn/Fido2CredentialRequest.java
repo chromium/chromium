@@ -133,6 +133,18 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             return;
         }
 
+        // Currently discoverable credentials on Android do not support the payment bit. To avoid
+        // requiring per-platform code in a developer website, we map residentKey=preferred to
+        // discouraged here if the payment extension is present.
+        //
+        // See https://crbug.com/1393662
+        if (options.isPaymentCredentialCreation) {
+            // Earlier code should reject an attempt by a developer to use residentKey=required or
+            // discouraged on Android - only preferred should have made it this far.
+            assert options.authenticatorSelection.residentKey == ResidentKeyRequirement.PREFERRED;
+            options.authenticatorSelection.residentKey = ResidentKeyRequirement.DISCOURAGED;
+        }
+
         // Attestation is only for non-discoverable credentials in the Android
         // platform authenticator and discoverable credentials aren't supported
         // on security keys. There was a bug where discoverable credentials
