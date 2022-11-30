@@ -132,13 +132,19 @@ function shouldBeEqualToString(a, b)
 }
 
 function indexedDBTest(upgradeCallback, optionalOpenCallback) {
+  indexedDBTestWithIdb(indexedDB, upgradeCallback, optionalOpenCallback);
+}
+
+// This version takes the indexeddb object as a parameter to support bucket
+// idbs.
+function indexedDBTestWithIdb(idb, upgradeCallback, optionalOpenCallback) {
   dbname = self.location.pathname.substring(
     1 + self.location.pathname.lastIndexOf("/"));
-  var deleteRequest = indexedDB.deleteDatabase(dbname);
+  var deleteRequest = idb.deleteDatabase(dbname);
   deleteRequest.onerror = unexpectedErrorCallback;
   deleteRequest.onblocked = unexpectedBlockedCallback;
   deleteRequest.onsuccess = function() {
-    var openRequest = indexedDB.open(dbname);
+    var openRequest = idb.open(dbname);
     openRequest.onerror = unexpectedErrorCallback;
     openRequest.onupgradeneeded = upgradeCallback;
     openRequest.onblocked = unexpectedBlockedCallback;

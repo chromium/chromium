@@ -209,19 +209,25 @@ class LevelDBTestTransaction : public TransactionalLevelDBTransaction {
   }
 
   leveldb::Status Commit(bool sync_on_commit) override {
-    if ((fail_method_ != FailMethod::COMMIT &&
-         fail_method_ != FailMethod::COMMIT_DISK_FULL) ||
-        ++current_call_num_ != fail_on_call_num_)
+    if (++current_call_num_ != fail_on_call_num_)
       return TransactionalLevelDBTransaction::Commit(sync_on_commit);
 
-    // TODO(jsbell): Consider parameterizing the failure mode.
+    if (fail_method_ == FailMethod::COMMIT)
+      return leveldb::Status::Corruption("Corrupted for the test");
+
     if (fail_method_ == FailMethod::COMMIT_DISK_FULL) {
       return leveldb_env::MakeIOError("dummy filename", "Disk Full",
                                       leveldb_env::kWritableFileAppend,
                                       base::File::FILE_ERROR_NO_SPACE);
     }
 
-    return leveldb::Status::Corruption("Corrupted for the test");
+    if (fail_method_ == FailMethod::COMMIT_SYNC && sync_on_commit) {
+      return leveldb_env::MakeIOError("dummy filename", "Sync on commit",
+                                      leveldb_env::kWritableFileAppend,
+                                      base::File::FILE_ERROR_FAILED);
+    }
+
+    return TransactionalLevelDBTransaction::Commit(sync_on_commit);
   }
 
  private:

@@ -50,7 +50,6 @@ class QuotaClientCallbackWrapper;
 }  // namespace storage
 
 namespace content {
-class IndexedDBConnection;
 class IndexedDBFactoryImpl;
 class IndexedDBQuotaClient;
 
@@ -164,10 +163,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // Methods called by IndexedDBFactoryImpl or IndexedDBDispatcherHost for
   // quota support.
   void FactoryOpened(const storage::BucketLocator& bucket_locator);
-  void ConnectionOpened(const storage::BucketLocator& bucket_locator,
-                        IndexedDBConnection* db);
-  void ConnectionClosed(const storage::BucketLocator& bucket_locator,
-                        IndexedDBConnection* db);
+  void ConnectionOpened(const storage::BucketLocator& bucket_locator);
+  void ConnectionClosed(const storage::BucketLocator& bucket_locator);
   void TransactionComplete(const storage::BucketLocator& bucket_locator);
   void DatabaseDeleted(const storage::BucketLocator& bucket_locator);
 

@@ -1054,7 +1054,7 @@ class LookingForQuotaErrorMockCallbacks : public IndexedDBCallbacks {
  public:
   LookingForQuotaErrorMockCallbacks()
       : IndexedDBCallbacks(nullptr,
-                           storage::BucketLocator(),
+                           absl::nullopt,
                            mojo::NullAssociatedRemote(),
                            base::SequencedTaskRunner::GetCurrentDefault()) {}
 

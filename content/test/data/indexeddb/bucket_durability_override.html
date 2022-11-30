@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<head>
+<title>Tests that bucket durability is overridden when specified in the transaction.
+The C++ side of the test sets the mock backend to fail on strict transactions.</title>
+<script type="text/javascript" src="common.js"></script>
+<script>
+
+async function test() {
+  const inboxBucket = await navigator.storageBuckets.open('inbox_bucket', {durability: 'relaxed'});
+  indexedDBTestWithIdb(inboxBucket.indexedDB, prepareDatabase, startNewTransaction);
+}
+
+function prepareDatabase() {
+  db = event.target.result;
+  objectStore = db.createObjectStore('store');
+}
+
+function startNewTransaction() {
+  tx = db.transaction('store', 'readwrite', {durability: 'strict'});
+  tx.objectStore('store').put('value', 'key');
+  tx.oncomplete = unexpectedCompleteCallback;
+  tx.onabort = function() {
+    shouldBeEqualToString("tx.error.name", "UnknownError");
+    done();
+  };
+}
+
+</script>
+</head>
+<body onLoad="test()">
+<div id="status">Starting...</div>
+</body>
+</html>

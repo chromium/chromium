@@ -18,12 +18,12 @@ namespace content {
 
 MockIndexedDBCallbacks::MockIndexedDBCallbacks()
     : IndexedDBCallbacks(nullptr,
-                         storage::BucketLocator(),
+                         absl::nullopt,
                          mojo::NullAssociatedRemote(),
                          base::SequencedTaskRunner::GetCurrentDefault()) {}
 MockIndexedDBCallbacks::MockIndexedDBCallbacks(bool expect_connection)
     : IndexedDBCallbacks(nullptr,
-                         storage::BucketLocator(),
+                         absl::nullopt,
                          mojo::NullAssociatedRemote(),
                          base::SequencedTaskRunner::GetCurrentDefault()),
       expect_connection_(expect_connection) {}

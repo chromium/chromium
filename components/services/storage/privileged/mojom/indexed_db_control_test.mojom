@@ -25,6 +25,7 @@ enum FailMethod {
   NOTHING,
   COMMIT,
   COMMIT_DISK_FULL,
+  COMMIT_SYNC,
   GET,
   SEEK,
   WRITE,

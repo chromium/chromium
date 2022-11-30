@@ -13,13 +13,14 @@
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_dispatcher_host.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "storage/browser/blob/blob_storage_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
@@ -41,7 +42,7 @@ class CONTENT_EXPORT IndexedDBCallbacks
     : public base::RefCounted<IndexedDBCallbacks> {
  public:
   IndexedDBCallbacks(base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
-                     const storage::BucketLocator& bucket_locator,
+                     const absl::optional<storage::BucketInfo>& bucket,
                      mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
                          pending_callbacks,
                      scoped_refptr<base::SequencedTaskRunner> idb_runner);
@@ -100,7 +101,7 @@ class CONTENT_EXPORT IndexedDBCallbacks
   bool sent_blocked_ = false;
 
   base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host_;
-  storage::BucketLocator bucket_locator_;
+  absl::optional<storage::BucketInfo> bucket_info_;
   scoped_refptr<base::SequencedTaskRunner> idb_runner_;
   mojo::AssociatedRemote<blink::mojom::IDBCallbacks> callbacks_;
 

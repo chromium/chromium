@@ -213,7 +213,7 @@ IndexedDBDispatcherHost::~IndexedDBDispatcherHost() {
 }
 
 void IndexedDBDispatcherHost::AddReceiver(
-    absl::optional<storage::BucketLocator> bucket,
+    absl::optional<storage::BucketInfo> bucket,
     mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -277,19 +277,19 @@ void IndexedDBDispatcherHost::GetDatabaseInfo(
   // Return error if failed to retrieve bucket from the QuotaManager.
   if (!receivers_.current_context().has_value()) {
     auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-        this->AsWeakPtr(), storage::BucketLocator(),
-        std::move(pending_callbacks), IDBTaskRunner());
+        this->AsWeakPtr(), absl::nullopt, std::move(pending_callbacks),
+        IDBTaskRunner());
     IndexedDBDatabaseError error = IndexedDBDatabaseError(
         blink::mojom::IDBException::kUnknownError, u"Internal error.");
     callbacks->OnError(error);
     return;
   }
 
-  const auto& bucket_locator = *receivers_.current_context();
+  const auto& bucket = *receivers_.current_context();
   auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      this->AsWeakPtr(), bucket_locator, std::move(pending_callbacks),
-      IDBTaskRunner());
+      this->AsWeakPtr(), bucket, std::move(pending_callbacks), IDBTaskRunner());
 
+  storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
   base::FilePath indexed_db_path =
       indexed_db_context_->GetDataPath(bucket_locator);
   indexed_db_context_->GetIDBFactory()->GetDatabaseInfo(
@@ -310,21 +310,21 @@ void IndexedDBDispatcherHost::Open(
   // Return error if failed to retrieve bucket from the QuotaManager.
   if (!receivers_.current_context().has_value()) {
     auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-        this->AsWeakPtr(), storage::BucketLocator(),
-        std::move(pending_callbacks), IDBTaskRunner());
+        this->AsWeakPtr(), absl::nullopt, std::move(pending_callbacks),
+        IDBTaskRunner());
     IndexedDBDatabaseError error = IndexedDBDatabaseError(
         blink::mojom::IDBException::kUnknownError, u"Internal error.");
     callbacks->OnError(error);
     return;
   }
 
-  const auto& bucket_locator = *receivers_.current_context();
+  const auto& bucket = *receivers_.current_context();
   auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      this->AsWeakPtr(), bucket_locator, std::move(pending_callbacks),
-      IDBTaskRunner());
+      this->AsWeakPtr(), bucket, std::move(pending_callbacks), IDBTaskRunner());
   auto database_callbacks = base::MakeRefCounted<IndexedDBDatabaseCallbacks>(
       indexed_db_context_, std::move(database_callbacks_remote),
       IDBTaskRunner());
+  storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
   base::FilePath indexed_db_path =
       indexed_db_context_->GetDataPath(bucket_locator);
 
@@ -351,19 +351,19 @@ void IndexedDBDispatcherHost::DeleteDatabase(
   // Return error if failed to retrieve bucket from the QuotaManager.
   if (!receivers_.current_context().has_value()) {
     auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-        this->AsWeakPtr(), storage::BucketLocator(),
-        std::move(pending_callbacks), IDBTaskRunner());
+        this->AsWeakPtr(), absl::nullopt, std::move(pending_callbacks),
+        IDBTaskRunner());
     IndexedDBDatabaseError error = IndexedDBDatabaseError(
         blink::mojom::IDBException::kUnknownError, u"Internal error.");
     callbacks->OnError(error);
     return;
   }
 
-  const auto& bucket_locator = *receivers_.current_context();
+  const auto& bucket = *receivers_.current_context();
   auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      this->AsWeakPtr(), bucket_locator, std::move(pending_callbacks),
-      IDBTaskRunner());
+      this->AsWeakPtr(), bucket, std::move(pending_callbacks), IDBTaskRunner());
 
+  storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
   base::FilePath indexed_db_path =
       indexed_db_context_->GetDataPath(bucket_locator);
   indexed_db_context_->GetIDBFactory()->DeleteDatabase(
@@ -380,7 +380,8 @@ void IndexedDBDispatcherHost::AbortTransactionsAndCompactDatabase(
     return;
   }
 
-  const auto& bucket_locator = *receivers_.current_context();
+  storage::BucketLocator bucket_locator =
+      receivers_.current_context()->ToBucketLocator();
   base::OnceCallback<void(leveldb::Status)> callback_on_io = base::BindOnce(
       &CallCompactionStatusCallbackOnIDBThread, std::move(mojo_callback));
 
@@ -398,7 +399,8 @@ void IndexedDBDispatcherHost::AbortTransactionsForDatabase(
     return;
   }
 
-  const auto& bucket_locator = *receivers_.current_context();
+  storage::BucketLocator bucket_locator =
+      receivers_.current_context()->ToBucketLocator();
   base::OnceCallback<void(leveldb::Status)> callback_on_io = base::BindOnce(
       &CallAbortStatusCallbackOnIDBThread, std::move(mojo_callback));
 

@@ -31,7 +31,8 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInfo {
              bool persistent,
              blink::mojom::BucketDurability durability);
 
-  BucketInfo() = delete;
+  // The empty ctor is only for testing.
+  BucketInfo();
   ~BucketInfo();
 
   BucketInfo(const BucketInfo&);
@@ -56,12 +57,13 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInfo {
 
   BucketId id;
   blink::StorageKey storage_key;
-  blink::mojom::StorageType type;
+  blink::mojom::StorageType type = blink::mojom::StorageType::kTemporary;
   std::string name;
   base::Time expiration;
-  int64_t quota;
-  bool persistent;
-  blink::mojom::BucketDurability durability;
+  int64_t quota = 0;
+  bool persistent = false;
+  blink::mojom::BucketDurability durability =
+      blink::mojom::BucketDurability::kRelaxed;
 };
 
 std::set<BucketLocator> COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)

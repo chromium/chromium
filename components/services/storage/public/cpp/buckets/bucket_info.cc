@@ -23,6 +23,7 @@ BucketInfo::BucketInfo(BucketId bucket_id,
       persistent(persistent),
       durability(durability) {}
 
+BucketInfo::BucketInfo() = default;
 BucketInfo::~BucketInfo() = default;
 
 BucketInfo::BucketInfo(const BucketInfo&) = default;

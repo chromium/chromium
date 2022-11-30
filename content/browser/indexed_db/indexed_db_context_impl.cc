@@ -200,10 +200,10 @@ void IndexedDBContextImpl::BindIndexedDBForBucket(
 void IndexedDBContextImpl::BindIndexedDBImpl(
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
     storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
-  absl::optional<storage::BucketLocator> bucket_locator;
+  absl::optional<storage::BucketInfo> bucket;
   if (bucket_info.ok())
-    bucket_locator = bucket_info->ToBucketLocator();
-  dispatcher_host_.AddReceiver(bucket_locator, std::move(receiver));
+    bucket = bucket_info.value();
+  dispatcher_host_.AddReceiver(bucket, std::move(receiver));
 }
 
 void IndexedDBContextImpl::GetUsage(GetUsageCallback usage_callback) {
@@ -920,8 +920,7 @@ void IndexedDBContextImpl::FactoryOpened(
 }
 
 void IndexedDBContextImpl::ConnectionOpened(
-    const storage::BucketLocator& bucket_locator,
-    IndexedDBConnection* connection) {
+    const storage::BucketLocator& bucket_locator) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   quota_manager_proxy()->NotifyBucketAccessed(bucket_locator.id,
                                               base::Time::Now());
@@ -934,8 +933,7 @@ void IndexedDBContextImpl::ConnectionOpened(
 }
 
 void IndexedDBContextImpl::ConnectionClosed(
-    const storage::BucketLocator& bucket_locator,
-    IndexedDBConnection* connection) {
+    const storage::BucketLocator& bucket_locator) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   quota_manager_proxy()->NotifyBucketAccessed(bucket_locator.id,
                                               base::Time::Now());

@@ -91,6 +91,13 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
         failure_injector_.BindNewPipeAndPassReceiver());
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Enable experimental web platform features to enable write access.
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
+    ContentBrowserTest::SetUpCommandLine(command_line);
+  }
+
   void TearDownOnMainThread() override { failure_injector_.reset(); }
 
   bool UseProductionQuotaSettings() override {
@@ -1341,6 +1348,21 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestBlobKeyCorruption, LifecycleTest) {
   }
 
   SimpleTest(embedded_test_server()->GetURL(test_file));
+}
+
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, BucketDurabilityStrict) {
+  FailOperation(FailClass::LEVELDB_TRANSACTION, FailMethod::COMMIT_SYNC, 2, 1);
+  SimpleTest(GetTestUrl("indexeddb", "bucket_durability_strict.html"));
+}
+
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, BucketDurabilityRelaxed) {
+  FailOperation(FailClass::LEVELDB_TRANSACTION, FailMethod::COMMIT_SYNC, 2, 1);
+  SimpleTest(GetTestUrl("indexeddb", "bucket_durability_relaxed.html"));
+}
+
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, BucketDurabilityOverride) {
+  FailOperation(FailClass::LEVELDB_TRANSACTION, FailMethod::COMMIT_SYNC, 2, 1);
+  SimpleTest(GetTestUrl("indexeddb", "bucket_durability_override.html"));
 }
 
 }  // namespace content

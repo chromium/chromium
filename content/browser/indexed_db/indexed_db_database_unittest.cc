@@ -190,7 +190,7 @@ class MockCallbacks : public IndexedDBCallbacks {
  public:
   MockCallbacks()
       : IndexedDBCallbacks(nullptr,
-                           storage::BucketLocator(),
+                           absl::nullopt,
                            mojo::NullAssociatedRemote(),
                            base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
