@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -35,7 +36,11 @@ policy::DMToken GetDMToken(
 // Gets current active user profile
 Profile* GetUserProfile() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+#if BUILDFLAG(IS_CHROMEOS)
   return ProfileManager::GetActiveUserProfile();
+#else
+  return ProfileManager::GetLastUsedProfile();
+#endif
 }
 
 // Processes retrieved DM token even if the retriever goes out of scope in the
