@@ -2609,6 +2609,20 @@ message DeviceInitialEnrollmentStateResponse {
 
   // SKU Type for License Packaged Device.
   optional LicensePackagingSKU license_packaging_sku = 5;
+
+  // Assigned upgrade type. See: go/zte-sku-consumption and go/cros-kiosk-prd
+  // LINT.IfChange(AssignedUpgradeTypeChange)
+  enum AssignedUpgradeType {
+    // Unspecified
+    ASSIGNED_UPGRADE_TYPE_UNSPECIFIED = 0;
+    // Chrome Enterprise Upgrade (CEU)
+    ASSIGNED_UPGRADE_TYPE_CHROME_ENTERPRISE = 1;
+    // Kiosk & Signage Upgrade (KSU)
+    ASSIGNED_UPGRADE_TYPE_KIOSK_AND_SIGNAGE = 2;
+  }
+  // LINT.ThenChange(//depot/google3/java/com/google/chrome/cros/spanner/devicemanagement/schema/enrollment.proto:AssignedUpgradeTypeChange)
+
+  optional AssignedUpgradeType assigned_upgrade_type = 6;
 }
 
 // Sent by the client to the server to pair the Host device with the Controller
