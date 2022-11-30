@@ -2773,8 +2773,6 @@
         'swarming': {
           'dimension_sets': [
             {
-              'device_os': 'MMB29Q',
-              'device_type': 'bullhead',
               'os': 'Android',
             },
           ],
@@ -2783,7 +2781,9 @@
           'gtest_tests': 'site_isolation_android_fyi_gtests',
         },
         'mixins': [
-          'has_native_resultdb_integration'
+          'has_native_resultdb_integration',
+          'pie_fleet',
+          'walleye',
         ],
       },
       'VR Linux': {
