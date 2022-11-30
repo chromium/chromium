@@ -9,7 +9,7 @@ declare_args() {
   # by overriding this in their .gn file or through custom args.gn
   # TODO(crbug.com/983223): Set this to false on all platforms, then remove it.
   jsoncpp_no_deprecated_declarations =
-      is_android || is_chromeos || is_linux || (is_win && is_clang)
+      is_android || is_chromeos || (is_win && is_clang)
 }
 
 config("jsoncpp_config") {

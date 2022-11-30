@@ -15,6 +15,9 @@
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 
+// TODO(https://crbug.com/1394423): Remove this again.
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 namespace {
 
 // ATK window activated event will be held until AT-SPI bridge is ready. For
