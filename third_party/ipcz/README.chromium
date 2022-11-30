@@ -1,0 +1,12 @@
+Name: ipcz
+License: BSD
+License File: LICENSE
+Security Critical: Yes
+
+Description:
+The //third_party/ipcz directory in the Chromium tree is the source-of-truth
+for this library. Patches here can here go through the same code review process
+as any other upstream Chromium CL.
+
+See README.md for an overview of what ipcz is.
+
