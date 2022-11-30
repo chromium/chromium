@@ -303,6 +303,12 @@ BASE_FEATURE(kEvictOnAXEvents,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+// Feature to ignore OpenURL from inactive RFH.
+BASE_FEATURE(kIgnoreOpenURLFromInactiveRFH,
+             "IgnoreOpenURLFromInactiveRFH",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace content {
@@ -7125,7 +7131,19 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   TRACE_EVENT1("navigation", "RenderFrameHostImpl::OpenURL", "url",
                validated_url.possibly_invalid_spec());
 
-  frame_tree_node_->navigator().RequestOpenURL(
+  RenderFrameHostOwner* owner = owner_;
+  // Inactive documents are not allowed to initiate navigations.
+  // Also, see a similar check in RenderFrameHostImpl::BeginNavigation at
+  // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/renderer_host/render_frame_host_impl.cc;l=7761-7769;drc=6dc39d60fea45c003424272efdb4c366119a9d7f
+  if (!owner) {
+    if (base::FeatureList::IsEnabled(features::kIgnoreOpenURLFromInactiveRFH)) {
+      return;
+    } else {
+      // TODO(mshin): Remove after 2023/Jan/21.
+      owner = frame_tree_node_;
+    }
+  }
+  owner->GetCurrentNavigator().RequestOpenURL(
       this, validated_url, base::OptionalToPtr(params->initiator_frame_token),
       GetProcess()->GetID(), params->initiator_origin, params->post_body,
       params->extra_headers, params->referrer.To<content::Referrer>(),
