@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(
       if (e.name !== "NoModificationAllowedError") {
         return "Unexpected exception";
       }
-      const hasToken = await document.hasTrustToken($1);
+      const hasToken = await document.hasPrivateStateToken($1);
       if (!hasToken)
         return "Unexpectedly absent token";
       return "Success";
