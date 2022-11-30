@@ -668,6 +668,13 @@ void DesksClient::OnCapturedDeskTemplate(
   if (!desk_template)
     return;
 
+  // Let FloatingWorkspaceService handle the save when the template type is
+  // FloatingWorkspace.
+  if (desk_template->type() == ash::DeskTemplateType::kFloatingWorkspace) {
+    std::move(callback).Run("", std::move(desk_template));
+    return;
+  }
+
   GetDeskModel()->AddOrUpdateEntry(
       std::move(desk_template),
       base::BindOnce(&DesksClient::OnCaptureActiveDeskAndSaveTemplate,

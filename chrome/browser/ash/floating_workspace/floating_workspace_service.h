@@ -108,9 +108,6 @@ class FloatingWorkspaceService : public KeyedService,
   // If no difference is recorded no upload job will be triggered.
   bool IsCurrentDeskSameAsPrevious(DeskTemplate* current) const;
 
-  // UUID assigned to the floating workspace desk template in desks_storage.
-  base::GUID current_local_floating_workspace_uuid_;
-
   const base::TimeDelta kPeriodicJobIntervalInSeconds = base::Seconds(30);
 
   // Callback function that is run after a floating workspace template

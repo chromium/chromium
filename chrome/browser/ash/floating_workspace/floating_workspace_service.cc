@@ -244,12 +244,9 @@ void FloatingWorkspaceService::OnTemplateCaptured(
   // If successfully captured desk, remove old entry and record new uuid.
   if (!FloatingWorkspaceService::IsCurrentDeskSameAsPrevious(
           desk_template.get())) {
-    // Remove old entry.
-    DesksClient::Get()->DeleteDeskTemplate(
-        current_local_floating_workspace_uuid_, base::DoNothing());
-
-    // Record new entry.
-    current_local_floating_workspace_uuid_ = desk_template->uuid();
+    // Upload and save the template.
+    desk_sync_service_->GetDeskModel()->AddOrUpdateEntry(
+        std::move(desk_template), base::DoNothing());
   }
 }
 
@@ -267,9 +264,6 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
     const DeskTemplate* desk_template) {
   // Desk templates have been downloaded.
   if (!should_run_restore_) {
-    // Remove old entry if template should not be restored.
-    DesksClient::Get()->DeleteDeskTemplate(desk_template->uuid(),
-                                           base::DoNothing());
     return;
   }
 
@@ -278,10 +272,6 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
       initialization_timestamp_ + kMaxTimeAvaliableForRestoreAfterLogin) {
     // No need to restore any remote session 3 seconds (TBD) after login.
     should_run_restore_ = false;
-    // Delete the newly downloaded template to avoid the capture/upload on each
-    // device to result in multiple floating workspace templates in storage.
-    DesksClient::Get()->DeleteDeskTemplate(desk_template->uuid(),
-                                           base::DoNothing());
     return;
   }
 
@@ -294,9 +284,7 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
 
 void FloatingWorkspaceService::OnTemplateLaunched(std::string error,
                                                   const base::GUID& desk_uuid) {
-  // Record launched desk UUID and disable future floating workspace restore.
-  if (error.empty())
-    current_local_floating_workspace_uuid_ = desk_uuid;
+  // Disable future floating workspace restore.
   should_run_restore_ = false;
 }
 
