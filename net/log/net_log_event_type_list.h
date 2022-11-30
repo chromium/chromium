@@ -1888,6 +1888,14 @@ EVENT_TYPE(QUIC_SESSION_PACKET_RETRANSMITTED)
 //   }
 EVENT_TYPE(QUIC_SESSION_PACKET_LOST)
 
+// Congestion control parameters have been configured for the session.
+//   {
+//     "congestion_control_type": <The name of the CC algorithm used>,
+//     "use_pacing": <The bool indicating if pacing is enabled>,
+//     "initial_congestion_window": <The size of the initial congestion window>
+//   }
+EVENT_TYPE(QUIC_CONGESTION_CONTROL_CONFIGURED)
+
 // Session received a QUIC packet with a sequence number that had previously
 // been received.
 //   {

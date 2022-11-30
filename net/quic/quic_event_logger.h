@@ -49,6 +49,7 @@ class NET_EXPORT_PRIVATE QuicEventLogger
                     quic::EncryptionLevel encryption_level,
                     quic::TransmissionType transmission_type,
                     quic::QuicTime detection_time) override;
+  void OnConfigProcessed(const SendParameters& parameters) override;
   void OnPacketReceived(const quic::QuicSocketAddress& self_address,
                         const quic::QuicSocketAddress& peer_address,
                         const quic::QuicEncryptedPacket& packet) override;

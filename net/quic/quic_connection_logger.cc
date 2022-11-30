@@ -227,6 +227,12 @@ void QuicConnectionLogger::OnPacketLoss(
                              transmission_type, detection_time);
 }
 
+void QuicConnectionLogger::OnConfigProcessed(
+    const quic::QuicSentPacketManager::DebugDelegate::SendParameters&
+        parameters) {
+  event_logger_.OnConfigProcessed(parameters);
+}
+
 void QuicConnectionLogger::OnPingSent() {
   no_packet_received_after_ping_ = true;
 }

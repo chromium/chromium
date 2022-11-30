@@ -52,6 +52,18 @@ base::Value NetLogQuicPacketLostParams(quic::QuicPacketNumber packet_number,
   return base::Value(std::move(dict));
 }
 
+base::Value NetLogQuicConfigProcessed(
+    const quic::QuicSentPacketManager::DebugDelegate::SendParameters&
+        parameters) {
+  base::Value::Dict dict;
+  dict.Set("congestion_control_type", quic::CongestionControlTypeToString(
+                                          parameters.congestion_control_type));
+  dict.Set("use_pacing", parameters.use_pacing);
+  dict.Set("initial_congestion_window",
+           NetLogNumberValue(parameters.initial_congestion_window));
+  return base::Value(std::move(dict));
+}
+
 base::Value NetLogQuicDuplicatePacketParams(
     quic::QuicPacketNumber packet_number) {
   base::Value::Dict dict;
@@ -543,6 +555,13 @@ void QuicEventLogger::OnPacketLoss(quic::QuicPacketNumber lost_packet_number,
     return NetLogQuicPacketLostParams(lost_packet_number, transmission_type,
                                       detection_time);
   });
+}
+
+void QuicEventLogger::OnConfigProcessed(
+    const quic::QuicSentPacketManager::DebugDelegate::SendParameters&
+        parameters) {
+  net_log_.AddEvent(NetLogEventType::QUIC_CONGESTION_CONTROL_CONFIGURED,
+                    [&] { return NetLogQuicConfigProcessed(parameters); });
 }
 
 void QuicEventLogger::OnPacketReceived(
