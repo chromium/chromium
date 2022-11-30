@@ -31,7 +31,6 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
       scoped_refptr<V4L2Device> device,
       VideoCodecProfile profile,
       const VideoColorSpace& color_space,
-      bool low_latency,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~V4L2StatefulVideoDecoderBackend() override;
 
@@ -125,10 +124,11 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   // The name of the running driver.
   const std::string driver_name_;
 
-  // Configuration options coming from upper layers initialization.
-  const VideoCodecProfile profile_;
-  const VideoColorSpace color_space_;
-  const bool low_latency_;
+  // Video profile we are decoding.
+  VideoCodecProfile profile_;
+
+  // Video color space we are decoding.
+  VideoColorSpace color_space_;
 
   // The task runner we are running on, for convenience.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
