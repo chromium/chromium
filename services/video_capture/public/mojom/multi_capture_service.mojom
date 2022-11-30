@@ -23,7 +23,7 @@ interface MultiCaptureServiceClient {
   // Called when a new multi capture is started. This event provides a unique
   // label and the origin that triggered the capture.
   MultiCaptureStarted(string label, url.mojom.Origin origin);
-  // Callend when an existing multi capture is stopped. This event provides a
+  // Called when an existing multi capture is stopped. This event provides a
   // unique label. A multi capture is considered to be stopped when all used
   // devices are closed.
   MultiCaptureStopped(string label);
