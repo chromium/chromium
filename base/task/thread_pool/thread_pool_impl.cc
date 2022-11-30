@@ -33,14 +33,6 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/task/thread_pool/thread_group_native_win.h"
-#endif
-
-#if BUILDFLAG(IS_APPLE)
-#include "base/task/thread_pool/thread_group_native_mac.h"
-#endif
-
 namespace base {
 namespace internal {
 
@@ -145,34 +137,6 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   if (g_synchronous_thread_start_for_testing)
     service_thread_.WaitUntilThreadStarted();
 
-#if HAS_NATIVE_THREAD_POOL()
-  if (FeatureList::IsEnabled(kUseNativeThreadPool)) {
-    std::unique_ptr<ThreadGroup> old_group =
-        std::move(foreground_thread_group_);
-    foreground_thread_group_ = std::make_unique<ThreadGroupNativeImpl>(
-#if BUILDFLAG(IS_APPLE)
-        ThreadType::kDefault, service_thread_.task_runner(),
-#endif
-        task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef(),
-        old_group.get());
-    old_group->InvalidateAndHandoffAllTaskSourcesToOtherThreadGroup(
-        foreground_thread_group_.get());
-  }
-
-  if (FeatureList::IsEnabled(kUseBackgroundNativeThreadPool)) {
-    std::unique_ptr<ThreadGroup> old_group =
-        std::move(background_thread_group_);
-    background_thread_group_ = std::make_unique<ThreadGroupNativeImpl>(
-#if BUILDFLAG(IS_APPLE)
-        ThreadType::kBackground, service_thread_.task_runner(),
-#endif
-        task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef(),
-        old_group.get());
-    old_group->InvalidateAndHandoffAllTaskSourcesToOtherThreadGroup(
-        background_thread_group_.get());
-  }
-#endif
-
   // Update the CanRunPolicy based on |has_disable_best_effort_switch_|.
   UpdateCanRunPolicy();
 
@@ -195,39 +159,23 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
 #endif
   }
 
-#if HAS_NATIVE_THREAD_POOL()
-  if (FeatureList::IsEnabled(kUseNativeThreadPool)) {
-    static_cast<ThreadGroupNative*>(foreground_thread_group_.get())
-        ->Start(worker_environment);
-  } else
-#endif
-  {
-    // On platforms that can't use the background thread priority, best-effort
-    // tasks run in foreground pools. A cap is set on the number of best-effort
-    // tasks that can run in foreground pools to ensure that there is always
-    // room for incoming foreground tasks and to minimize the performance impact
-    // of best-effort tasks.
-    static_cast<ThreadGroupImpl*>(foreground_thread_group_.get())
-        ->Start(init_params.max_num_foreground_threads, max_best_effort_tasks,
+  // On platforms that can't use the background thread priority, best-effort
+  // tasks run in foreground pools. A cap is set on the number of best-effort
+  // tasks that can run in foreground pools to ensure that there is always
+  // room for incoming foreground tasks and to minimize the performance impact
+  // of best-effort tasks.
+  static_cast<ThreadGroupImpl*>(foreground_thread_group_.get())
+      ->Start(init_params.max_num_foreground_threads, max_best_effort_tasks,
+              init_params.suggested_reclaim_time, service_thread_task_runner,
+              worker_thread_observer, worker_environment,
+              g_synchronous_thread_start_for_testing);
+
+  if (background_thread_group_) {
+    static_cast<ThreadGroupImpl*>(background_thread_group_.get())
+        ->Start(max_best_effort_tasks, max_best_effort_tasks,
                 init_params.suggested_reclaim_time, service_thread_task_runner,
                 worker_thread_observer, worker_environment,
                 g_synchronous_thread_start_for_testing);
-  }
-
-  if (background_thread_group_) {
-#if HAS_NATIVE_THREAD_POOL()
-    if (FeatureList::IsEnabled(kUseBackgroundNativeThreadPool)) {
-      static_cast<ThreadGroupNative*>(background_thread_group_.get())
-          ->Start(worker_environment);
-    } else
-#endif
-    {
-      static_cast<ThreadGroupImpl*>(background_thread_group_.get())
-          ->Start(max_best_effort_tasks, max_best_effort_tasks,
-                  init_params.suggested_reclaim_time,
-                  service_thread_task_runner, worker_thread_observer,
-                  worker_environment, g_synchronous_thread_start_for_testing);
-    }
   }
 
   started_ = true;

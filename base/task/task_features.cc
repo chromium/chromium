@@ -22,15 +22,6 @@ namespace base {
 // must be aware that all tests sharing a process will have the same state,
 // regardless of future ScopedFeatureList instances.
 
-#if HAS_NATIVE_THREAD_POOL()
-BASE_FEATURE(kUseNativeThreadPool,
-             "UseNativeThreadPool",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kUseBackgroundNativeThreadPool,
-             "UseBackgroundNativeThreadPool",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kNoWorkerThreadReclaim,
              "NoWorkerThreadReclaim",
              base::FEATURE_DISABLED_BY_DEFAULT);

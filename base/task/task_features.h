@@ -12,22 +12,6 @@
 
 namespace base {
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-#define HAS_NATIVE_THREAD_POOL() 1
-#else
-#define HAS_NATIVE_THREAD_POOL() 0
-#endif
-
-#if HAS_NATIVE_THREAD_POOL()
-// Under this feature, ThreadPoolImpl will use a foreground ThreadGroup backed
-// by a native thread pool implementation. The Windows Thread Pool API and
-// libdispatch are used on Windows and macOS/iOS respectively.
-BASE_EXPORT BASE_DECLARE_FEATURE(kUseNativeThreadPool);
-// Under this feature, ThreadPoolImpl will use a background ThreadGroup backed
-// by a native thread pool implementation.
-BASE_EXPORT BASE_DECLARE_FEATURE(kUseBackgroundNativeThreadPool);
-#endif
-
 // Under this feature, worker threads are not reclaimed after a timeout. Rather,
 // only excess workers are cleaned up immediately after finishing a task.
 BASE_EXPORT BASE_DECLARE_FEATURE(kNoWorkerThreadReclaim);

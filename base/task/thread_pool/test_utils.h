@@ -118,15 +118,6 @@ class MockJobTask : public base::RefCountedThreadSafe<MockJobTask> {
   std::atomic_size_t remaining_num_tasks_to_run_;
 };
 
-// An enumeration of possible thread pool types. Used to parametrize relevant
-// thread_pool tests.
-enum class GroupType {
-  GENERIC,
-#if HAS_NATIVE_THREAD_POOL()
-  NATIVE,
-#endif
-};
-
 // Creates a Sequence with given |traits| and pushes |task| to it. If a
 // TaskRunner is associated with |task|, it should be be passed as |task_runner|
 // along with its |execution_mode|. Returns the created Sequence.
