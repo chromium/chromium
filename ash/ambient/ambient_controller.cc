@@ -199,8 +199,7 @@ AmbientController::AmbientController(
 }
 
 AmbientController::~AmbientController() {
-  CloseAllWidgets(/*immediately=*/true);
-  CloseUi();
+  CloseUi(/*immediately=*/true);
 }
 
 void AmbientController::OnAmbientUiVisibilityChanged(
@@ -238,7 +237,7 @@ void AmbientController::OnAmbientUiVisibilityChanged(
     case AmbientUiVisibility::kClosed: {
       bool ambient_ui_was_rendering =
           Shell::GetPrimaryRootWindowController()->HasAmbientWidget();
-      CloseAllWidgets(/*immediately=*/false);
+      CloseAllWidgets(close_widgets_immediately_);
 
       // TODO(wutao): This will clear the image cache currently. It will not
       // work with `kHidden` if the token has expired and ambient mode is shown
@@ -399,8 +398,7 @@ void AmbientController::ScreenIdleStateChanged(
   if (idle_state.off()) {
     DVLOG(1) << "Screen is off, close ambient mode.";
 
-    CloseAllWidgets(/*immediately=*/true);
-    CloseUi();
+    CloseUi(/*immediately=*/true);
     return;
   }
 
@@ -437,8 +435,7 @@ void AmbientController::SuspendImminent(
   // the UI before device goes to suspend. Otherwise when opening lid after
   // lid closed, there may be a flash of the old window before previous
   // closing finished.
-  CloseAllWidgets(/*immediately=*/true);
-  CloseUi();
+  CloseUi(/*immediately=*/true);
   is_suspend_imminent_ = true;
 }
 
@@ -522,9 +519,10 @@ void AmbientController::ShowHiddenUi() {
   ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kHidden);
 }
 
-void AmbientController::CloseUi() {
+void AmbientController::CloseUi(bool immediately) {
   DVLOG(1) << __func__;
 
+  close_widgets_immediately_ = immediately;
   ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kClosed);
 }
 

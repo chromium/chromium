@@ -117,7 +117,7 @@ class ASH_EXPORT AmbientController
   // Ui will be enabled but not shown immediately. If there is no user activity
   // Ui will be shown after a short delay.
   void ShowHiddenUi();
-  void CloseUi();
+  void CloseUi(bool immediately = false);
 
   void ToggleInSessionUi();
 
@@ -255,6 +255,8 @@ class ASH_EXPORT AmbientController
   // Set to the off value in |ScreenIdleState| when ScreenIdleState() is
   // called. Used to prevent Ambient mode starting after screen is off.
   bool is_screen_off_ = false;
+
+  bool close_widgets_immediately_ = false;
 
   // Not set until the AmbientAnimationTheme is initially read from pref
   // storage when ambient mode is enabled.

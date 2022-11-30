@@ -15,6 +15,7 @@
 #include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/constants/ambient_animation_theme.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
@@ -1378,6 +1379,42 @@ TEST_P(AmbientControllerTestForAnyTheme, MetricsStartupTime) {
 
   histogram_tester.ExpectTotalCount(
       base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(GetParam())}), 2);
+}
+
+TEST_F(AmbientControllerTest,
+       ANIMATION_TEST_WITH_RESOURCES(MetricsStartupTimeSuspendAfterTimeMax)) {
+  SetAmbientAnimationTheme(AmbientAnimationTheme::kSlideshow);
+  base::HistogramTester histogram_tester;
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  task_environment()->FastForwardBy(ambient::kMetricsStartupTimeMax);
+  FastForwardTiny();
+  ASSERT_TRUE(ambient_controller()->IsShown());
+
+  SimulateSystemSuspendAndWait(power_manager::SuspendImminent::Reason::
+                                   SuspendImminent_Reason_LID_CLOSED);
+
+  ASSERT_FALSE(ambient_controller()->IsShown());
+  histogram_tester.ExpectTotalCount("Ash.AmbientMode.StartupTime.SlideShow", 1);
+  UnlockScreen();
+}
+
+TEST_F(AmbientControllerTest,
+       ANIMATION_TEST_WITH_RESOURCES(MetricsStartupTimeScreenOffAfterTimeMax)) {
+  SetAmbientAnimationTheme(AmbientAnimationTheme::kSlideshow);
+  base::HistogramTester histogram_tester;
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+
+  task_environment()->FastForwardBy(ambient::kMetricsStartupTimeMax);
+  FastForwardTiny();
+  ASSERT_TRUE(ambient_controller()->IsShown());
+
+  SetScreenIdleStateAndWait(/*dimmed=*/true, /*off=*/true);
+
+  ASSERT_FALSE(ambient_controller()->IsShown());
+  histogram_tester.ExpectTotalCount("Ash.AmbientMode.StartupTime.SlideShow", 1);
+  UnlockScreen();
 }
 
 TEST_P(AmbientControllerTestForAnyTheme, MetricsStartupTimeFailedToStart) {
