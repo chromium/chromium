@@ -738,4 +738,9 @@ void LayoutMultiColumnSet::FinishLayoutFromNG() {
   ComputeLayoutOverflow(computed_values.extent_);
 }
 
+void LayoutMultiColumnSet::SetIsIgnoredByNG() {
+  NOT_DESTROYED();
+  fragmentainer_groups_.First().SetColumnBlockSizeFromNG(LayoutUnit());
+}
+
 }  // namespace blink
