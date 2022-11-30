@@ -279,12 +279,12 @@ void ActionView::UpdateTrashButtonPosition() {
 }
 
 void ActionView::OnDragStart(const ui::LocatedEvent& event) {
-  start_drag_pos_ = event.location();
+  start_drag_event_pos_ = event.location();
 }
 
 bool ActionView::OnDragUpdate(const ui::LocatedEvent& event) {
   auto new_location = event.location();
-  auto target_location = origin() + (new_location - start_drag_pos_);
+  auto target_location = origin() + (new_location - start_drag_event_pos_);
   target_location.set_x(base::clamp(target_location.x(), /*lo=*/0,
                                     /*hi=*/parent()->width() - width()));
   target_location.set_y(base::clamp(target_location.y(), /*lo=*/0,

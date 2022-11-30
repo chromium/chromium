@@ -38,20 +38,18 @@ class MenuEntryView : public views::ImageButton {
   void OnDragUpdate(const ui::LocatedEvent& event);
   void OnDragEnd();
 
-  // The position when starting to drag.
-  gfx::Point start_drag_pos_;
+  // Saves the position of the menu entry view.
+  OnPositionChangedCallback on_position_changed_callback_;
 
-  // The position when drag is updated.
-  gfx::Point target_location_;
-
-  // TODO(b/253646354): This can be removed when removing the flag.
-  bool beta_ = ash::features::IsArcInputOverlayBetaEnabled();
-
+  // LocatedEvent's position when drag starts.
+  gfx::Point start_drag_event_pos_;
+  // This view's position when drag starts.
+  gfx::Point start_drag_view_pos_;
   // If this view is in a dragging state.
   bool is_dragging_ = false;
 
-  // Used to save the position of the menu entry view.
-  OnPositionChangedCallback on_position_changed_callback_;
+  // TODO(b/253646354): This can be removed when removing the flag.
+  bool beta_ = ash::features::IsArcInputOverlayBetaEnabled();
 };
 
 }  // namespace arc::input_overlay

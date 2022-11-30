@@ -140,7 +140,7 @@ class ActionView : public views::View {
   // By default, no label is unbound.
   int unbind_label_index_ = kDefaultLabelIndex;
   // The position when starting to drag.
-  gfx::Point start_drag_pos_;
+  gfx::Point start_drag_event_pos_;
   // TODO(b/250900717): Update when the final UX/UI is ready.
   raw_ptr<views::ImageButton> trash_button_ = nullptr;
 

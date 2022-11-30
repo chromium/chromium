@@ -64,26 +64,25 @@ void MenuEntryView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void MenuEntryView::OnDragStart(const ui::LocatedEvent& event) {
-  start_drag_pos_ = event.location();
+  start_drag_event_pos_ = event.location();
+  start_drag_view_pos_ = origin();
 }
 
 void MenuEntryView::OnDragUpdate(const ui::LocatedEvent& event) {
   is_dragging_ = true;
   auto new_location = event.location();
-  auto target_location = origin() + (new_location - start_drag_pos_);
+  auto target_location = origin() + (new_location - start_drag_event_pos_);
   target_location.set_x(base::clamp(target_location.x(), /*lo=*/0,
                                     /*hi=*/parent()->width() - width()));
   target_location.set_y(base::clamp(target_location.y(), /*lo=*/0,
                                     /*hi=*/parent()->height() - height()));
   SetPosition(target_location);
-  target_location_ = target_location;
 }
 
 void MenuEntryView::OnDragEnd() {
   is_dragging_ = false;
-  if (target_location_ != start_drag_pos_) {
-    on_position_changed_callback_.Run(target_location_);
-  }
+  if (origin() != start_drag_view_pos_)
+    on_position_changed_callback_.Run(origin());
 }
 
 }  // namespace arc::input_overlay
