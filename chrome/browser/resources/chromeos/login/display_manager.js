@@ -7,7 +7,7 @@
  */
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {$, ensureTransitionEndEvent} from 'chrome://resources/js/util.js';
+import {$, ensureTransitionEndEvent} from 'chrome://resources/ash/common/util.js';
 import {loadTimeData} from './i18n_setup.js';
 import {OobeTypes} from './components/oobe_types.js';
 

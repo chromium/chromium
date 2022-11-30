@@ -18,7 +18,7 @@ group("js_modules") {
 js_library("table_column") {
   deps = [
     "//ash/webui/common/resources:cr_deprecated",
-    "//ui/webui/resources/js/cr:event_target",
+    "//ash/webui/common/resources:event_target",
   ]
 }
 
@@ -40,7 +40,7 @@ js_library("table_column_model") {
   deps = [
     ":table_column",
     "//ash/webui/common/resources:cr_deprecated",
-    "//ui/webui/resources/js/cr:event_target",
+    "//ash/webui/common/resources:event_target",
   ]
 }
 
@@ -62,7 +62,7 @@ js_library("table_list") {
 js_library("table_splitter") {
   deps = [
     "//ash/webui/common/resources:cr_deprecated",
+    "//ash/webui/common/resources:event_target",
     "//ui/file_manager/file_manager/foreground/js/ui:splitter",
-    "//ui/webui/resources/js/cr:event_target",
   ]
 }

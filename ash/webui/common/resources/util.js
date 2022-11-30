@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from './assert.js';
+import {assertInstanceof} from '//resources/js/assert.js';
 
 /**
  * Alias for document.getElementById. Found elements must be HTMLElements.
@@ -29,7 +29,6 @@ export function getDeepActiveElement() {
   return a;
 }
 
-// <if expr="chromeos_ash">
 /**
  * DEPRECATED (if using Polymer): Use IronA11yAnnouncer instead.
  * TODO(crbug.com/985410): Replace all existing usages and remove this function.
@@ -50,7 +49,6 @@ export function announceAccessibleMessage(msg) {
     document.body.removeChild(element);
   }, 50);
 }
-// </if>
 
 /**
  * Check the directionality of the page.

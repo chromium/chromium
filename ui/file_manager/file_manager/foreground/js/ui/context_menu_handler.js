@@ -4,7 +4,7 @@
 
 // clang-format off
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 import {EventTracker} from 'chrome://resources/ash/common/event_tracker.js';
 import {dispatchPropertyChange} from 'chrome://resources/ash/common/cr_deprecated.js';
 

@@ -9,8 +9,8 @@ import {$, appendParam} from 'chrome://resources/js/util_ts.js';
 // </if>
 // <if expr="chromeos_ash">
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
-import {$, appendParam} from 'chrome://resources/js/util.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
+import {$, appendParam} from 'chrome://resources/ash/common/util.js';
 // </if>
 
 

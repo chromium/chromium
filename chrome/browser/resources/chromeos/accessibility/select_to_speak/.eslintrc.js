@@ -5,7 +5,7 @@
 module.exports = {
   'rules': {
     // Override restrictions for document.getElementById usage since,
-    // chrome://resources/js/util.js is not accessible for select_to_speak.
+    // chrome://resources/ash/common/util.js is not accessible for select_to_speak.
     'no-restricted-properties': 'off',
   },
 };

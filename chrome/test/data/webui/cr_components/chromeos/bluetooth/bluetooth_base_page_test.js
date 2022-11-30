@@ -6,7 +6,7 @@ import 'chrome://bluetooth-pairing/strings.m.js';
 
 import {SettingsBluetoothBasePageElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_base_page.js';
 import {ButtonState} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 

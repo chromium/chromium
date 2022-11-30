@@ -9,7 +9,7 @@ import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {isRTL} from 'chrome://resources/js/util.js';
+import {isRTL} from 'chrome://resources/ash/common/util.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @enum {string} */

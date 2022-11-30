@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // <if expr="chromeos_ash">
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 // </if>
 
 import {Channel} from './channel.js';

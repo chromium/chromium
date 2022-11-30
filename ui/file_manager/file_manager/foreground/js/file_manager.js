@@ -4,7 +4,7 @@
 
 import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {getDialogCaller, getDlpBlockedComponents, getPreferences} from '../../common/js/api.js';

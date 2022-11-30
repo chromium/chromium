@@ -361,9 +361,9 @@ js_library("deep_linking_behavior") {
 js_library("find_shortcut_behavior") {
   deps = [
     "//ash/webui/common/resources:keyboard_shortcut_list_js",
+    "//ash/webui/common/resources:util",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util",
   ]
 }
 

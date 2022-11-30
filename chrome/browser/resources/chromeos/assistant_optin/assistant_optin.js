@@ -4,7 +4,7 @@
 
 import './assistant_optin_flow.js';
 
-import {$} from 'chrome://resources/js/util.js';
+import {$} from 'chrome://resources/ash/common/util.js';
 
 import {BrowserProxyImpl} from './browser_proxy.m.js';
 

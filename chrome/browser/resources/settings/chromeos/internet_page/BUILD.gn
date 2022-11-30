@@ -80,6 +80,7 @@ js_library("internet_config") {
   deps = [
     ":internet_shared_css",
     "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources:util",
     "//ash/webui/common/resources/network:network_config",
     "//ash/webui/common/resources/network:onc_mojo",
     "//chrome/browser/resources/settings:router",
@@ -87,7 +88,6 @@ js_library("internet_config") {
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:util",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",

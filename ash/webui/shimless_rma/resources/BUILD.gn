@@ -296,12 +296,12 @@ js_library("onboarding_network_page") {
     ":mojo_interface_provider",
     ":shimless_rma_types",
     "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources:util",
     "//ash/webui/common/resources/network:network_config",
     "//ash/webui/common/resources/network:network_list",
     "//ash/webui/common/resources/network:onc_mojo",
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:util",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",

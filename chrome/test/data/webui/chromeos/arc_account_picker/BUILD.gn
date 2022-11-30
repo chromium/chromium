@@ -26,10 +26,10 @@ js_type_check("closure_compile") {
 js_library("arc_account_picker_test") {
   deps = [
     "..:chai_assert",
+    "//ash/webui/common/resources:event_target",
     "//chrome/browser/resources/chromeos/arc_account_picker:arc_account_picker_app",
     "//chrome/browser/resources/chromeos/arc_account_picker:arc_account_picker_browser_proxy",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js/cr:event_target",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

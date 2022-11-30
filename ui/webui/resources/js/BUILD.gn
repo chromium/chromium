@@ -85,14 +85,6 @@ preprocess_if_expr("preprocess_src") {
     "load_time_data_deprecated.js",
   ]
 
-  if (is_chromeos_ash) {
-    # Used by ChromeOS Closure UIs.
-    in_files += [
-      "cr/event_target.js",
-      "util.js",
-    ]
-  }
-
   if (is_chromeos_ash || is_android) {
     # Used by ChromeOS and Android Closure UIs.
     in_files += [ "cr.m.js" ]
@@ -137,15 +129,7 @@ if (is_chromeos_ash) {
 
 # Targets for type-checking JS Modules
 
-group("closure_compile_modules") {
-  deps = [ ":js_resources_modules" ]
-
-  if (is_chromeos_ash) {
-    deps += [ "cr:closure_compile_modules" ]
-  }
-}
-
-js_type_check("js_resources_modules") {
+js_type_check("closure_compile_modules") {
   is_polymer3 = true
   deps = [
     ":assert",
@@ -154,10 +138,6 @@ js_type_check("js_resources_modules") {
 
   if (is_chromeos_ash || is_android) {
     deps += [ ":cr.m" ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ ":util" ]
   }
 }
 
@@ -170,10 +150,4 @@ if (is_chromeos_ash || is_android) {
 }
 
 js_library("load_time_data.m") {
-}
-
-if (is_chromeos_ash) {
-  js_library("util") {
-    deps = [ ":assert" ]
-  }
 }

@@ -439,8 +439,8 @@ js_library("oobe_reset") {
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_modal_dialog",
+    "//ash/webui/common/resources:util",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:util",
   ]
   extra_deps = [ ":web_components" ]
 }

@@ -43,7 +43,7 @@ js_library("test_browser_proxy") {
 }
 
 js_library("test_util") {
-  deps = [ "//ui/webui/resources/js/cr:event_target" ]
+  deps = [ "//ash/webui/common/resources:event_target" ]
 }
 
 group("closure_compile") {

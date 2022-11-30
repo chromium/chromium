@@ -134,7 +134,7 @@ if (is_chromeos_ash) {
 
   js_library("saml_username_autofill") {
     sources = [ "$preprocess_folder/scroll_helper_injected.js" ]
-    deps = [ "//ui/webui/resources/js:util" ]
+    deps = [ "//ash/webui/common/resources:util" ]
     extra_deps = [ ":preprocess_src" ]
   }
 
@@ -146,7 +146,7 @@ if (is_chromeos_ash) {
       ":saml_password_attributes",
       ":saml_username_autofill",
       ":webview_event_manager",
-      "//ui/webui/resources/js/cr:event_target",
+      "//ash/webui/common/resources:event_target",
     ]
     extra_deps = [ ":preprocess_src" ]
   }
@@ -166,10 +166,10 @@ if (is_chromeos_ash) {
     deps = [
       ":saml_handler",
       ":saml_password_attributes",
+      "//ash/webui/common/resources:event_target",
+      "//ash/webui/common/resources:util",
       "//ui/webui/resources/js:assert",
       "//ui/webui/resources/js:cr.m",
-      "//ui/webui/resources/js:util",
-      "//ui/webui/resources/js/cr:event_target",
     ]
     externs_list = [
       "$externs_path/chrome_extensions.js",
@@ -183,9 +183,9 @@ if (is_chromeos_ash) {
     sources = [ "$preprocess_folder/password_change_authenticator.js" ]
     deps = [
       ":saml_handler",
+      "//ash/webui/common/resources:event_target",
+      "//ash/webui/common/resources:util",
       "//ui/webui/resources/js:assert",
-      "//ui/webui/resources/js:util",
-      "//ui/webui/resources/js/cr:event_target",
     ]
     externs_list = [
       "$externs_path/chrome_extensions.js",

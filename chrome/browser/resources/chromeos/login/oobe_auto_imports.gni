@@ -65,8 +65,8 @@ oobe_auto_imports = [
   "ui/webui/resources/html/assert.html|assert,assertNotReached",
   "ui/webui/resources/html/cr.html|sendWithPromise,removeWebUIListener,addWebUIListener,WebUIListener",
   "ash/webui/common/resources/parse_html_subset.html|SanitizeInnerHtmlOpts,sanitizeInnerHtml",
+  "ash/webui/common/resources/util.html|announceAccessibleMessage,ensureTransitionEndEvent",
   "ui/webui/resources/html/polymer.html|afterNextRender,Polymer,PolymerElement,html,flush,mixinBehaviors,dom",
-  "ui/webui/resources/html/util.html|announceAccessibleMessage,ensureTransitionEndEvent",
 ]
 
 oobe_namespace_rewrites = [
@@ -131,9 +131,11 @@ oobe_migrated_imports = [
   "chrome/browser/resources/chromeos/login/components/security_token_pin.html",
   "chrome/browser/resources/chromeos/login/components/throbber_notice.html",
   "chrome/browser/resources/chromeos/login/screens/common/offline_ad_login.html",
+  "ash/webui/common/resources/parse_html_subset.html",
   "ash/webui/common/resources/quick_unlock/lock_screen_constants.html",
   "ash/webui/common/resources/quick_unlock/pin_keyboard.html",
   "ash/webui/common/resources/quick_unlock/setup_pin_keyboard.html",
+  "ash/webui/common/resources/util.html",
   "ui/webui/resources/cr_elements/action_link.css.html",
   "ui/webui/resources/cr_elements/chromeos/cros_color_overrides.css.html",
   "ui/webui/resources/cr_elements/cr_button/cr_button.html",
@@ -153,6 +155,4 @@ oobe_migrated_imports = [
   "ui/webui/resources/cr_elements/cr_toggle/cr_toggle.html",
   "ui/webui/resources/cr_elements/md_select.css.html",
   "ui/webui/resources/html/assert.html",
-  "ash/webui/common/resources/parse_html_subset.html",
-  "ui/webui/resources/html/util.html",
 ]

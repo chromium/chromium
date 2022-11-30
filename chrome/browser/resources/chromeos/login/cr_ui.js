@@ -9,7 +9,7 @@
  */
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {$} from 'chrome://resources/js/util.js';
+import {$} from 'chrome://resources/ash/common/util.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
 

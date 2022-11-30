@@ -4,7 +4,7 @@
 
 // clang-format off
 import {assert} from 'chrome://resources/js/assert.js';
-import {$} from 'chrome://resources/js/util.js';
+import {$} from 'chrome://resources/ash/common/util.js';
 import {Oobe} from './cr_ui.js';
 import * as OobeDebugger from './debug/debug.m.js';
 import {invokePolymerMethod} from './display_manager.js';
@@ -53,7 +53,7 @@ import './components/common_styles/oobe_flex_layout_styles.m.js';
 // for accessing OOBE controls from the browser side.
 function prepareGlobalValues(globalValue) {
   // '$(id)' is an alias for 'document.getElementById(id)'. It is defined
-  // in chrome://resources/js/util.js. If this function is not exposed
+  // in chrome://resources/ash/common/util.js. If this function is not exposed
   // via the global object, it would not be available to tests that inject
   // JavaScript directly into the renderer.
   window.$ = $;

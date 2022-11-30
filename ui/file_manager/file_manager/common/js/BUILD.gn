@@ -122,8 +122,8 @@ js_library("app_util") {
 
 js_library("array_data_model") {
   deps = [
+    "//ash/webui/common/resources:event_target",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -203,6 +203,7 @@ js_library("filtered_volume_manager") {
     ":array_data_model",
     ":util",
     "//ash/webui/common/resources:cr_deprecated",
+    "//ash/webui/common/resources:event_target",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:entry_location",
@@ -211,7 +212,6 @@ js_library("filtered_volume_manager") {
     "//ui/file_manager/file_manager/externs:volume_info_list",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 

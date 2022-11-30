@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // <if expr="chromeos_ash">
-import {appendParam} from 'chrome://resources/js/util.js';
+import {appendParam} from 'chrome://resources/ash/common/util.js';
 // </if>
 // <if expr="not chromeos_ash">
 import {appendParam} from 'chrome://resources/js/util_ts.js';

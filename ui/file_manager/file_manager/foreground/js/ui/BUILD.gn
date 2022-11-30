@@ -193,10 +193,10 @@ js_library("context_menu_handler") {
     ":menu_item",
     ":position_util",
     "//ash/webui/common/resources:cr_deprecated",
+    "//ash/webui/common/resources:event_target",
     "//ash/webui/common/resources:event_tracker",
     "//ui/file_manager/file_manager/common/js:ui",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -300,6 +300,7 @@ js_library("file_grid") {
     ":list_item",
     ":list_selection_model",
     "//ash/webui/common/resources:cr_deprecated",
+    "//ash/webui/common/resources:util",
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:util",
@@ -309,7 +310,6 @@ js_library("file_grid") {
     "//ui/file_manager/file_manager/foreground/js:list_thumbnail_loader",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:util",
   ]
 }
 
@@ -413,8 +413,8 @@ js_library("file_manager_ui") {
 js_library("file_metadata_formatter") {
   deps = [
     "//ash/webui/common/resources:cr_deprecated",
+    "//ash/webui/common/resources:event_target",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -622,7 +622,7 @@ js_library("list_selection_controller") {
 js_library("list_selection_model") {
   deps = [
     "//ash/webui/common/resources:cr_deprecated",
-    "//ui/webui/resources/js/cr:event_target",
+    "//ash/webui/common/resources:event_target",
   ]
 }
 
@@ -645,7 +645,7 @@ js_unittest("list_selection_model_unittest") {
 js_library("list_single_selection_model") {
   deps = [
     "//ash/webui/common/resources:cr_deprecated",
-    "//ui/webui/resources/js/cr:event_target",
+    "//ash/webui/common/resources:event_target",
   ]
 }
 
@@ -783,9 +783,9 @@ js_library("splitter") {
 js_unittest("splitter_unittest") {
   deps = [
     ":splitter",
+    "//ash/webui/common/resources:util",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:ui",
-    "//ui/webui/resources/js:util",
   ]
 }
 

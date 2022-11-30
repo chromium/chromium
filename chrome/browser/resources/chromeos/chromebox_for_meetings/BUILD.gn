@@ -30,13 +30,13 @@ preprocess_if_expr("preprocess_generated") {
 
 js_library("cfm_network_settings") {
   deps = [
+    "//ash/webui/common/resources:util",
     "//ash/webui/common/resources/network:mojo_interface_provider",
     "//ash/webui/common/resources/network:network_list_types",
     "//ash/webui/common/resources/network:onc_mojo",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util",
   ]
 }
 

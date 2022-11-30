@@ -4,7 +4,7 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
-import {$} from 'chrome://resources/js/util.js';
+import {$} from 'chrome://resources/ash/common/util.js';
 
 import {CPU_COLOR_SET, INFO_PAGE_PRECISION, MEMORY_COLOR_SET, PAGE_HASH, UNITBASE_MEMORY, UNITBASE_NUMBER_PER_SECOND, UNITS_MEMORY, UNITS_NUMBER_PER_SECOND, UPDATE_PERIOD, ZRAM_COLOR_SET} from './constants.js';
 import {UnitLabelAlign} from './line_chart/constants.js';

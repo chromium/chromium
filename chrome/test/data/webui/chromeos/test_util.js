@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 // clang-format on
 
 // Do not depend on the Chai Assertion Library in this file. Some consumers of

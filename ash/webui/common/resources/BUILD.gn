@@ -112,6 +112,7 @@ non_web_component_files = [
   "cr_picture/webcam_utils.js",
   "cr_policy_indicator_behavior.js",
   "cr_scrollable_behavior.js",
+  "event_target.js",
   "event_tracker.js",
   "focus_row_js.js",
   "focus_row_behavior.js",
@@ -143,6 +144,7 @@ non_web_component_files = [
   "store/store_client.js",
   "traffic_counters/traffic_counters_adapter.js",
   "quick_unlock/lock_screen_constants.js",
+  "util.js",
   "web_ui_listener_behavior.js",
 ]
 
@@ -317,6 +319,7 @@ generate_definitions_js_files = [
   "cr_picture/icons.html.js",
   "cr_picture/png.js",
   "cr_picture/webcam_utils.js",
+  "event_target.js",
   "event_tracker.js",
   "focus_row_js.js",
   "focus_without_ink_js.js",
@@ -330,6 +333,7 @@ generate_definitions_js_files = [
   "quick_unlock/pin_keyboard_icons.html.js",
   "store/store.js",
   "store/store_client.js",
+  "util.js",
 ]
 
 ts_definitions("generate_definitions") {
@@ -487,6 +491,9 @@ js_library("cr_scrollable_behavior") {
   ]
 }
 
+js_library("event_target") {
+}
+
 js_library("event_tracker") {
 }
 
@@ -501,8 +508,8 @@ js_library("fake_method_resolver") {
 js_library("focus_row_js") {
   deps = [
     ":event_tracker",
+    ":util",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:util",
   ]
 }
 
@@ -594,4 +601,8 @@ js_library("web_ui_listener_behavior") {
 
 js_library("webui_resource_test") {
   externs_list = [ "//ui/webui/resources/js/dom_automation_controller.js" ]
+}
+
+js_library("util") {
+  deps = [ "//ui/webui/resources/js:assert" ]
 }
