@@ -16,9 +16,13 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/web_applications/commands/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/isolation_data.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -40,11 +44,23 @@ base::File::Error CreateNonExistingDirectory(const base::FilePath& path) {
 }  // namespace
 
 namespace web_app {
+IsolatedWebAppPolicyManager::IwaInstallCommandWrapperImpl::
+    IwaInstallCommandWrapperImpl(web_app::WebAppProvider* provider)
+    : provider_(provider) {}
+
+void IsolatedWebAppPolicyManager::IwaInstallCommandWrapperImpl::Install(
+    const IsolationData& isolation_data,
+    const IsolatedWebAppUrlInfo& isolation_info,
+    WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) {
+  provider_->scheduler().InstallIsolatedWebApp(isolation_info, isolation_data,
+                                               std::move(callback));
+}
 
 IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(
     const base::FilePath& context_dir,
     std::vector<IsolatedWebAppExternalInstallOptions> iwa_install_options,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<IwaInstallCommandWrapper> installer,
     base::OnceCallback<void(std::vector<EphemeralAppInstallResult>)>
         ephemeral_install_cb)
     : ephemeral_iwa_install_options_(std::move(iwa_install_options)),
@@ -53,21 +69,20 @@ IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(
       url_loader_factory_(std::move(url_loader_factory)),
       result_vector_(ephemeral_iwa_install_options_.size(),
                      EphemeralAppInstallResult::kUnknown),
+      installer_(std::move(installer)),
       ephemeral_install_cb_(std::move(ephemeral_install_cb)) {}
 IsolatedWebAppPolicyManager::~IsolatedWebAppPolicyManager() = default;
 
 void IsolatedWebAppPolicyManager::InstallEphemeralApps() {
   if (!profiles::IsPublicSession()) {
     LOG(ERROR) << "The IWAs should be installed only in managed guest session.";
-    SetResultForAllEphemeralApps(
+    SetResultForAllAndFinish(
         EphemeralAppInstallResult::kErrorNotEphemeralSession);
-    std::move(ephemeral_install_cb_).Run(result_vector_);
     return;
   }
 
   if (ephemeral_iwa_install_options_.empty()) {
-    SetResultForAllEphemeralApps(EphemeralAppInstallResult::kSuccess);
-    std::move(ephemeral_install_cb_).Run(result_vector_);
+    SetResultForAllAndFinish(EphemeralAppInstallResult::kSuccess);
     return;
   }
 
@@ -88,9 +103,8 @@ void IsolatedWebAppPolicyManager::OnIwaEphemeralRootDirectoryCreated(
   if (error != base::File::FILE_OK) {
     LOG(ERROR) << "Error in creating the directory for ephemeral IWAs: "
                << base::File::ErrorToString(error);
-    SetResultForAllEphemeralApps(
+    SetResultForAllAndFinish(
         EphemeralAppInstallResult::kErrorCantCreateRootDirectory);
-    std::move(ephemeral_install_cb_).Run(result_vector_);
     return;
   }
 
@@ -161,9 +175,8 @@ void IsolatedWebAppPolicyManager::OnUpdateManifestDownloaded(
   simple_loader.reset();
 
   if (!update_manifest_string) {
-    SetResultForCurrentEphemeralApp(
+    SetResultAndContinue(
         EphemeralAppInstallResult::kErrorUpdateManifestDownloadFailed);
-    ContinueWithTheNextApp();
     return;
   }
 
@@ -181,16 +194,26 @@ void IsolatedWebAppPolicyManager::ContinueWithTheNextApp() {
   DownloadUpdateManifest();
 }
 
-void IsolatedWebAppPolicyManager::SetResultForCurrentEphemeralApp(
+void IsolatedWebAppPolicyManager::SetResultAndContinue(
     EphemeralAppInstallResult result) {
   const auto index =
       std::distance(ephemeral_iwa_install_options_.begin(), current_app_);
   result_vector_.at(index) = result;
+
+  // If the error occurs after the directory for an app had been created,
+  // then we should wipe the directory.
+  if (result != EphemeralAppInstallResult::kSuccess) {
+    WipeCurrentIwaDirectory();
+    return;
+  }
+
+  ContinueWithTheNextApp();
 }
 
-void IsolatedWebAppPolicyManager::SetResultForAllEphemeralApps(
+void IsolatedWebAppPolicyManager::SetResultForAllAndFinish(
     EphemeralAppInstallResult result) {
   base::ranges::fill(result_vector_, result);
+  std::move(ephemeral_install_cb_).Run(result_vector_);
 }
 
 void IsolatedWebAppPolicyManager::ParseUpdateManifest(
@@ -206,16 +229,14 @@ void IsolatedWebAppPolicyManager::OnUpdateManifestParsed(
     absl::optional<base::Value> result,
     const absl::optional<std::string>& error) {
   if (!result.has_value()) {
-    SetResultForCurrentEphemeralApp(
+    SetResultAndContinue(
         EphemeralAppInstallResult::kErrorUpdateManifestParsingFailed);
-    ContinueWithTheNextApp();
     return;
   }
   absl::optional<GURL> web_bundle_url = ExtractWebBundleURL(result.value());
   if (!web_bundle_url.has_value()) {
-    SetResultForCurrentEphemeralApp(
+    SetResultAndContinue(
         EphemeralAppInstallResult::kErrorWebBundleUrlCantBeDetermined);
-    ContinueWithTheNextApp();
     return;
   }
 
@@ -237,9 +258,8 @@ void IsolatedWebAppPolicyManager::OnIwaDirectoryCreated(
     const base::FilePath& iwa_dir,
     base::File::Error error) {
   if (error != base::File::FILE_OK) {
-    SetResultForCurrentEphemeralApp(
+    SetResultAndContinue(
         EphemeralAppInstallResult::kErrorCantCreateIwaDirectory);
-    ContinueWithTheNextApp();
     return;
   }
 
@@ -305,25 +325,53 @@ void IsolatedWebAppPolicyManager::OnWebBundleDownloaded(
     std::unique_ptr<network::SimpleURLLoader> simple_loader,
     base::FilePath path) {
   if (path.empty()) {
-    // Delete the app directory as we don't need it any more.
-    const base::FilePath iwa_path_to_delete(current_app_->app_directory());
-    current_app_->reset_app_directory();
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::GetDeleteFileCallback(iwa_path_to_delete));
-
-    SetResultForCurrentEphemeralApp(
+    SetResultAndContinue(
         EphemeralAppInstallResult::kErrorCantDownloadWebBundle);
-    ContinueWithTheNextApp();
     return;
   }
 
-  LOG(ERROR) << "We downloaded the signed Web Bundle for the app "
-             << current_app_->web_bundle_id().id()
-             << ". Further installation steps will be executed after "
-                "the feature is complete.";
+  IsolationData isolation_data =
+      IsolationData(IsolationData::InstalledBundle{.path = path});
+  IsolatedWebAppUrlInfo isolation_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+          current_app_->web_bundle_id());
 
-  SetResultForCurrentEphemeralApp(EphemeralAppInstallResult::kSuccess);
+  installer_->Install(
+      isolation_data, isolation_info,
+      base::BindOnce(&IsolatedWebAppPolicyManager::OnIwaInstalled,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void IsolatedWebAppPolicyManager::OnIwaInstalled(
+    base::expected<InstallIsolatedWebAppCommandSuccess,
+                   InstallIsolatedWebAppCommandError> result) {
+  if (!result.has_value()) {
+    LOG(ERROR) << "Could not install the IWA "
+               << current_app_->web_bundle_id().id();
+    SetResultAndContinue(
+        EphemeralAppInstallResult::kErrorCantInstallFromWebBundle);
+    return;
+  }
+
+  SetResultAndContinue(EphemeralAppInstallResult::kSuccess);
+}
+
+void IsolatedWebAppPolicyManager::WipeCurrentIwaDirectory() {
+  const base::FilePath iwa_path_to_delete(current_app_->app_directory());
+  current_app_->reset_app_directory();
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(&base::DeletePathRecursively, iwa_path_to_delete),
+      base::BindOnce(&IsolatedWebAppPolicyManager::OnCurrentIwaDirectoryWiped,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void IsolatedWebAppPolicyManager::OnCurrentIwaDirectoryWiped(bool wipe_result) {
+  if (!wipe_result) {
+    LOG(ERROR) << "Could not wipe an IWA directory";
+  }
+
   ContinueWithTheNextApp();
 }
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -13,8 +14,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/isolation_data.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -49,6 +52,8 @@ constexpr char kUpdateManifestUrl6[] =
     "https://example.com/6/update-manifest-6.json";
 constexpr char kUpdateManifestUrl7[] =
     "https://example.com/7/update-manifest-7.json";
+constexpr char kUpdateManifestUrl8[] =
+    "https://example.com/8/update-manifest-8.json";
 
 constexpr char kUpdateManifestValue1[] = R"(
     {"versions":[
@@ -70,6 +75,9 @@ constexpr char kUpdateManifestValue6[] = R"(
 constexpr char kUpdateManifestValue7[] = R"(
     {"versions":
     [{"version": "1.0.0", "src": "https://example.com/app7.swbn"}]})";
+constexpr char kUpdateManifestValue8[] = R"(
+    {"versions":
+    [{"version": "1.0.0","src": "https://example.com/app8.swbn"}]})";
 
 constexpr char kWebBundleId1[] =
     "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
@@ -84,6 +92,8 @@ constexpr char kWebBundleId5[] =
 constexpr base::StringPiece kWebBundleId6 = kWebBundleId1;
 constexpr char kWebBundleId7[] =
     "gerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+constexpr char kWebBundleId8[] =
+    "herugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 
 base::Value CreatePolicyEntry(base::StringPiece web_bundle_id,
                               base::StringPiece update_manifest_url) {
@@ -139,6 +149,12 @@ std::vector<IsolatedWebAppExternalInstallOptions> GenerateInstallOptions() {
   IsolatedWebAppExternalInstallOptions app_options_7 =
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_value_7)
           .value();
+  // The Web Bundle of the App 8 can't be installed.
+  const base::Value policy_value_8 =
+      CreatePolicyEntry(kWebBundleId8, kUpdateManifestUrl8);
+  IsolatedWebAppExternalInstallOptions app_options_8 =
+      IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_value_8)
+          .value();
 
   std::vector<IsolatedWebAppExternalInstallOptions> options;
   options.push_back(std::move(app_options_1));
@@ -148,6 +164,7 @@ std::vector<IsolatedWebAppExternalInstallOptions> GenerateInstallOptions() {
   options.push_back(std::move(app_options_5));
   options.push_back(std::move(app_options_6));
   options.push_back(std::move(app_options_7));
+  options.push_back(std::move(app_options_8));
   return options;
 }
 
@@ -178,6 +195,26 @@ void ShutdownManagedGuestSession() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+class TestIwaInstallCommandWrapper
+    : public IsolatedWebAppPolicyManager::IwaInstallCommandWrapper {
+ public:
+  TestIwaInstallCommandWrapper() = default;
+  void Install(
+      const IsolationData& isolation_data,
+      const IsolatedWebAppUrlInfo& isolation_info,
+      WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) override {
+    if (isolation_info.web_bundle_id().id() == kWebBundleId1 ||
+        isolation_info.web_bundle_id().id() == kWebBundleId2) {
+      std::move(callback).Run(InstallIsolatedWebAppCommandSuccess{});
+      return;
+    }
+
+    std::move(callback).Run(base::unexpected{InstallIsolatedWebAppCommandError{
+        .message = std::string{"Install error message"}}});
+  }
+  ~TestIwaInstallCommandWrapper() override = default;
+};
+
 }  // namespace
 
 class IsolatedWebAppPolicyManagerTest : public ::testing::Test {
@@ -198,13 +235,15 @@ class IsolatedWebAppPolicyManagerTest : public ::testing::Test {
     AddJsonResponse(kUpdateManifestUrl5, kUpdateManifestValue5);
     AddJsonResponse(kUpdateManifestUrl6, kUpdateManifestValue6);
     AddJsonResponse(kUpdateManifestUrl7, kUpdateManifestValue7);
+    AddJsonResponse(kUpdateManifestUrl8, kUpdateManifestValue8);
     test_factory_.AddResponse("https://example.com/app1.swbn",
                               "Content of app1");
     test_factory_.AddResponse("https://example.com/app2.swbn",
                               "Content of app2");
     test_factory_.AddResponse("https://example.com/app7.swbn", "",
                               net::HttpStatusCode::HTTP_NOT_FOUND);
-
+    test_factory_.AddResponse("https://example.com/app8.swbn",
+                              "Content of app8");
     StartManagedGuestSession();
   }
 
@@ -221,7 +260,6 @@ class IsolatedWebAppPolicyManagerTest : public ::testing::Test {
     test_factory_.AddResponse(GURL(url), std::move(head), std::string(content),
                               status);
   }
-
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir dir_;
   network::TestURLLoaderFactory test_factory_;
@@ -253,13 +291,16 @@ TEST_F(IsolatedWebAppPolicyManagerTest, MgsRegularFlow) {
       EphemeralAppInstallResult::kErrorCantCreateIwaDirectory;
   expected_results.at(6) = IsolatedWebAppPolicyManager::
       EphemeralAppInstallResult::kErrorCantDownloadWebBundle;
+  expected_results.at(7) = IsolatedWebAppPolicyManager::
+      EphemeralAppInstallResult::kErrorCantInstallFromWebBundle;
   base::test::TestFuture<
       std::vector<IsolatedWebAppPolicyManager::EphemeralAppInstallResult>>
       future;
-  IsolatedWebAppPolicyManager manager(dir_.GetPath(), all_install_options_,
-                                      shared_url_loader_factory_,
-                                      future.GetCallback());
+  IsolatedWebAppPolicyManager manager(
+      dir_.GetPath(), all_install_options_, shared_url_loader_factory_,
+      std::make_unique<TestIwaInstallCommandWrapper>(), future.GetCallback());
   manager.InstallEphemeralApps();
+
   EXPECT_EQ(future.Get(), expected_results);
 
   const base::FilePath iwa_root_dir = dir_.GetPath().Append(
@@ -296,9 +337,9 @@ TEST_F(IsolatedWebAppPolicyManagerTest, RegularUserDirectoryForIwaNotCreated) {
   base::test::TestFuture<
       std::vector<IsolatedWebAppPolicyManager::EphemeralAppInstallResult>>
       future;
-  IsolatedWebAppPolicyManager manager(dir_.GetPath(), all_install_options_,
-                                      shared_url_loader_factory_,
-                                      future.GetCallback());
+  IsolatedWebAppPolicyManager manager(
+      dir_.GetPath(), all_install_options_, shared_url_loader_factory_,
+      std::make_unique<TestIwaInstallCommandWrapper>(), future.GetCallback());
   manager.InstallEphemeralApps();
 
   EXPECT_EQ(future.Get(), expected_results);
@@ -320,9 +361,9 @@ TEST_F(IsolatedWebAppPolicyManagerTest, RootDirectoryExists) {
   base::test::TestFuture<
       std::vector<IsolatedWebAppPolicyManager::EphemeralAppInstallResult>>
       future;
-  IsolatedWebAppPolicyManager manager(dir_.GetPath(), all_install_options_,
-                                      shared_url_loader_factory_,
-                                      future.GetCallback());
+  IsolatedWebAppPolicyManager manager(
+      dir_.GetPath(), all_install_options_, shared_url_loader_factory_,
+      std::make_unique<TestIwaInstallCommandWrapper>(), future.GetCallback());
   manager.InstallEphemeralApps();
 
   EXPECT_EQ(future.Get(), expected_results);
@@ -335,9 +376,9 @@ TEST_F(IsolatedWebAppPolicyManagerTest, EmptyInstallList) {
   base::test::TestFuture<
       std::vector<IsolatedWebAppPolicyManager::EphemeralAppInstallResult>>
       future;
-  IsolatedWebAppPolicyManager manager(dir_.GetPath(), empty_install_options,
-                                      shared_url_loader_factory_,
-                                      future.GetCallback());
+  IsolatedWebAppPolicyManager manager(
+      dir_.GetPath(), empty_install_options, shared_url_loader_factory_,
+      std::make_unique<TestIwaInstallCommandWrapper>(), future.GetCallback());
   manager.InstallEphemeralApps();
 
   // No apps to install leads to zero install results.
