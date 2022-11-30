@@ -131,8 +131,12 @@ CrostiniUpgradeAvailableNotification::CrostiniUpgradeAvailableNotification(
   ForceRedisplay();
 }
 
-CrostiniUpgradeAvailableNotification::~CrostiniUpgradeAvailableNotification() =
-    default;
+CrostiniUpgradeAvailableNotification::~CrostiniUpgradeAvailableNotification() {
+  if (notification_ && !profile_->ShutdownStarted()) {
+    NotificationDisplayService::GetForProfile(profile_)->Close(
+        NotificationHandler::Type::TRANSIENT, notification_->id());
+  }
+}
 
 void CrostiniUpgradeAvailableNotification::UpgradeDialogShown() {
   notification_->set_buttons({});

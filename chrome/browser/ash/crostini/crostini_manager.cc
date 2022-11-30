@@ -4070,6 +4070,13 @@ void CrostiniManager::UnregisterContainer(
 
   guest_os::GuestOsSharePath::GetForProfile(profile_)->UnregisterGuest(
       container_id);
+
+  if (container_id == DefaultContainerId()) {
+    // For now the upgrade notification only supports the default container. If
+    // we're removing that container then destroy any notification we might have
+    // for it.
+    upgrade_available_notification_.reset();
+  }
 }
 
 void CrostiniManager::UnregisterAllContainers() {
@@ -4095,6 +4102,8 @@ void CrostiniManager::UnregisterAllContainers() {
       share_service->UnregisterGuest(guest);
     }
   }
+
+  upgrade_available_notification_.reset();
 }
 
 bool CrostiniManager::RegisterCreateOptions(
