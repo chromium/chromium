@@ -57,8 +57,6 @@ class GPU_GLES2_EXPORT SkiaGLImageRepresentation
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker);
 
-  void ClearCachedSurfaces();
-
  private:
   void CheckContext();
 

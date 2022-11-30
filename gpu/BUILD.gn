@@ -432,7 +432,6 @@ test("gl_tests") {
     sources += [
       "command_buffer/service/dxgi_shared_handle_manager_unittest.cc",
       "command_buffer/service/shared_image/d3d_image_backing_factory_unittest.cc",
-      "command_buffer/service/shared_image/dcomp_image_backing_factory_unittest.cc",
     ]
   } else if (is_linux || is_chromeos) {
     # Simply loading the Vulkan driver leaks crbug.com/1134681

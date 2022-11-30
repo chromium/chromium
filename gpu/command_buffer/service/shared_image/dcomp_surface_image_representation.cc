@@ -68,14 +68,8 @@ DCompSurfaceSkiaImageRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
-  sk_sp<SkSurface> surface =
-      static_cast<DCompSurfaceImageBacking*>(backing())->BeginDraw(
-          context_state_.get(), final_msaa_count, surface_props, update_rect);
-  if (!surface) {
-    return {};
-  }
-
-  return {std::move(surface)};
+  return {static_cast<DCompSurfaceImageBacking*>(backing())->BeginDraw(
+      context_state_.get(), final_msaa_count, surface_props, update_rect)};
 }
 
 void DCompSurfaceSkiaImageRepresentation::EndWriteAccess() {
