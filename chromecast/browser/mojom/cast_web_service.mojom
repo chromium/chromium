@@ -145,6 +145,9 @@ struct CastWebViewParams {
   // setting alone does not guarantee the bindings will be added, just that
   // they have the appropriate permissions.
   bool enable_webui_bindings_permission = false;
+
+  // Determines whether URL Rewrite Rules should be supported.
+  bool enable_url_rewrite_rules = true;
 };
 
 // Service interface for creating/managing web pages in the Cast Browser. The

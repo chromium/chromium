@@ -173,10 +173,12 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
   // CastWebContents created in |InnerWebContentsCreated()| callback will use
   // the private ctor with |parent| specified which allows sharing the same
   // manager, so that the whole Cast session applies the same rules.
-  if (!parent_cast_web_contents_) {
-    url_rewrite_rules_manager_.emplace();
+  if (params_->enable_url_rewrite_rules) {
+    if (!parent_cast_web_contents_) {
+      url_rewrite_rules_manager_.emplace();
+    }
+    url_rewrite_rules_manager()->AddWebContents(web_contents_);
   }
-  url_rewrite_rules_manager()->AddWebContents(web_contents_);
 
   if (params_->enabled_for_dev) {
     LOG(INFO) << "Enabling dev console for CastWebContentsImpl";
@@ -255,6 +257,7 @@ void CastWebContentsImpl::SetInterfacesForRenderer(
 
 void CastWebContentsImpl::SetUrlRewriteRules(
     url_rewrite::mojom::UrlRequestRewriteRulesPtr rules) {
+  DCHECK(params_->enable_url_rewrite_rules);
   if (!url_rewrite_rules_manager()->OnRulesUpdated(std::move(rules))) {
     LOG(ERROR) << "URL rewrite rules update failed.";
   }

@@ -304,6 +304,7 @@ CastWebView::Scoped RuntimeApplicationServiceImpl::CreateCastWebView() {
                             ? params->session_id
                             : runtime_application_->GetAppId();
   params->enabled_for_dev = IsEnabledForDev();
+  params->enable_url_rewrite_rules = false;
   return web_service_->CreateWebViewInternal(std::move(params));
 }
 
