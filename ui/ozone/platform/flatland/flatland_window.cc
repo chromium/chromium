@@ -30,6 +30,21 @@
 
 namespace ui {
 
+namespace {
+
+// Converts and scales Scenic's rect-based representation of insets to
+// gfx::Insets. Returns zero-width insets if |view_inset| information was not
+// provided in the |GetLayout()| call.
+gfx::Insets ConvertInsets(float device_pixel_ratio,
+                          const fuchsia::math::Inset& view_inset) {
+  return gfx::ScaleToRoundedInsets(
+      gfx::Insets::TLBR(view_inset.top, view_inset.left, view_inset.bottom,
+                        view_inset.right),
+      device_pixel_ratio);
+}
+
+}  // namespace
+
 FlatlandWindow::FlatlandWindow(FlatlandWindowManager* window_manager,
                                PlatformWindowDelegate* platform_window_delegate,
                                PlatformWindowInitProperties properties)
@@ -303,8 +318,13 @@ void FlatlandWindow::OnGetLayout(fuchsia::ui::composition::LayoutInfo info) {
       std::max(info.device_pixel_ratio().x, info.device_pixel_ratio().y);
   DCHECK_EQ(info.device_pixel_ratio().x, info.device_pixel_ratio().y);
 
-  if (scenic_window_delegate_)
+  if (info.has_inset()) {
+    view_inset_ = ConvertInsets(device_pixel_ratio_, info.inset());
+  }
+
+  if (scenic_window_delegate_) {
     scenic_window_delegate_->OnScenicPixelScale(this, device_pixel_ratio_);
+  }
 
   UpdateSize();
 
@@ -359,7 +379,7 @@ void FlatlandWindow::UpdateSize() {
 
   PlatformWindowDelegate::BoundsChange bounds(old_bounds.origin() !=
                                               bounds_.origin());
-  // TODO(fxbug.dev/93998): Calculate insets and update.
+  bounds.system_ui_overlap = view_inset_;
   platform_window_delegate_->OnBoundsChanged(bounds);
 }
 

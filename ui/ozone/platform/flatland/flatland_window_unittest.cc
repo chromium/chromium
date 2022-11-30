@@ -62,11 +62,13 @@ class FlatlandWindowTest : public ::testing::Test {
     return flatland_window_.get();
   }
 
-  void SetLayoutInfo(float device_pixel_ratio) {
+  void SetLayoutInfo(float device_pixel_ratio,
+                     fuchsia::math::Inset inset = {0, 0, 0, 0}) {
     fuchsia::ui::composition::LayoutInfo layout_info;
     layout_info.set_logical_size({100, 100});
     layout_info.set_device_pixel_ratio(
         {device_pixel_ratio, device_pixel_ratio});
+    layout_info.set_inset(inset);
     flatland_window_->OnGetLayout(std::move(layout_info));
   }
 
@@ -217,6 +219,35 @@ TEST_F(FlatlandWindowTest, WaitForNonZeroSize) {
   EXPECT_CALL(delegate, OnBoundsChanged(_)).Times(1);
   SetLayoutInfo(1.f);
   EXPECT_FALSE(HasPendingAttachSurfaceContentClosure());
+}
+
+class ParameterizedViewInsetTest : public FlatlandWindowTest,
+                                   public testing::WithParamInterface<float> {};
+
+INSTANTIATE_TEST_SUITE_P(ViewInsetTest,
+                         ParameterizedViewInsetTest,
+                         testing::Values(1.f, 2.f, 3.f));
+
+// Tests whether view insets are properly set in |FlatlandWindow|.
+TEST_P(ParameterizedViewInsetTest, ViewInsetsTest) {
+  MockPlatformWindowDelegate delegate;
+  EXPECT_CALL(delegate, OnAcceleratedWidgetAvailable(_));
+  CreateFlatlandWindow(&delegate);
+  EXPECT_CALL(delegate, OnBoundsChanged(_)).Times(1);
+  SetLayoutInfo(1.f);
+
+  const fuchsia::math::Inset inset = {1, 1, 1, 1};
+  const float dpr = GetParam();
+
+  // Setting LayoutInfo should trigger a change in the bounds.
+  PlatformWindowDelegate::BoundsChange bounds(false);
+  EXPECT_CALL(delegate, OnBoundsChanged(_)).WillOnce(SaveArg<0>(&bounds));
+  SetLayoutInfo(dpr, inset);
+
+  EXPECT_EQ(bounds.system_ui_overlap.top(), dpr * inset.top);
+  EXPECT_EQ(bounds.system_ui_overlap.left(), dpr * inset.left);
+  EXPECT_EQ(bounds.system_ui_overlap.bottom(), dpr * inset.bottom);
+  EXPECT_EQ(bounds.system_ui_overlap.right(), dpr * inset.right);
 }
 
 }  // namespace ui

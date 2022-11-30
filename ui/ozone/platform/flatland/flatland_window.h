@@ -164,6 +164,11 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   // |parent_viewport_watcher_| is bound and returns OnGetLayout().
   gfx::Rect bounds_;
 
+  // The offsets between the edges and the visible rectangle of the View, set
+  // based on fuchsia::ui::composition::LayoutInfo. Used to set
+  // `bounds_.system_ui_overlap` in `UpdateSize()`.
+  gfx::Insets view_inset_;
+
   // False if the View for this window is detached from the View tree, in which
   // case it is definitely not visible.
   bool is_visible_ = false;
