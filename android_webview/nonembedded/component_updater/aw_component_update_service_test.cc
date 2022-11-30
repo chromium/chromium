@@ -67,13 +67,13 @@ void CreateTestFiles(const base::FilePath& install_dir) {
 void AssertOnDemandRequest(bool on_demand, std::string post_data) {
   const auto root = base::JSONReader::Read(post_data);
   ASSERT_TRUE(root);
-  const auto* request = root->FindKey("request");
+  const auto* request = root->GetDict().FindDict("request");
   ASSERT_TRUE(request);
-  const auto& app = request->FindKey("app")->GetListDeprecated()[0];
+  const auto& app = (*request->FindList("app"))[0].GetDict();
   if (on_demand) {
-    EXPECT_EQ("ondemand", app.FindKey("installsource")->GetString());
+    EXPECT_EQ("ondemand", *app.FindString("installsource"));
   } else {
-    EXPECT_EQ(nullptr, app.FindKey("installsource"));
+    EXPECT_EQ(nullptr, app.FindString("installsource"));
   }
 }
 
@@ -425,7 +425,7 @@ TEST_F(AwComponentUpdateServiceTest, TestFreshDownloadingFakeApk) {
   // Assert that the manifest is valid by asserting a field in it other than
   // version.
   std::string* minimum_chrome_version =
-      service.GetMockPolicy()->GetManifest().FindStringKey(
+      service.GetMockPolicy()->GetManifest().GetDict().FindString(
           "minimum_chrome_version");
   ASSERT_TRUE(minimum_chrome_version);
   EXPECT_EQ(*minimum_chrome_version, "50");
