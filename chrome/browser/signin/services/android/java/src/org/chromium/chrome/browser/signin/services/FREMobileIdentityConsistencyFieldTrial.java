@@ -13,9 +13,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.components.metrics.LowEntropySource;
+import org.chromium.components.variations.NormalizedMurmurHashEntropyProvider;
 import org.chromium.components.version_info.Channel;
 import org.chromium.components.version_info.VersionConstants;
 
@@ -34,12 +37,12 @@ import java.util.Random;
  */
 public class FREMobileIdentityConsistencyFieldTrial {
     private static final Object LOCK = new Object();
-    private static final String ENABLED_GROUP = "Enabled8";
+    private static final String ENABLED_GROUP = "Enabled9";
     @VisibleForTesting
-    public static final String DISABLED_GROUP = "Disabled8";
+    public static final String DISABLED_GROUP = "Disabled9";
     private static final String DEFAULT_GROUP = "Default";
     @VisibleForTesting
-    public static final String OLD_FRE_WITH_UMA_DIALOG_GROUP = "OldFreWithUmaDialog8";
+    public static final String OLD_FRE_WITH_UMA_DIALOG_GROUP = "OldFreWithUmaDialog9";
 
     /**
      * Shows the new flow with separate sign-in and sync pages. Uses the new initialization logic
@@ -47,20 +50,24 @@ public class FREMobileIdentityConsistencyFieldTrial {
      * buttons on the welcome screen.
      */
     @VisibleForTesting
-    public static final String INITIALIZATION_FLOW_NEW_GROUP = "InitializationFlowNew8";
+    public static final String INITIALIZATION_FLOW_NEW_GROUP = "InitializationFlowNew9";
     /**
      * Shows the new flow with separate sign-in and sync pages. Uses the old initialization logic
      * in which continue/dismiss buttons on the welcome screen are shown after native is
      * initialized. This group is used to check the effect of the delay introduced by the native
      * initialization.
      */
-    public static final String INITIALIZATION_FLOW_OLD_GROUP = "InitializationFlowOld8";
+    public static final String INITIALIZATION_FLOW_OLD_GROUP = "InitializationFlowOld9";
     /**
      * Shows the flow without the sign-in page but with UMA controls in a dialog.
      * This group is used as control for {@link #INITIALIZATION_FLOW_NEW_GROUP} and
      * {@link #INITIALIZATION_FLOW_OLD_GROUP}.
      */
-    private static final String INITIALIZATION_FLOW_CONTROL_GROUP = "InitializationFlowControl8";
+    private static final String INITIALIZATION_FLOW_CONTROL_GROUP = "InitializationFlowControl9";
+    /**
+     * Used as a seed while selecting the group for the trial.
+     */
+    private static final int STUDY_RANDOMIZATION_SALT = 0xf2689bf8;
 
     /**
      * The group variation values should be consecutive starting from zero. WELCOME_TO_CHROME acts
@@ -125,7 +132,6 @@ public class FREMobileIdentityConsistencyFieldTrial {
         int MAX_VALUE = 6;
     }
 
-    @CalledByNative
     @AnyThread
     public static boolean isEnabled() {
         // Switch used for tests. Disabled by default otherwise.
@@ -173,6 +179,57 @@ public class FREMobileIdentityConsistencyFieldTrial {
     }
 
     @CalledByNative
+    @AnyThread
+    private static int getFirstRunTrialVariationId(int lowEntropySource, int lowEntropySize) {
+        String groupFromLowEntropySource =
+                generateFirstRunTrialGroup(lowEntropySource, lowEntropySize);
+        boolean isGroupConsistent = getFirstRunTrialGroup().equals(groupFromLowEntropySource);
+        RecordHistogram.recordBooleanHistogram(
+                "Signin.AndroidIsFREStudyGroupConsistent", isGroupConsistent);
+
+        final int variationsEmptyID = 0; // This should be identical to variations::EMPTY_ID.
+        if (!isGroupConsistent) {
+            return variationsEmptyID; // Do not send variations ID if there's a mismatch.
+        }
+        if (VersionConstants.CHANNEL == Channel.STABLE) {
+            // IDs in this method were obtained following go/finch-allocating-gws-ids.
+            switch (getFirstRunTrialGroup()) {
+                case DISABLED_GROUP:
+                    return 3354002;
+                case ENABLED_GROUP:
+                    return 3354003;
+                case OLD_FRE_WITH_UMA_DIALOG_GROUP:
+                    return 3354004;
+                case INITIALIZATION_FLOW_CONTROL_GROUP:
+                    return 3356513;
+                case INITIALIZATION_FLOW_NEW_GROUP:
+                    return 3356514;
+                case INITIALIZATION_FLOW_OLD_GROUP:
+                    return 3356515;
+                default:
+                    break;
+            }
+        } else if (VersionConstants.CHANNEL == Channel.BETA) {
+            switch (getFirstRunTrialGroup()) {
+                case DISABLED_GROUP:
+                    return 3356552;
+                case ENABLED_GROUP:
+                    return 3356553;
+                case OLD_FRE_WITH_UMA_DIALOG_GROUP:
+                    return 3356554;
+                case INITIALIZATION_FLOW_CONTROL_GROUP:
+                    return 3356555;
+                case INITIALIZATION_FLOW_NEW_GROUP:
+                    return 3356556;
+                case INITIALIZATION_FLOW_OLD_GROUP:
+                    return 3356557;
+                default:
+                    break;
+            }
+        }
+        return variationsEmptyID; // In other channels, the experiment is not GWS-visible.
+    }
+
     @AnyThread
     public static String getFirstRunVariationsTrialGroup() {
         @VariationsGroup
@@ -247,14 +304,16 @@ public class FREMobileIdentityConsistencyFieldTrial {
             }
         }
 
-        String group = generateFirstRunTrialGroup();
+        String group = generateFirstRunTrialGroup(
+                LowEntropySource.generateLowEntropySourceForFirstRunTrial(),
+                LowEntropySource.MAX_LOW_ENTROPY_SIZE);
         synchronized (LOCK) {
             SharedPreferencesManager.getInstance().writeString(
                     ChromePreferenceKeys.FIRST_RUN_FIELD_TRIAL_GROUP, group);
         }
     }
 
-    private static String generateFirstRunTrialGroup() {
+    private static String generateFirstRunTrialGroup(int lowEntropyValue, int lowEntropySize) {
         // Tweak these values for different builds to create the percentage of group population.
         // For A/B testing all 3 experiment groups should have the same percentages.
         int enabledPercent = 0;
@@ -296,7 +355,10 @@ public class FREMobileIdentityConsistencyFieldTrial {
                         + initializationFlowControlPercent
                 <= 100;
 
-        int randomBucket = new Random().nextInt(100);
+        NormalizedMurmurHashEntropyProvider entropyProvider =
+                new NormalizedMurmurHashEntropyProvider(lowEntropyValue, lowEntropySize);
+        double entropyForTrial = entropyProvider.getEntropyForTrial(STUDY_RANDOMIZATION_SALT);
+        double randomBucket = entropyForTrial * 100;
 
         if (randomBucket < enabledPercent) return ENABLED_GROUP;
         randomBucket -= enabledPercent;

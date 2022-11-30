@@ -1,3 +1,9 @@
 include_rules = [
   "+components/variations/jni",
 ]
+
+specific_include_rules = {
+  ".*Test\.java": [
+    "+content/public/test/android",
+  ]
+}

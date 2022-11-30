@@ -17,10 +17,53 @@ android_library("variations_java") {
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
+    "java/src/org/chromium/components/variations/NormalizedMurmurHashEntropyProvider.java",
     "java/src/org/chromium/components/variations/VariationsAssociatedData.java",
     "java/src/org/chromium/components/variations/VariationsCompressionUtils.java",
     "java/src/org/chromium/components/variations/firstrun/VariationsSeedBridge.java",
     "java/src/org/chromium/components/variations/firstrun/VariationsSeedFetcher.java",
+  ]
+}
+
+generate_jni("test_support_jni_headers") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/components/variations/NormalizedMurmurHashEntropyProviderTestUtilsBridge.java" ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [ "normalized_murmur_hash_entropy_provider_test_utils_bridge.cc" ]
+
+  deps = [
+    ":test_support_jni_headers",
+    "//base",
+    "//components/variations",
+  ]
+}
+
+android_library("test_support_java") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/components/variations/NormalizedMurmurHashEntropyProviderTestUtilsBridge.java" ]
+  deps = [
+    "//base:jni_java",
+    "//build/android:build_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+android_library("unit_device_javatests") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/components/variations/NormalizedMurmurHashEntropyProviderTest.java" ]
+  deps = [
+    ":test_support_java",
+    ":variations_java",
+    "//base:base_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/metrics:metrics_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
   ]
 }
 

@@ -2406,6 +2406,7 @@ if (current_toolchain == default_toolchain) {
       "//components/external_intents/android:test_support_java",
       "//components/minidump_uploader:minidump_uploader_java",
       "//components/paint_preview/player/android:player_java_test_support",
+      "//components/variations/android:test_support_java",
       "//content/public/test/android:content_java_test_support",
       "//ui/android:clipboard_java_test_support",
     ]
@@ -3199,6 +3200,7 @@ if (current_toolchain == default_toolchain) {
       "//components/strictmode/android:unit_device_javatests",
       "//components/translate/content/android:unit_device_javatests",
       "//components/url_formatter/android:unit_device_javatests",
+      "//components/variations/android:unit_device_javatests",
       "//ui/android:ui_unit_device_javatests",
     ]
 
@@ -4303,6 +4305,7 @@ chrome_common_shared_library("libchromefortest") {
     "//components/minidump_uploader",
     "//components/paint_preview/player/android:test_support",
     "//components/sync",
+    "//components/variations/android:test_support",
     "//content/public/test/android:content_native_test_support",
     "//content/test:test_support",
     "//ui/base/clipboard:clipboard_test_support",
