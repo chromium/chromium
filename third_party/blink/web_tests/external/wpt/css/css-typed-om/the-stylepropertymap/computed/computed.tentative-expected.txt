@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Computed StylePropertyMap contains every CSS property
+PASS Computed StylePropertyMap contains CSS property declarations in style rules
+FAIL Computed StylePropertyMap contains custom property declarations in style rules assert_equals: expected "auto" but got " auto"
+PASS Computed StylePropertyMap contains CSS property declarations in inline styles
+FAIL Computed StylePropertyMap contains custom property declarations in inline rules assert_equals: expected "5" but got " 5"
+PASS Computed StylePropertyMap contains computed values and not resolved values
+PASS Computed StylePropertyMap is live
+Harness: the test ran to completion.
+

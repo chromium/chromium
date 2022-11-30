@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Getting a custom property not in the inline style returns null
+PASS Getting a valid property not in the inline style returns null
+PASS Getting a valid property from inline style returns the correct entry
+FAIL Getting a valid custom property from inline style returns the correct entry assert_equals: expected "auto" but got " auto"
+PASS Getting a list-valued property from inline style returns only the first value
+PASS Declared StylePropertyMap.get is not case-sensitive
+PASS Declared StylePropertyMap.get reflects changes in the inline style
+Harness: the test ran to completion.
+

@@ -313268,6 +313268,56 @@
       }
      },
      "the-stylepropertymap": {
+      "computed": {
+       "computed.tentative-expected.txt": [
+        "9cc7d2456acb52654ee519f8bffcb32f606a0b28",
+        []
+       ],
+       "get-expected.txt": [
+        "5bfbe49e99f6b920dc826065aaa0e286f34ef65d",
+        []
+       ],
+       "getAll.tentative-expected.txt": [
+        "e36092271058693814988d9060fb99b9247fd938",
+        []
+       ],
+       "iterable.tentative-expected.txt": [
+        "b336f138e5c759075b730d295e3bacda2e6a22ea",
+        []
+       ]
+      },
+      "declared": {
+       "declared.tentative-expected.txt": [
+        "ce750c29a55a59f081c58c467bfda43e2ac666bc",
+        []
+       ],
+       "get-expected.txt": [
+        "f6c6f25ed75ee7d739d4935511a2a7a5663e5fa6",
+        []
+       ],
+       "getAll.tentative-expected.txt": [
+        "f7f92526e8466c2494a845761b3e261c2ffe0397",
+        []
+       ],
+       "iterable.tentative-expected.txt": [
+        "d98502b9a7a7012ed3a105b88a1b7f17db1057f1",
+        []
+       ]
+      },
+      "inline": {
+       "get-expected.txt": [
+        "b35cd21e328e90247090be029e32fbc007cc80c8",
+        []
+       ],
+       "getAll.tentative-expected.txt": [
+        "f7f92526e8466c2494a845761b3e261c2ffe0397",
+        []
+       ],
+       "iterable.tentative-expected.txt": [
+        "b5fcadc861dcee7cdf906b6e80ed9db21ba26fee",
+        []
+       ]
+      },
       "properties": {
        "accent-color-expected.txt": [
         "08f9287a96c5c59b34948f10cbf7f92f711058fd",
@@ -325268,11 +325318,11 @@
       []
      ],
      "subscript.js": [
-      "212981438b64ff88f7c4ac685f50c2cabfdb3a89",
+      "4129f4f0e810cc320de560b515b058e07da68b10",
       []
      ],
      "superscript.js": [
-      "e06fe6f4b175770bbef7990fea7937245709f7bc",
+      "310f471a97f1e016b3bdcc87124b13be3000f1dd",
       []
      ],
      "underline.js": [
@@ -361587,7 +361637,7 @@
      []
     ],
     "pointerevent_support.js": [
-     "696ea46748b99b4287dd9ad60303469843714b32",
+     "c50610a700cf4453a438fff4a490a76b203e63d0",
      []
     ],
     "pointerevent_touch-action-modified_touch.html.ini": [
@@ -419072,7 +419122,7 @@
       ]
      ],
      "anchor-position-004.html": [
-      "5034fb1ba6fd62feceb33807b9b33c10e039a93f",
+      "d6d4d6427629825ef4044a7b77d28637e7818147",
       [
        null,
        {}
@@ -419240,7 +419290,7 @@
       ]
      ],
      "anchor-position-writing-modes-002.html": [
-      "660e8c99b3d53b1e65569ec217556f1b1596d96a",
+      "834835ef214c628dc84946018d40605cf9d3de17",
       [
        null,
        {}
@@ -442485,7 +442535,7 @@
      "the-stylepropertymap": {
       "computed": {
        "computed.tentative.html": [
-        "8d563777cba9f4953c2f7673a8f9df98f426335e",
+        "a059787ca12a62a4a09161a56b20f2bd98ad379e",
         [
          null,
          {}
@@ -442520,7 +442570,7 @@
         ]
        ],
        "get.html": [
-        "3e061e1cbe4ccadf235bc1cfb9cd21d5d0da6e33",
+        "88fe53493cbcdfa470b2aa0558c9917fc253b242",
         [
          null,
          {}
@@ -442534,7 +442584,7 @@
         ]
        ],
        "getAll.tentative.html": [
-        "1673a52bc0c124f6c759b3c946d4b9baaa003757",
+        "e6d86ac7b67fa2b783718e932d5473dc7a843a4b",
         [
          null,
          {}
@@ -442548,7 +442598,7 @@
         ]
        ],
        "iterable.tentative.html": [
-        "bd11dd28a7ea575804e421c51e6b0d6a8ca2574e",
+        "55e4353708b7df83cfe8c0dacca7b766b0741975",
         [
          null,
          {}
@@ -442571,7 +442621,7 @@
         ]
        ],
        "declared.tentative.html": [
-        "3d857f1b6f907e9505dcd685fc19e5faff05b8d4",
+        "f6c5dfdb6a9b3e6fdfc5d8000e3ac2e38f096e8e",
         [
          null,
          {}
@@ -442613,7 +442663,7 @@
         ]
        ],
        "get.html": [
-        "c4215cb339e023a1b5f50995fd4e1e4e9f50b51b",
+        "847b6f6fa7a22317e1e6e704a9dfb558e4f84d5c",
         [
          null,
          {}
@@ -442627,7 +442677,7 @@
         ]
        ],
        "getAll.tentative.html": [
-        "97baf08a784e701c9a368b698ab83516278b33dd",
+        "bc557d0a76a114fd2cef86a7f9e8f8a363d6db85",
         [
          null,
          {}
@@ -442641,7 +442691,7 @@
         ]
        ],
        "iterable.tentative.html": [
-        "74a100ab7a54103e59460152bbd9001e7e9a481b",
+        "a13f83716e6990ff393a0060e78386c314edc989",
         [
          null,
          {}
@@ -442713,7 +442763,7 @@
         ]
        ],
        "get.html": [
-        "8588e6eda78998f5b560b89c32a6b64221944264",
+        "1fcc09be6f21b54f12b980e3a2154a7e98a46204",
         [
          null,
          {}
@@ -442727,7 +442777,7 @@
         ]
        ],
        "getAll.tentative.html": [
-        "935417ddcc022656371e1a88a36473112b286d86",
+        "027f3e0e6bba351b16365498e786d58a2822a05c",
         [
          null,
          {}
@@ -442741,7 +442791,7 @@
         ]
        ],
        "iterable.tentative.html": [
-        "d39fc147eb128d34df0b013aa5886a99f8be39bd",
+        "ae4490f4aaa2b98b8c70fff97499d5632178e730",
         [
          null,
          {}
@@ -453219,6 +453269,13 @@
      ],
      "event-global-is-still-set-when-coercing-beforeunload-result.html": [
       "a64c8b6b8b6d5fd39ab4f1a4ad1a8bd432fab7c8",
+      [
+       null,
+       {}
+      ]
+     ],
+     "event-global-is-still-set-when-reporting-exception-onerror.html": [
+      "ceaac4fe2b2408e3ac06ab5191fee8f1573294e6",
       [
        null,
        {}
@@ -485995,7 +486052,7 @@
       ]
      ],
      "revalidate-not-blocked-by-csp.html": [
-      "9f31ef759a3ace2d5cbcc2faa4304df8385fdc59",
+      "ea70b9a9c76c70a58c404831e2b4a8b0668a6ebb",
       [
        null,
        {}
@@ -527021,7 +527078,7 @@
         ]
        ],
        "image-loading-lazy-move-into-script-disabled-iframe.html": [
-        "10b644e22fd9b04f6eb2796a2f245f813df37721",
+        "79bfa243782987eb3475b49dfb68973c374e962f",
         [
          null,
          {}
@@ -530613,7 +530670,7 @@
        ]
       ],
       "popover-attribute-basic.tentative.html": [
-       "23aaf75d71d28ee4360b8c63cbd326e8ac7a9e7d",
+       "ba09380f0195b72f9fb3a0e368b2e3ada9b966d0",
        [
         null,
         {
@@ -558949,7 +559006,7 @@
      ]
     },
     "pointerevent_attributes_hoverable_pointers.html": [
-     "6051991375eba4cb5c3b53bae26f65c0bc844aea",
+     "a6158d59d6e63d1b642ee30e32388a560be679a9",
      [
       "pointerevents/pointerevent_attributes_hoverable_pointers.html?mouse",
       {
@@ -558964,7 +559021,7 @@
      ]
     ],
     "pointerevent_attributes_nohover_pointers.html": [
-     "477aa1f6751c1ddae6c076d185be44e031e7987b",
+     "ec1aee83da7587c4df57376e2c3e15891302a726",
      [
       null,
       {
@@ -559365,7 +559422,7 @@
      ]
     ],
     "pointerevent_pointerenter_does_not_bubble.html": [
-     "a8153c256fcb2f88c946b0b68123ff01799a3516",
+     "5193e7ab0bbb16f3f3b3db62e059dc1d798fc6b6",
      [
       null,
       {
@@ -559401,7 +559458,7 @@
      ]
     ],
     "pointerevent_pointerleave_does_not_bubble.html": [
-     "0dc88ee318feef18a04139230b42a50373384b9b",
+     "50af44cfbaf3280bfd90a49b1b6cfb0492d1fa1f",
      [
       null,
       {
@@ -577133,7 +577190,7 @@
       ]
      ],
      "view-timeline-inset.html": [
-      "4864d63b386a5fc4f6ec94247fe0984a3bf2f00a",
+      "0dcce6d48dca175b1c7da744427f083e07227719",
       [
        null,
        {}
@@ -584731,8 +584788,15 @@
        {}
       ]
      ],
+     "prefetch-traverse-reload.sub.html": [
+      "86e03ed7b796b1c97ddc359edb2022f98d1494a1",
+      [
+       null,
+       {}
+      ]
+     ],
      "redirect-url.https.html": [
-      "8515c610269b17844d6c1151a05b041509053293",
+      "07db405dc3f6ef961605ce14ee7e01eda9ac8408",
       [
        null,
        {}
@@ -594818,6 +594882,15 @@
      }
     },
     "mouse": {
+     "attributes.html": [
+      "bbc388445c052293091739db39719d5e3a27e1a5",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "cancel-mousedown-in-subframe.html": [
       "07350377354cda3c3fbafada0ff67700d01d06a0",
       [
@@ -632830,7 +632903,7 @@
      ]
     ],
     "event-timeout-order.any.js": [
-     "55319814a90064786c726abf6d73c75e6e4b45d1",
+     "74daff976c74d1ed282c9816237f7fd96f731d84",
      [
       "xhr/event-timeout-order.any.html",
       {
