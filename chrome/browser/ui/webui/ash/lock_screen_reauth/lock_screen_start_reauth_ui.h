@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_START_REAUTH_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_START_REAUTH_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_LOCK_SCREEN_START_REAUTH_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_LOCK_SCREEN_START_REAUTH_UI_H_
 
 #include "base/callback_list.h"
-#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_handler.h"
+#include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -44,4 +44,4 @@ class LockScreenStartReauthUI : public ui::WebDialogUI {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_START_REAUTH_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_LOCK_SCREEN_START_REAUTH_UI_H_

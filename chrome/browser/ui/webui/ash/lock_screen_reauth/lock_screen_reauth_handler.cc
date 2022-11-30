@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_handler.h"
+#include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_handler.h"
 
 #include <memory>
 
@@ -18,7 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_dialogs.h"
+#include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
 #include "chrome/browser/ui/webui/ash/login/check_passwords_against_cryptohome_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"

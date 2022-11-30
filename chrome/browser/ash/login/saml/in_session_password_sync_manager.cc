@@ -24,7 +24,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_dialogs.h"
+#include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
 #include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/password_update_flow.h"

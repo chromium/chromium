@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_BASE_LOCK_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_BASE_LOCK_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_BASE_LOCK_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_BASE_LOCK_DIALOG_H_
 
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 
@@ -30,4 +30,4 @@ class BaseLockDialog : public SystemWebDialogDelegate {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_BASE_LOCK_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_BASE_LOCK_DIALOG_H_

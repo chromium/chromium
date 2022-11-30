@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_LOCK_SCREEN_NETWORK_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_LOCK_SCREEN_NETWORK_UI_H_
 
 #include "base/values.h"
-#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_network_handler.h"
+#include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_network_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "content/public/browser/webui_config.h"
@@ -57,4 +57,4 @@ class LockScreenNetworkUI : public ui::MojoWebDialogUI {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_LOCK_SCREEN_NETWORK_UI_H_

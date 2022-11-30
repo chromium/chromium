@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_network_handler.h"
+#include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_network_handler.h"
 
 #include <memory>
 #include <string>
@@ -14,9 +14,9 @@
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/tab_helper.h"
-#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_dialogs.h"
 #include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
+#include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"

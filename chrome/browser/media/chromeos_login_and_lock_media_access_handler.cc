@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_dialogs.h"
+#include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "content/public/browser/render_frame_host.h"

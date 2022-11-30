@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_REAUTH_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_REAUTH_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_LOCK_SCREEN_REAUTH_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_LOCK_SCREEN_REAUTH_HANDLER_H_
 
 #include <memory>
 
@@ -44,11 +44,7 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
   }
 
  private:
-  enum class AuthenticatorState {
-    NOT_LOADED,
-    LOADING,
-    LOADED
-  };
+  enum class AuthenticatorState { NOT_LOADED, LOADING, LOADED };
 
   void ShowSamlConfirmPasswordScreen();
 
@@ -138,4 +134,4 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_REAUTH_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_LOCK_SCREEN_REAUTH_HANDLER_H_

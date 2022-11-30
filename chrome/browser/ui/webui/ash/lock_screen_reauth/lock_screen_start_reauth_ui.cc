@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_start_reauth_ui.h"
+#include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_start_reauth_ui.h"
 
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_handler.h"
+#include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -61,9 +61,10 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
   source->AddString(
       "lockScreenReauthSubtitile1WithError",
       l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_WRONG_USER_SUBTITLE1));
-  source->AddString("lockScreenReauthSubtitile2WithError",
-                    l10n_util::GetStringFUTF16(IDS_LOCK_SCREEN_WRONG_USER_SUBTITLE2,
-                                               base::UTF8ToUTF16(email)));
+  source->AddString(
+      "lockScreenReauthSubtitile2WithError",
+      l10n_util::GetStringFUTF16(IDS_LOCK_SCREEN_WRONG_USER_SUBTITLE2,
+                                 base::UTF8ToUTF16(email)));
 
   source->AddString("lockScreenVerifyButton",
                     l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_VERIFY_BUTTON));

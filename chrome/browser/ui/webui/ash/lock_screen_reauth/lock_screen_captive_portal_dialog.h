@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_CAPTIVE_PORTAL_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_CAPTIVE_PORTAL_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_LOCK_SCREEN_CAPTIVE_PORTAL_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_LOCK_SCREEN_CAPTIVE_PORTAL_DIALOG_H_
 
 #include <string>
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
-#include "chrome/browser/ui/webui/ash/in_session_password_change/base_lock_dialog.h"
+#include "chrome/browser/ui/webui/ash/lock_screen_reauth/base_lock_dialog.h"
 #include "ui/views/widget/widget.h"
 
 class Profile;
@@ -42,4 +42,4 @@ class LockScreenCaptivePortalDialog : public BaseLockDialog {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_CAPTIVE_PORTAL_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_LOCK_SCREEN_CAPTIVE_PORTAL_DIALOG_H_
