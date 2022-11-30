@@ -7462,6 +7462,7 @@ test("unit_tests") {
       "../browser/ui/app_list/search/omnibox/omnibox_result_unittest.cc",
       "../browser/ui/app_list/search/omnibox/open_tab_result_unittest.cc",
       "../browser/ui/app_list/search/os_settings_provider_unittest.cc",
+      "../browser/ui/app_list/search/personalization_provider_unittest.cc",
       "../browser/ui/app_list/search/ranking/answer_ranker_unittest.cc",
       "../browser/ui/app_list/search/ranking/best_match_ranker_unittest.cc",
       "../browser/ui/app_list/search/ranking/filtering_ranker_unittest.cc",

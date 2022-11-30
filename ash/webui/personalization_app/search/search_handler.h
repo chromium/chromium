@@ -60,6 +60,10 @@ class SearchHandler : public mojom::SearchHandler,
   // SearchTagRegistry::Observer
   void OnRegistryUpdated() override;
 
+ protected:
+  // For testing purposes only.
+  SearchHandler();
+
  private:
   friend class PersonalizationAppSearchHandlerTest;
 

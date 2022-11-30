@@ -55,6 +55,9 @@ SearchHandler::SearchHandler(
   search_tag_registry_observer_.Observe(search_tag_registry_.get());
 }
 
+// For testing purposes only.
+SearchHandler::SearchHandler() = default;
+
 SearchHandler::~SearchHandler() = default;
 
 void SearchHandler::BindInterface(
