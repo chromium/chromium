@@ -205,11 +205,11 @@ void SetInvalidRefreshTokenForPrimaryAccount(
 }
 
 void RemoveRefreshTokenForPrimaryAccount(IdentityManager* identity_manager) {
-  if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSync))
+  if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSignin))
     return;
 
   CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(ConsentLevel::kSync);
+      identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin);
 
   RemoveRefreshTokenForAccount(identity_manager, account_id);
 }
@@ -261,8 +261,6 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
     return;
 
   DCHECK(identity_manager->GetPrimaryAccountMutator());
-  bool wait_for_primary_acount_cleared_notification =
-      identity_manager->HasPrimaryAccount(ConsentLevel::kSync);
   base::RunLoop run_loop;
   TestIdentityManagerObserver signout_observer(identity_manager);
   signout_observer.SetOnPrimaryAccountChangedCallback(base::BindOnce(
@@ -277,8 +275,7 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
       signin_metrics::SIGNOUT_TEST,
       signin_metrics::SignoutDelete::kIgnoreMetric);
 
-  if (wait_for_primary_acount_cleared_notification)
-    run_loop.Run();
+  run_loop.Run();
 #endif
 }
 
