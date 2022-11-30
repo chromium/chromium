@@ -191,6 +191,7 @@ std::string SHA1HashString(StringPiece str) {
 
 void SHA1HashBytes(const unsigned char* data, size_t len, unsigned char* hash) {
   SHA1Context context;
+  context.Init();
   context.Update(data, len);
   context.Final();
 
