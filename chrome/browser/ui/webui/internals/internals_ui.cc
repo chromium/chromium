@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/dev_ui_browser_resources.h"
 #include "chrome/grit/internals_resources.h"
@@ -66,7 +67,7 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
   source_ = content::WebUIDataSource::Create(chrome::kChromeUIInternalsHost);
   source_->AddResourcePaths(
       base::make_span(kInternalsResources, kInternalsResourcesSize));
-  source_->DisableTrustedTypesCSP();
+  webui::EnableTrustedTypesCSP(source_);
 
   // chrome://internals/
   // Redirects to: chrome://chrome-urls/#internals
