@@ -367,8 +367,8 @@ CRLRevocationStatus CheckCRL(std::string_view raw_crl,
                              const ParsedCertificateList& valid_chain,
                              size_t target_cert_index,
                              const ParsedDistributionPoint& cert_dp,
-                             const base::Time& verify_time,
-                             const base::TimeDelta& max_age) {
+                             int64_t verify_time_epoch_seconds,
+                             int64_t max_age_seconds) {
   DCHECK_LT(target_cert_index, valid_chain.size());
 
   if (cert_dp.reasons) {
@@ -426,7 +426,7 @@ CRLRevocationStatus CheckCRL(std::string_view raw_crl,
                                 tbs_cert_list.next_update.has_value()
                                     ? &tbs_cert_list.next_update.value()
                                     : nullptr,
-                                verify_time, max_age)) {
+                                verify_time_epoch_seconds, max_age_seconds)) {
     return CRLRevocationStatus::UNKNOWN;
   }
 

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cert/ocsp_revocation_status.h"
 #include "net/cert/ocsp_verify_result.h"
@@ -20,11 +19,6 @@
 #include "net/der/tag.h"
 
 class GURL;
-
-namespace base {
-class Time;
-class TimeDelta;
-}  // namespace base
 
 namespace net {
 
@@ -280,17 +274,18 @@ NET_EXPORT_PRIVATE bool ParseOCSPResponse(const der::Input& raw_tlv,
 //  * |certificate_der|: The certificate being checked for revocation.
 //  * |issuer_certificate_der|: The certificate that signed |certificate_der|.
 //        The caller must have already performed path verification.
-//  * |verify_time|: The time to use when checking revocation status.
-//  * |max_age|: The maximum age for an OCSP response, implemented as time since
-//        the |this_update| field in OCSPSingleResponse. Responses older than
-//        |max_age| will be considered invalid.
+//  * |verify_time_epoch_seconds|: The time as the difference in seconds from
+//        the POSIX epoch to use when checking revocation status.
+//  * |max_age_seconds|: The maximum age in seconds for a CRL, implemented as
+//        time since the |thisUpdate| field in the CRL TBSCertList. Responses
+//        older than |max_age_seconds| will be considered invalid.
 //  * |response_details|: Additional details about failures.
 [[nodiscard]] NET_EXPORT OCSPRevocationStatus
 CheckOCSP(std::string_view raw_response,
           std::string_view certificate_der,
           std::string_view issuer_certificate_der,
-          const base::Time& verify_time,
-          const base::TimeDelta& max_age,
+          int64_t verify_time_epoch_seconds,
+          int64_t max_age_seconds,
           OCSPVerifyResult::ResponseStatus* response_details);
 
 // Checks the revocation status of |certificate| by using the DER-encoded
@@ -302,8 +297,8 @@ CheckOCSP(std::string_view raw_response,
 CheckOCSP(std::string_view raw_response,
           const ParsedCertificate* certificate,
           const ParsedCertificate* issuer_certificate,
-          const base::Time& verify_time,
-          const base::TimeDelta& max_age,
+          int64_t verify_time_epoch_seconds,
+          int64_t max_age_seconds,
           OCSPVerifyResult::ResponseStatus* response_details);
 
 // Creates a DER-encoded OCSPRequest for |cert|. The request is fairly basic:

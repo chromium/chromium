@@ -4,7 +4,8 @@
 
 #include "net/cert/pki/path_builder.h"
 
-#include "base/time/time.h"
+#include <cstdint>
+
 #include "net/base/net_errors.h"
 #include "net/cert/pki/cert_issuer_source_static.h"
 #include "net/cert/pki/common_cert_errors.h"
@@ -20,6 +21,8 @@
 
 #include "net/cert/pki/nist_pkits_unittest.h"
 
+constexpr int64_t kOneYear = 60 * 60 * 24 * 365;
+
 namespace net {
 
 namespace {
@@ -27,8 +30,8 @@ namespace {
 class CrlCheckingPathBuilderDelegate : public SimplePathBuilderDelegate {
  public:
   CrlCheckingPathBuilderDelegate(const std::vector<std::string>& der_crls,
-                                 const base::Time& verify_time,
-                                 const base::TimeDelta& max_age,
+                                 int64_t verify_time,
+                                 int64_t max_age,
                                  size_t min_rsa_modulus_length_bits,
                                  DigestPolicy digest_policy)
       : SimplePathBuilderDelegate(min_rsa_modulus_length_bits, digest_policy),
@@ -121,8 +124,8 @@ class CrlCheckingPathBuilderDelegate : public SimplePathBuilderDelegate {
 
  private:
   std::vector<std::string> der_crls_;
-  const base::Time verify_time_;
-  const base::TimeDelta max_age_;
+  int64_t verify_time_;
+  int64_t max_age_;
 };
 
 class PathBuilderPkitsTestDelegate {
@@ -156,10 +159,10 @@ class PathBuilderPkitsTestDelegate {
 
     scoped_refptr<ParsedCertificate> target_cert(certs.back());
 
-    base::Time verify_time;
-    ASSERT_TRUE(der::GeneralizedTimeToTime(info.time, &verify_time));
+    int64_t verify_time;
+    ASSERT_TRUE(der::GeneralizedTimeToPosixTime(info.time, &verify_time));
     CrlCheckingPathBuilderDelegate path_builder_delegate(
-        crl_ders, verify_time, /*max_age=*/base::Days(365 * 2), 1024,
+        crl_ders, verify_time, /*max_age=*/kOneYear * 2, 1024,
         SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
 
     std::string_view test_number = info.test_number;

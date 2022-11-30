@@ -7,10 +7,7 @@
 
 #include "net/base/net_export.h"
 
-namespace base {
-class Time;
-class TimeDelta;
-}  // namespace base
+#include <cstdint>
 
 namespace net {
 
@@ -19,14 +16,15 @@ struct GeneralizedTime;
 }
 
 // Returns true if a revocation status with |this_update| field and potentially
-// a |next_update| field, is valid at |verify_time| and not older than
-// |max_age|.  Expressed differently, returns true if |this_update <=
-// verify_time < next_update|, and |this_update >= verify_time - max_age|.
+// a |next_update| field, is valid at POSIX time |verify_time_epoch_seconds| and
+// not older than |max_age_seconds| seconds. Expressed differently, returns true
+// if |this_update <= verify_time < next_update|, and |this_update >=
+// verify_time - max_age|.
 [[nodiscard]] NET_EXPORT_PRIVATE bool CheckRevocationDateValid(
     const der::GeneralizedTime& this_update,
     const der::GeneralizedTime* next_update,
-    const base::Time& verify_time,
-    const base::TimeDelta& max_age);
+    int64_t verify_time_epoch_seconds,
+    int64_t max_age_seconds);
 
 }  // namespace net
 

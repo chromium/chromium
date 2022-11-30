@@ -16,7 +16,7 @@ namespace net {
 
 namespace {
 
-const base::TimeDelta kOCSPAgeOneWeek = base::Days(7);
+constexpr int64_t kOCSPAgeOneWeek = 7 * 24 * 60 * 60;
 
 std::string GetFilePath(const std::string& file_name) {
   return std::string("net/data/ocsp_unittest/") + file_name;
@@ -152,7 +152,7 @@ TEST_P(CheckOCSPTest, FromFile) {
   ASSERT_TRUE(ReadTestDataFromPemFile(GetFilePath(params.file_name), mappings));
 
   // Mar 5 00:00:00 2017 GMT
-  base::Time kVerifyTime = base::Time::UnixEpoch() + base::Seconds(1488672000);
+  int64_t kVerifyTime = 1488672000;
 
   // Test that CheckOCSP() works.
   OCSPVerifyResult::ResponseStatus response_status;

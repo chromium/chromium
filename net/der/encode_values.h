@@ -23,11 +23,25 @@ struct GeneralizedTime;
 NET_EXPORT bool EncodeTimeAsGeneralizedTime(const base::Time& time,
                                             GeneralizedTime* generalized_time);
 
+// Encodes |posix_time|, a posix time in seconds, to DER |generalized_time|, for
+// comparing against other GeneralizedTime objects, returning true on success or
+// false if |posix_time| is outside of the range from year 0000 to 9999.
+NET_EXPORT bool EncodePosixTimeAsGeneralizedTime(
+    int64_t posix_time,
+    GeneralizedTime* generalized_time);
+
 // Converts a GeneralizedTime struct to a base::Time, returning true on success
 // or false if |generalized| was invalid or cannot be represented by
 // base::Time.
 NET_EXPORT bool GeneralizedTimeToTime(const der::GeneralizedTime& generalized,
                                       base::Time* result);
+
+// Converts a GeneralizedTime struct to a posix time in seconds in |result|,
+// returning true on success or false if |generalized| was invalid or cannot be
+// represented as a posix time in the range from the year 0000 to 9999.
+NET_EXPORT bool GeneralizedTimeToPosixTime(
+    const der::GeneralizedTime& generalized,
+    int64_t* result);
 
 static const size_t kGeneralizedTimeLength = 15;
 

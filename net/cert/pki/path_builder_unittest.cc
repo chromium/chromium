@@ -13,7 +13,6 @@
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/cert/pem.h"
 #include "net/cert/pki/cert_error_params.h"

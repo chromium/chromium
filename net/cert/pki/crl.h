@@ -5,7 +5,6 @@
 #ifndef NET_CERT_PKI_CRL_H_
 #define NET_CERT_PKI_CRL_H_
 
-#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cert/pki/general_names.h"
 #include "net/cert/pki/parsed_certificate.h"
@@ -206,17 +205,18 @@ GetCRLStatusForCert(const der::Input& cert_serial,
 //        |raw_crl| was not specified in a distribution point, the caller must
 //        synthesize a ParsedDistributionPoint object as specified by RFC 5280
 //        6.3.3.
-//  * |verify_time|: The time to use when checking revocation status.
-//  * |max_age|: The maximum age for a CRL, implemented as time since
-//        the |thisUpdate| field in the CRL TBSCertList. Responses older than
-//        |max_age| will be considered invalid.
+//  * |verify_time_epoch_seconds|: The time as the difference in seconds from
+//        the POSIX epoch to use when checking revocation status.
+//  * |max_age_seconds|: The maximum age in seconds for a CRL, implemented as
+//        time since the |thisUpdate| field in the CRL TBSCertList. Responses
+//        older than |max_age_seconds| will be considered invalid.
 [[nodiscard]] NET_EXPORT CRLRevocationStatus
 CheckCRL(std::string_view raw_crl,
          const ParsedCertificateList& valid_chain,
          size_t target_cert_index,
          const ParsedDistributionPoint& cert_dp,
-         const base::Time& verify_time,
-         const base::TimeDelta& max_age);
+         int64_t verify_time_epoch_seconds,
+         int64_t max_age_seconds);
 
 }  // namespace net
 

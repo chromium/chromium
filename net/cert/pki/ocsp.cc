@@ -4,7 +4,6 @@
 
 #include "net/cert/pki/ocsp.h"
 
-#include "base/time/time.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/extended_key_usage.h"
@@ -732,8 +731,8 @@ OCSPRevocationStatus GetRevocationStatusForCert(
     const OCSPResponseData& response_data,
     const ParsedCertificate* cert,
     const ParsedCertificate* issuer_certificate,
-    const base::Time& verify_time,
-    const base::TimeDelta& max_age,
+    int64_t verify_time_epoch_seconds,
+    int64_t max_age_seconds,
     OCSPVerifyResult::ResponseStatus* response_details) {
   OCSPRevocationStatus result = OCSPRevocationStatus::UNKNOWN;
   *response_details = OCSPVerifyResult::NO_MATCHING_RESPONSE;
@@ -772,7 +771,7 @@ OCSPRevocationStatus GetRevocationStatusForCert(
                                   single_response.has_next_update
                                       ? &single_response.next_update
                                       : nullptr,
-                                  verify_time, max_age)) {
+                                  verify_time_epoch_seconds, max_age_seconds)) {
       if (*response_details != OCSPVerifyResult::PROVIDED)
         *response_details = OCSPVerifyResult::INVALID_DATE;
       continue;
@@ -797,8 +796,8 @@ OCSPRevocationStatus CheckOCSP(
     const ParsedCertificate* certificate,
     std::string_view issuer_certificate_der,
     const ParsedCertificate* issuer_certificate,
-    const base::Time& verify_time,
-    const base::TimeDelta& max_age,
+    int64_t verify_time_epoch_seconds,
+    int64_t max_age_seconds,
     OCSPVerifyResult::ResponseStatus* response_details) {
   *response_details = OCSPVerifyResult::NOT_CHECKED;
 
@@ -878,9 +877,9 @@ OCSPRevocationStatus CheckOCSP(
 
   // Look through all of the OCSPSingleResponses for a match (based on CertID
   // and time).
-  OCSPRevocationStatus status =
-      GetRevocationStatusForCert(response_data, certificate, issuer_certificate,
-                                 verify_time, max_age, response_details);
+  OCSPRevocationStatus status = GetRevocationStatusForCert(
+      response_data, certificate, issuer_certificate, verify_time_epoch_seconds,
+      max_age_seconds, response_details);
 
   // Check that the OCSP response has a valid signature. It must either be
   // signed directly by the issuing certificate, or a valid authorized
@@ -899,23 +898,24 @@ OCSPRevocationStatus CheckOCSP(
     std::string_view raw_response,
     std::string_view certificate_der,
     std::string_view issuer_certificate_der,
-    const base::Time& verify_time,
-    const base::TimeDelta& max_age,
+    int64_t verify_time_epoch_seconds,
+    int64_t max_age_seconds,
     OCSPVerifyResult::ResponseStatus* response_details) {
   return CheckOCSP(raw_response, certificate_der, nullptr,
-                   issuer_certificate_der, nullptr, verify_time, max_age,
-                   response_details);
+                   issuer_certificate_der, nullptr, verify_time_epoch_seconds,
+                   max_age_seconds, response_details);
 }
 
 OCSPRevocationStatus CheckOCSP(
     std::string_view raw_response,
     const ParsedCertificate* certificate,
     const ParsedCertificate* issuer_certificate,
-    const base::Time& verify_time,
-    const base::TimeDelta& max_age,
+    int64_t verify_time_epoch_seconds,
+    int64_t max_age_seconds,
     OCSPVerifyResult::ResponseStatus* response_details) {
   return CheckOCSP(raw_response, std::string_view(), certificate,
-                   std::string_view(), issuer_certificate, verify_time, max_age,
+                   std::string_view(), issuer_certificate,
+                   verify_time_epoch_seconds, max_age_seconds,
                    response_details);
 }
 
