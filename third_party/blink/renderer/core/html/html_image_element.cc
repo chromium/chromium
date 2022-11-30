@@ -453,13 +453,9 @@ ImageCandidate HTMLImageElement::FindBestFitImageFromPictureParent() {
 
 LayoutObject* HTMLImageElement::CreateLayoutObject(const ComputedStyle& style,
                                                    LegacyLayout legacy) {
-  const ContentData* content_data = style.GetContentData();
-  if (content_data && content_data->IsImage()) {
-    const StyleImage* content_image =
-        To<ImageContentData>(content_data)->GetImage();
-    bool error_occurred = content_image && content_image->CachedImage() &&
-                          content_image->CachedImage()->ErrorOccurred();
-    if (!error_occurred)
+  if (auto* content_image =
+          DynamicTo<ImageContentData>(style.GetContentData())) {
+    if (!content_image->GetImage()->ErrorOccurred())
       return LayoutObject::CreateObject(this, style, legacy);
   }
 
