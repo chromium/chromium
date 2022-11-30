@@ -110,6 +110,8 @@ void ScopedStyleResolver::AppendActiveStyleSheets(
       continue;
     const RuleSet& rule_set = *active_iterator->second;
     style_sheets_.push_back(sheet);
+    style_sheets_expanded_.emplace_back(sheet,
+                                        &sheet->Contents()->GetRuleSet());
     AddKeyframeRules(rule_set);
     AddFontFaceRules(rule_set);
     AddCounterStyleRules(rule_set);
@@ -123,7 +125,7 @@ void ScopedStyleResolver::CollectFeaturesTo(
         visited_shared_style_sheet_contents) const {
   features.MutableMediaQueryResultFlags().Add(media_query_result_flags_);
 
-  for (auto sheet : style_sheets_) {
+  for (auto [sheet, rule_set] : style_sheets_expanded_) {
     DCHECK(sheet->ownerNode() || sheet->IsConstructed());
     StyleSheetContents* contents = sheet->Contents();
     if (contents->HasOneClient() ||
@@ -134,6 +136,7 @@ void ScopedStyleResolver::CollectFeaturesTo(
 
 void ScopedStyleResolver::ResetStyle() {
   style_sheets_.clear();
+  style_sheets_expanded_.clear();
   media_query_result_flags_.Clear();
   keyframes_rule_map_.clear();
   position_fallback_rule_map_.clear();
@@ -225,13 +228,13 @@ void ScopedStyleResolver::KeyframesRulesAdded(const TreeScope& tree_scope) {
 
 template <class Func>
 void ScopedStyleResolver::ForAllStylesheets(const Func& func) {
-  if (style_sheets_.empty()) {
+  if (style_sheets_expanded_.empty()) {
     return;
   }
 
   MatchRequest match_request{&scope_->RootNode()};
-  for (auto sheet : style_sheets_) {
-    match_request.AddRuleset(&sheet->Contents()->GetRuleSet(), sheet);
+  for (auto [sheet, rule_set] : style_sheets_expanded_) {
+    match_request.AddRuleset(rule_set, sheet);
     if (match_request.IsFull()) {
       func(match_request);
       match_request.ClearAfterMatching();
@@ -276,9 +279,8 @@ void ScopedStyleResolver::CollectMatchingPartPseudoRules(
 void ScopedStyleResolver::MatchPageRules(PageRuleCollector& collector) {
   // Currently, only @page rules in the document scope apply.
   DCHECK(scope_->RootNode().IsDocumentNode());
-  for (auto sheet : style_sheets_) {
-    collector.MatchPageRules(&sheet->Contents()->GetRuleSet(),
-                             GetCascadeLayerMap());
+  for (auto [sheet, rule_set] : style_sheets_expanded_) {
+    collector.MatchPageRules(rule_set, GetCascadeLayerMap());
   }
 }
 
