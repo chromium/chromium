@@ -42,12 +42,15 @@ class Lock::ThenFunction final : public ScriptFunction::Callable {
     DCHECK(lock_);
     DCHECK(resolve_type_ == kFulfilled || resolve_type_ == kRejected);
     lock_->ReleaseIfHeld();
-    if (resolve_type_ == kFulfilled)
+    if (resolve_type_ == kFulfilled) {
       lock_->resolver_->Resolve(value);
-    else
+      lock_ = nullptr;
+      return value;
+    } else {
       lock_->resolver_->Reject(value);
-    lock_ = nullptr;
-    return value;
+      lock_ = nullptr;
+      return ScriptValue();
+    }
   }
 
  private:
