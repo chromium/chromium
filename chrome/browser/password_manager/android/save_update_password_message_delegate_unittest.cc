@@ -442,6 +442,70 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
   DismissMessage(messages::DismissReason::UNKNOWN);
 }
 
+// Tests that secondary menu icon is set for the save password message
+// with kPasswordEditDialogWithDetails feature on.
+TEST_P(SaveUpdatePasswordMessageDelegateTest,
+       CogButton_SavePassword_PasswordEditDialogWithDetails) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitWithFeatures(
+      {password_manager::features::kPasswordEditDialogWithDetails,
+       password_manager::features::kUnifiedPasswordManagerAndroidBranding},
+      {});
+  SetPendingCredentials(kUsername, kPassword);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/false);
+
+  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS),
+            GetMessageWrapper()->GetSecondaryIconResourceId());
+
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
+// Tests that secondary menu icon is set for the update password message
+// in case when user has only single credential stored for the web site
+// with kPasswordEditDialogWithDetails feature on.
+TEST_P(SaveUpdatePasswordMessageDelegateTest,
+       CogButton_SingleCredUpdatePassword_PasswordEditDialogWithDetails) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitWithFeatures(
+      {password_manager::features::kPasswordEditDialogWithDetails,
+       password_manager::features::kUnifiedPasswordManagerAndroidBranding},
+      {});
+  SetPendingCredentials(kUsername, kPassword);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/true);
+
+  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS),
+            GetMessageWrapper()->GetSecondaryIconResourceId());
+
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
+// Tests that secondary menu icon is not set for the update password message
+// in case when user has multiple credentials stored for the web site
+// with kPasswordEditDialogWithDetails feature on.
+TEST_P(SaveUpdatePasswordMessageDelegateTest,
+       NoCogButton_MultipleCredUpdatePassword_PasswordEditDialogWithDetails) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitWithFeatures(
+      {password_manager::features::kPasswordEditDialogWithDetails,
+       password_manager::features::kUnifiedPasswordManagerAndroidBranding},
+      {});
+  SetPendingCredentials(kUsername, kPassword);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/true);
+
+  EXPECT_EQ(0, GetMessageWrapper()->GetSecondaryIconResourceId());
+
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
 // Tests that the description is set correctly when signed-in user saves a
 // password.
 TEST_P(SaveUpdatePasswordMessageDelegateTest,

@@ -197,9 +197,9 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
 
   update_password_ = update_password;
 
-  bool use_followup_button_text = HasMultipleCredentialsStored();
+  bool use_followup_button = HasMultipleCredentialsStored();
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(
-      GetPrimaryButtonTextId(update_password, use_followup_button_text)));
+      GetPrimaryButtonTextId(update_password, use_followup_button)));
 
   if (password_manager::features::UsesUnifiedPasswordManagerBranding()) {
     message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
@@ -210,11 +210,18 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
         ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD));
   }
 
-  // With detailed dialog feature enabled the cog button is always shown
-  // (it was shown only for Save password dialog before)
-  if (base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails)) {
+  // With kPasswordEditDialogWithDetails feature on: the cog button is always
+  // shown for the save message and for the update message when there is
+  // just one password stored for the web site. When there are multiple
+  // credentials stored, the dialog will be called anyway from the followup
+  // button, so there are no options to put under the cog.
+  // With kPasswordEditDialogWithDetails feature off: the cog button is
+  // shown only for the Save password message.
+  if (base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails) &&
+      (!update_password || !use_followup_button)) {
     SetupCogMenuForDialogWithDetails(message_, update_password);
-  } else if (!update_password) {
+  } else if (!base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails) &&
+             !update_password) {
     SetupCogMenu(message_, update_password);
   }
 }
