@@ -5057,9 +5057,6 @@ void RenderFrameImpl::BeginNavigation(
   // (we currently do that in DocumentLoader), all the empty checks can be
   // removed, since they already account for an empty url.
 
-  // Blink is asking whether to navigate to a new URL.
-  // This is fine normally, except if we're showing UI from one security
-  // context and they're trying to navigate to a different context.
   const GURL& url = info->url_request.Url();
   TRACE_EVENT2("navigation", "RenderFrameImpl::BeginNavigation", "url",
                url.possibly_invalid_spec(), "navigation_type",
