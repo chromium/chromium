@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
-                 browserSignals) {
+                 browserSignals, directFromSellerSignals) {
   validateAdMetadata(adMetadata);
   validateBid(bid);
   validateAuctionConfig(auctionConfig);
   validateTrustedScoringSignals(trustedScoringSignals);
   validateBrowserSignals(browserSignals,/*isScoreAd=*/true);
+  validateDirectFromSellerSignals(directFromSellerSignals);
 
   if (browserSignals.biddingDurationMsec < 0)
     throw 'Wrong biddingDurationMsec ' + browserSignals.biddingDurationMsec;
@@ -16,9 +17,10 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
   return {desirability: 37, allowComponentAuction: true};
 }
 
-function reportResult(auctionConfig, browserSignals) {
+function reportResult(auctionConfig, browserSignals, directFromSellerSignals) {
   validateAuctionConfig(auctionConfig);
   validateBrowserSignals(browserSignals, /*isScoreAd=*/false);
+  validateDirectFromSellerSignals(directFromSellerSignals);
 
   sendReportTo(auctionConfig.seller + '/echo?report_top_level_seller');
   return ['top-level seller signals for winner'];
@@ -164,5 +166,21 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
     }
     if (browserSignals.dataVersion !== 1234)
       throw 'Wrong dataVersion ' + browserSignals.dataVersion;
+  }
+}
+
+// Used for both scoreAd() and reportResult().
+function validateDirectFromSellerSignals(directFromSellerSignals) {
+  const sellerSignalsJSON =
+      JSON.stringify(directFromSellerSignals.sellerSignals);
+  if (sellerSignalsJSON !== '{"json":"for","the":["seller"]}') {
+    throw 'Wrong directFromSellerSignals.sellerSignals ' +
+        sellerSignalsJSON;
+  }
+  const auctionSignalsJSON =
+      JSON.stringify(directFromSellerSignals.auctionSignals);
+  if (auctionSignalsJSON !== '{"json":"for","all":["parties"]}') {
+    throw 'Wrong directFromSellerSignals.auctionSignals ' +
+        auctionSignalsJSON;
   }
 }

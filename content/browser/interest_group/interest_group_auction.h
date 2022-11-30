@@ -456,6 +456,22 @@ class CONTENT_EXPORT InterestGroupAuction
       const blink::AuctionConfig& config,
       const url::Origin& buyer);
 
+  // Gets the buyer DirectFromSellerSignals auction-signals in `config` for
+  // buyer.  Public so that InterestGroupAuctionReporter can use it.
+  static absl::optional<GURL> GetDirectFromSellerAuctionSignals(
+      const SubresourceUrlBuilder& subresource_url_builder);
+
+  // Gets the buyer DirectFromSellerSignals per-buyer-signals in `config` for
+  // buyer. Public so that InterestGroupAuctionReporter can use it.
+  static absl::optional<GURL> GetDirectFromSellerPerBuyerSignals(
+      const SubresourceUrlBuilder& subresource_url_builder,
+      const url::Origin& owner);
+
+  // Gets the buyer DirectFromSellerSignals seller-signals in `config` for
+  // buyer. Public so that InterestGroupAuctionReporter can use it.
+  static absl::optional<GURL> GetDirectFromSellerSellerSignals(
+      const SubresourceUrlBuilder& subresource_url_builder);
+
  private:
   using AuctionList = std::list<std::unique_ptr<InterestGroupAuction>>;
 

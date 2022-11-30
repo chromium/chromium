@@ -25,6 +25,7 @@
 #include "base/types/optional_util.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
+#include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
@@ -191,6 +192,8 @@ void BidderWorklet::GenerateBid(
     const url::Origin& interest_group_join_origin,
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
+    const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
+    const absl::optional<GURL>& direct_from_seller_auction_signals,
     const absl::optional<base::TimeDelta> per_buyer_timeout,
     const url::Origin& browser_signal_seller_origin,
     const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
@@ -225,6 +228,40 @@ void BidderWorklet::GenerateBid(
   generate_bid_task->generate_bid_client.set_disconnect_handler(
       base::BindOnce(&BidderWorklet::OnGenerateBidClientDestroyed,
                      base::Unretained(this), generate_bid_task));
+
+  if (direct_from_seller_per_buyer_signals) {
+    // Deleting `generate_bid_task` will destroy
+    // `direct_from_seller_request_per_buyer_signals` and thus abort this
+    // callback, so it's safe to use Unretained(this) and `generate_bid_task`
+    // here.
+    generate_bid_task->direct_from_seller_request_per_buyer_signals =
+        direct_from_seller_requester_per_buyer_signals_.LoadSignals(
+            *url_loader_factory_, *direct_from_seller_per_buyer_signals,
+            base::BindOnce(
+                &BidderWorklet::
+                    OnDirectFromSellerPerBuyerSignalsDownloadedGenerateBid,
+                base::Unretained(this), generate_bid_task));
+  } else {
+    generate_bid_task->direct_from_seller_result_per_buyer_signals =
+        DirectFromSellerSignalsRequester::Result();
+  }
+
+  if (direct_from_seller_auction_signals) {
+    // Deleting `generate_bid_task` will destroy
+    // `direct_from_seller_request_auction_signals` and thus abort this
+    // callback, so it's safe to use Unretained(this) and `generate_bid_task`
+    // here.
+    generate_bid_task->direct_from_seller_request_auction_signals =
+        direct_from_seller_requester_auction_signals_.LoadSignals(
+            *url_loader_factory_, *direct_from_seller_auction_signals,
+            base::BindOnce(
+                &BidderWorklet::
+                    OnDirectFromSellerAuctionSignalsDownloadedGenerateBid,
+                base::Unretained(this), generate_bid_task));
+  } else {
+    generate_bid_task->direct_from_seller_result_auction_signals =
+        DirectFromSellerSignalsRequester::Result();
+  }
 
   const auto& trusted_bidding_signals_keys =
       generate_bid_task->bidder_worklet_non_shared_params
@@ -261,6 +298,8 @@ void BidderWorklet::ReportWin(
     const std::string& interest_group_name,
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
+    const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
+    const absl::optional<GURL>& direct_from_seller_auction_signals,
     const std::string& seller_signals_json,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
@@ -295,14 +334,43 @@ void BidderWorklet::ReportWin(
   report_win_task->callback = std::move(report_win_callback);
   report_win_task->trace_id = trace_id;
 
+  if (direct_from_seller_per_buyer_signals) {
+    // Deleting `report_win_task` will destroy
+    // `direct_from_seller_request_seller_signals` and thus abort this
+    // callback, so it's safe to use Unretained(this) and `report_win_task`
+    // here.
+    report_win_task->direct_from_seller_request_per_buyer_signals =
+        direct_from_seller_requester_per_buyer_signals_.LoadSignals(
+            *url_loader_factory_, *direct_from_seller_per_buyer_signals,
+            base::BindOnce(
+                &BidderWorklet::
+                    OnDirectFromSellerPerBuyerSignalsDownloadedReportWin,
+                base::Unretained(this), report_win_task));
+  } else {
+    report_win_task->direct_from_seller_result_per_buyer_signals =
+        DirectFromSellerSignalsRequester::Result();
+  }
+
+  if (direct_from_seller_auction_signals) {
+    // Deleting `report_win_task` will destroy
+    // `direct_from_seller_request_auction_signals` and thus abort this
+    // callback, so it's safe to use Unretained(this) and `report_win_task`
+    // here.
+    report_win_task->direct_from_seller_request_auction_signals =
+        direct_from_seller_requester_auction_signals_.LoadSignals(
+            *url_loader_factory_, *direct_from_seller_auction_signals,
+            base::BindOnce(
+                &BidderWorklet::
+                    OnDirectFromSellerAuctionSignalsDownloadedReportWin,
+                base::Unretained(this), report_win_task));
+  } else {
+    report_win_task->direct_from_seller_result_auction_signals =
+        DirectFromSellerSignalsRequester::Result();
+  }
+
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "waiting_for_bidder_script",
                                     trace_id);
-
-  // If not yet ready, need to wait for load to complete.
-  if (!IsCodeReady())
-    return;
-
-  RunReportWin(report_win_task);
+  RunReportWinIfReady(report_win_task);
 }
 
 void BidderWorklet::ConnectDevToolsAgent(
@@ -387,6 +455,10 @@ void BidderWorklet::V8State::ReportWin(
     const std::string& interest_group_name,
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
+    DirectFromSellerSignalsRequester::Result
+        direct_from_seller_result_per_buyer_signals,
+    DirectFromSellerSignalsRequester::Result
+        direct_from_seller_result_auction_signals,
     const std::string& seller_signals_json,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
@@ -460,9 +532,29 @@ void BidderWorklet::V8State::ReportWin(
   }
   args.push_back(browser_signals);
 
+  std::vector<std::string> errors_out;
+  v8::Local<v8::Object> direct_from_seller_signals = v8::Object::New(isolate);
+  gin::Dictionary direct_from_seller_signals_dict(isolate,
+                                                  direct_from_seller_signals);
+  v8::Local<v8::Value> per_buyer_signals =
+      direct_from_seller_result_per_buyer_signals.GetSignals(
+          *v8_helper_, context, errors_out);
+  v8::Local<v8::Value> auction_signals =
+      direct_from_seller_result_auction_signals.GetSignals(*v8_helper_, context,
+                                                           errors_out);
+  if (!direct_from_seller_signals_dict.Set("perBuyerSignals",
+                                           per_buyer_signals) ||
+      !direct_from_seller_signals_dict.Set("auctionSignals", auction_signals)) {
+    PostReportWinCallbackToUserThread(std::move(callback),
+                                      /*report_url=*/absl::nullopt,
+                                      /*ad_beacon_map=*/{}, /*pa_requests=*/{},
+                                      /*errors=*/std::move(errors_out));
+    return;
+  }
+  args.push_back(direct_from_seller_signals);
+
   // An empty return value indicates an exception was thrown. Any other return
   // value indicates no exception.
-  std::vector<std::string> errors_out;
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
       *debug_id_, "beforeBidderWorkletReportingStart");
 
@@ -504,6 +596,10 @@ void BidderWorklet::V8State::GenerateBid(
     const url::Origin& interest_group_join_origin,
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
+    DirectFromSellerSignalsRequester::Result
+        direct_from_seller_result_per_buyer_signals,
+    DirectFromSellerSignalsRequester::Result
+        direct_from_seller_result_auction_signals,
     const absl::optional<base::TimeDelta> per_buyer_timeout,
     const url::Origin& browser_signal_seller_origin,
     const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
@@ -523,7 +619,9 @@ void BidderWorklet::V8State::GenerateBid(
   absl::optional<SingleGenerateBidResult> result = GenerateSingleBid(
       bidder_worklet_non_shared_params, interest_group_join_origin,
       base::OptionalToPtr(auction_signals_json),
-      base::OptionalToPtr(per_buyer_signals_json), per_buyer_timeout,
+      base::OptionalToPtr(per_buyer_signals_json),
+      direct_from_seller_result_per_buyer_signals,
+      direct_from_seller_result_auction_signals, per_buyer_timeout,
       browser_signal_seller_origin,
       base::OptionalToPtr(browser_signal_top_level_seller_origin),
       bidding_browser_signals, auction_start_time,
@@ -553,7 +651,9 @@ void BidderWorklet::V8State::GenerateBid(
           GenerateSingleBid(
               bidder_worklet_non_shared_params, interest_group_join_origin,
               base::OptionalToPtr(auction_signals_json),
-              base::OptionalToPtr(per_buyer_signals_json), per_buyer_timeout,
+              base::OptionalToPtr(per_buyer_signals_json),
+              direct_from_seller_result_per_buyer_signals,
+              direct_from_seller_result_auction_signals, per_buyer_timeout,
               browser_signal_seller_origin,
               base::OptionalToPtr(browser_signal_top_level_seller_origin),
               bidding_browser_signals, auction_start_time,
@@ -599,6 +699,10 @@ BidderWorklet::V8State::GenerateSingleBid(
     const url::Origin& interest_group_join_origin,
     const std::string* auction_signals_json,
     const std::string* per_buyer_signals_json,
+    const DirectFromSellerSignalsRequester::Result&
+        direct_from_seller_result_per_buyer_signals,
+    const DirectFromSellerSignalsRequester::Result&
+        direct_from_seller_result_auction_signals,
     const absl::optional<base::TimeDelta> per_buyer_timeout,
     const url::Origin& browser_signal_seller_origin,
     const url::Origin* browser_signal_top_level_seller_origin,
@@ -772,8 +876,24 @@ BidderWorklet::V8State::GenerateSingleBid(
 
   args.push_back(browser_signals);
 
-  v8::Local<v8::Value> generate_bid_result;
   std::vector<std::string> errors_out;
+  v8::Local<v8::Object> direct_from_seller_signals = v8::Object::New(isolate);
+  gin::Dictionary direct_from_seller_signals_dict(isolate,
+                                                  direct_from_seller_signals);
+  v8::Local<v8::Value> per_buyer_signals =
+      direct_from_seller_result_per_buyer_signals.GetSignals(
+          *v8_helper_, context, errors_out);
+  v8::Local<v8::Value> auction_signals =
+      direct_from_seller_result_auction_signals.GetSignals(*v8_helper_, context,
+                                                           errors_out);
+  if (!direct_from_seller_signals_dict.Set("perBuyerSignals",
+                                           per_buyer_signals) ||
+      !direct_from_seller_signals_dict.Set("auctionSignals", auction_signals)) {
+    return absl::nullopt;
+  }
+  args.push_back(direct_from_seller_signals);
+
+  v8::Local<v8::Value> generate_bid_result;
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
       *debug_id_, "beforeBidderWorkletBiddingStart");
 
@@ -996,11 +1116,11 @@ void BidderWorklet::RunReadyTasks() {
   if (!IsCodeReady())
     return;
 
-  // Run all ReportWin() tasks. RunReportWin() does *not* modify
-  // `report_win_tasks_` when invoked, so this is safe.
+  // Run all ReportWin() tasks that are ready. RunReportWinIfReady() does *not*
+  // modify `report_win_tasks_` when invoked, so this is safe.
   for (auto report_win_task = report_win_tasks_.begin();
        report_win_task != report_win_tasks_.end(); ++report_win_task) {
-    RunReportWin(report_win_task);
+    RunReportWinIfReady(report_win_task);
   }
 }
 
@@ -1047,7 +1167,7 @@ void BidderWorklet::OnGenerateBidClientDestroyed(
   // loaded, it hasn't posted a task to run off-thread, so can be safely
   // deleted, as everything else, including fetching trusted bidding signals,
   // can be safely cancelled.
-  if (!task->signals_received_callback_invoked || !IsCodeReady()) {
+  if (!IsReadyToGenerateBid(*task)) {
     generate_bid_tasks_.erase(task);
   } else {
     // Otherwise, there should be a pending V8 call. Try to cancel that, but if
@@ -1066,9 +1186,37 @@ void BidderWorklet::SignalsReceivedCallback(
   GenerateBidIfReady(task);
 }
 
+void BidderWorklet::OnDirectFromSellerPerBuyerSignalsDownloadedGenerateBid(
+    GenerateBidTaskList::iterator task,
+    DirectFromSellerSignalsRequester::Result result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+
+  task->direct_from_seller_result_per_buyer_signals = std::move(result);
+  task->direct_from_seller_request_per_buyer_signals.reset();
+
+  GenerateBidIfReady(task);
+}
+
+void BidderWorklet::OnDirectFromSellerAuctionSignalsDownloadedGenerateBid(
+    GenerateBidTaskList::iterator task,
+    DirectFromSellerSignalsRequester::Result result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+
+  task->direct_from_seller_result_auction_signals = std::move(result);
+  task->direct_from_seller_request_auction_signals.reset();
+
+  GenerateBidIfReady(task);
+}
+
+bool BidderWorklet::IsReadyToGenerateBid(const GenerateBidTask& task) const {
+  return task.signals_received_callback_invoked &&
+         !task.direct_from_seller_request_per_buyer_signals &&
+         !task.direct_from_seller_request_auction_signals && IsCodeReady();
+}
+
 void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  if (!task->signals_received_callback_invoked || !IsCodeReady())
+  if (!IsReadyToGenerateBid(*task))
     return;
 
   // If there was a trusted signals request, it should have already completed
@@ -1094,11 +1242,11 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
   // `task` are needed after this point, so can consume them instead of copying
   // them.
   //
-  // Since `signals_received_callback_invoked` and IsCodeReady() are true, the
-  // GenerateBidTask won't be deleted on the main thread during this call, even
-  // if the GenerateBidClient pipe is deleted by the caller (unless the
-  // BidderWorklet  itself is deleted). Therefore, it's safe to post a callback
-  // with the `task`  iterator the v8 thread.
+  // Since IsReadyToGenerateBid() is true, the GenerateBidTask won't be deleted
+  // on the main thread during this call, even if the GenerateBidClient pipe is
+  // deleted by the caller (unless the BidderWorklet  itself is deleted).
+  // Therefore, it's safe to post a callback with the `task`  iterator the v8
+  // thread.
   task->task_id = cancelable_task_tracker_.PostTask(
       v8_runner_.get(), FROM_HERE,
       base::BindOnce(
@@ -1108,6 +1256,8 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
           std::move(task->interest_group_join_origin),
           std::move(task->auction_signals_json),
           std::move(task->per_buyer_signals_json),
+          std::move(task->direct_from_seller_result_per_buyer_signals),
+          std::move(task->direct_from_seller_result_auction_signals),
           std::move(task->per_buyer_timeout),
           std::move(task->browser_signal_seller_origin),
           std::move(task->browser_signal_top_level_seller_origin),
@@ -1118,8 +1268,37 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
                          weak_ptr_factory_.GetWeakPtr(), task)));
 }
 
-void BidderWorklet::RunReportWin(ReportWinTaskList::iterator task) {
+void BidderWorklet::OnDirectFromSellerPerBuyerSignalsDownloadedReportWin(
+    ReportWinTaskList::iterator task,
+    DirectFromSellerSignalsRequester::Result result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+
+  task->direct_from_seller_result_per_buyer_signals = std::move(result);
+  task->direct_from_seller_request_per_buyer_signals.reset();
+
+  RunReportWinIfReady(task);
+}
+
+void BidderWorklet::OnDirectFromSellerAuctionSignalsDownloadedReportWin(
+    ReportWinTaskList::iterator task,
+    DirectFromSellerSignalsRequester::Result result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+
+  task->direct_from_seller_result_auction_signals = std::move(result);
+  task->direct_from_seller_request_auction_signals.reset();
+
+  RunReportWinIfReady(task);
+}
+
+bool BidderWorklet::IsReadyToReportWin(const ReportWinTask& task) const {
+  return IsCodeReady() && !task.direct_from_seller_request_per_buyer_signals &&
+         !task.direct_from_seller_request_auction_signals;
+}
+
+void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  if (!IsReadyToReportWin(*task))
+    return;
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "waiting_for_bidder_script",
                                   task->trace_id);
@@ -1134,6 +1313,8 @@ void BidderWorklet::RunReportWin(ReportWinTaskList::iterator task) {
           std::move(task->interest_group_name),
           std::move(task->auction_signals_json),
           std::move(task->per_buyer_signals_json),
+          std::move(task->direct_from_seller_result_per_buyer_signals),
+          std::move(task->direct_from_seller_result_auction_signals),
           std::move(task->seller_signals_json),
           std::move(task->browser_signal_render_url),
           std::move(task->browser_signal_bid),

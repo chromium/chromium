@@ -171,6 +171,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       const url::Origin& interest_group_join_origin,
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
+      const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
+      const absl::optional<GURL>& direct_from_seller_auction_signals,
       const absl::optional<base::TimeDelta> per_buyer_timeout,
       const url::Origin& browser_signal_seller_origin,
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
@@ -194,6 +196,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       const std::string& interest_group_name,
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
+      const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
+      const absl::optional<GURL>& direct_from_seller_auction_signals,
       const std::string& seller_signals_json,
       const GURL& browser_signal_render_url,
       double browser_signal_bid,
@@ -311,6 +315,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
                double bid,
                const blink::AuctionConfig::NonSharedParams&
                    auction_ad_config_non_shared_params,
+               const absl::optional<GURL>& direct_from_seller_seller_signals,
+               const absl::optional<GURL>& direct_from_seller_auction_signals,
                auction_worklet::mojom::ComponentAuctionOtherSellerPtr
                    browser_signals_other_seller,
                const url::Origin& browser_signal_interest_group_owner,
@@ -335,6 +341,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
   void ReportResult(
       const blink::AuctionConfig::NonSharedParams&
           auction_ad_config_non_shared_params,
+      const absl::optional<GURL>& direct_from_seller_seller_signals,
+      const absl::optional<GURL>& direct_from_seller_auction_signals,
       auction_worklet::mojom::ComponentAuctionOtherSellerPtr
           browser_signals_other_seller,
       const url::Origin& browser_signal_interest_group_owner,

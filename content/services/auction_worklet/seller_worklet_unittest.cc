@@ -70,7 +70,7 @@ std::string CreateScoreAdScript(const std::string& raw_return_value,
                                 const std::string& extra_code = "") {
   constexpr char kSellAdScript[] = R"(
     function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
-        browserSignals) {
+        browserSignals, directFromSellerSignals) {
       %s;
       return %s;
     }
@@ -93,7 +93,8 @@ std::string CreateBasicSellAdScript() {
 std::string CreateReportToScript(const std::string& raw_return_value,
                                  const std::string& extra_code) {
   constexpr char kBasicSellerScript[] = R"(
-    function reportResult(auctionConfig, browserSignals) {
+    function reportResult(auctionConfig, browserSignals,
+        directFromSellerSignals) {
       %s;
       return %s;
     }
@@ -336,6 +337,7 @@ class SellerWorkletTest : public testing::Test {
       base::OnceClosure done_closure) {
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, auction_ad_config_non_shared_params_,
+        direct_from_seller_seller_signals_, direct_from_seller_auction_signals_,
         browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
@@ -399,6 +401,7 @@ class SellerWorkletTest : public testing::Test {
       mojom::SellerWorklet* seller_worklet) {
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, auction_ad_config_non_shared_params_,
+        direct_from_seller_seller_signals_, direct_from_seller_auction_signals_,
         browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
@@ -513,6 +516,7 @@ class SellerWorkletTest : public testing::Test {
       base::OnceClosure done_closure) {
     seller_worklet->ReportResult(
         auction_ad_config_non_shared_params_,
+        direct_from_seller_seller_signals_, direct_from_seller_auction_signals_,
         browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
         browser_signal_desireability_,
@@ -558,6 +562,7 @@ class SellerWorkletTest : public testing::Test {
       mojom::SellerWorklet* seller_worklet) {
     seller_worklet->ReportResult(
         auction_ad_config_non_shared_params_,
+        direct_from_seller_seller_signals_, direct_from_seller_auction_signals_,
         browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
         browser_signal_desireability_,
@@ -600,10 +605,16 @@ class SellerWorkletTest : public testing::Test {
   // the stash an actual implementation pointer there.
   mojo::Remote<mojom::SellerWorklet> CreateWorklet(
       bool pause_for_debugger_on_start = false,
-      SellerWorklet** out_seller_worklet_impl = nullptr) {
+      SellerWorklet** out_seller_worklet_impl = nullptr,
+      bool use_alternate_url_loader_factory = false) {
     mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
-    url_loader_factory_.Clone(
-        url_loader_factory.InitWithNewPipeAndPassReceiver());
+    if (use_alternate_url_loader_factory) {
+      alternate_url_loader_factory_.Clone(
+          url_loader_factory.InitWithNewPipeAndPassReceiver());
+    } else {
+      url_loader_factory_.Clone(
+          url_loader_factory.InitWithNewPipeAndPassReceiver());
+    }
 
     mojo::Remote<mojom::SellerWorklet> seller_worklet;
     auto seller_worklet_impl = std::make_unique<SellerWorklet>(
@@ -662,6 +673,9 @@ class SellerWorkletTest : public testing::Test {
 
   // Arguments passed to score_bid() and report_result(). Arguments common to
   // both of them use the same field.
+  //
+  // NOTE: For each new GURL field, ScoreAdLoadCompletionOrder /
+  // ReportResultLoadCompletionOrder should be updated.
   std::string ad_metadata_;
   // `bid_` is a browser signal for report_result(), but a direct parameter for
   // score_bid().
@@ -669,6 +683,8 @@ class SellerWorkletTest : public testing::Test {
   GURL decision_logic_url_;
   absl::optional<GURL> trusted_scoring_signals_url_;
   blink::AuctionConfig::NonSharedParams auction_ad_config_non_shared_params_;
+  absl::optional<GURL> direct_from_seller_seller_signals_;
+  absl::optional<GURL> direct_from_seller_auction_signals_;
   url::Origin top_window_origin_;
   absl::optional<uint16_t> experiment_group_id_;
   mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller_;
@@ -688,6 +704,7 @@ class SellerWorkletTest : public testing::Test {
   absl::optional<std::string> disconnect_reason_;
 
   network::TestURLLoaderFactory url_loader_factory_;
+  network::TestURLLoaderFactory alternate_url_loader_factory_;
   scoped_refptr<AuctionV8Helper> v8_helper_;
 
   // Owns all created seller worklets - having a ReceiverSet allows them to have
@@ -1747,6 +1764,170 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched3) {
   run_loop.Run();
 }
 
+// It shouldn't matter the order in which network fetches complete. For each
+// required and optional scoreAd() URL load prerequisite, ensure that
+// scoreAd() completes when that URL is the last loaded URL.
+TEST_F(SellerWorkletTest, ScoreAdLoadCompletionOrder) {
+  constexpr char kJsonResponse[] = "{}";
+  constexpr char kDirectFromSellerSignalsHeaders[] =
+      "X-Allow-FLEDGE: true\nX-FLEDGE-Auction-Only: true";
+
+  direct_from_seller_seller_signals_ = GURL("https://url.test/sellersignals");
+  direct_from_seller_auction_signals_ = GURL("https://url.test/auctionsignals");
+  trusted_scoring_signals_url_ = GURL("https://url.test/trustedsignals");
+
+  struct Response {
+    GURL response_url;
+    std::string response_type;
+    std::string headers;
+    std::string content;
+  };
+
+  const Response kResponses[] = {
+      {decision_logic_url_, kJavascriptMimeType, kAllowFledgeHeader,
+       CreateScoreAdScript("1")},
+      {*direct_from_seller_seller_signals_, kJsonMimeType,
+       kDirectFromSellerSignalsHeaders, kJsonResponse},
+      {*direct_from_seller_auction_signals_, kJsonMimeType,
+       kDirectFromSellerSignalsHeaders, kJsonResponse},
+      {GURL(trusted_scoring_signals_url_->spec() +
+            "?hostname=window.test"
+            "&renderUrls=https%3A%2F%2Frender.url.test%2F"),
+       kJsonMimeType, kAllowFledgeHeader, kTrustedScoringSignalsResponse}};
+
+  // Cycle such that each response in `kResponses` gets to be the last response,
+  // like so:
+  //
+  // 0,1,2
+  // 1,2,0
+  // 2,0,1
+  for (size_t offset = 0; offset < std::size(kResponses); ++offset) {
+    SCOPED_TRACE(offset);
+    mojo::Remote<mojom::SellerWorklet> seller_worklet = CreateWorklet();
+    url_loader_factory_.ClearResponses();
+    auto run_loop = std::make_unique<base::RunLoop>();
+    RunScoreAdOnWorkletAsync(
+        seller_worklet.get(), /*expected_score=*/1.0,
+        /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_reject_reason=*/
+        mojom::RejectReason::kNotAvailable,
+        /*expected_pa_requests=*/{}, run_loop->QuitClosure());
+    for (size_t i = 0; i < std::size(kResponses); ++i) {
+      SCOPED_TRACE(i);
+      const Response& response =
+          kResponses[(i + offset) % std::size(kResponses)];
+      AddResponse(
+          &url_loader_factory_, response.response_url, response.response_type,
+          /*charset=*/absl::nullopt, response.content, response.headers);
+      task_environment_.RunUntilIdle();
+      if (i < std::size(kResponses) - 1) {
+        // Some URLs haven't finished loading -- generateBid() should be
+        // blocked.
+        EXPECT_FALSE(run_loop->AnyQuitCalled());
+      }
+    }
+    // The last URL for this generateBid() call has completed -- check that
+    // generateBid() returns.
+    run_loop->Run();
+  }
+}
+
+// If multiple worklets request DirectFromSellerSignals, they each get the
+// correct signals.
+TEST_F(SellerWorkletTest, ScoreAdDirectFromSellerSignalsMultipleWorklets) {
+  constexpr char kWorklet1JsonResponse[] = R"({"worklet":1})";
+  constexpr char kWorklet2JsonResponse[] = R"({"worklet":2})";
+  constexpr char kWorklet1ExtraCode[] = R"(
+const sellerSignalsJson =
+    JSON.stringify(directFromSellerSignals.sellerSignals);
+if (sellerSignalsJson !== '{"worklet":1}') {
+  throw 'Wrong directFromSellerSignals.sellerSignals ' +
+      sellerSignalsJson;
+}
+const auctionSignalsJson =
+    JSON.stringify(directFromSellerSignals.auctionSignals);
+if (auctionSignalsJson !== '{"worklet":1}') {
+  throw 'Wrong directFromSellerSignals.auctionSignals ' +
+      auctionSignalsJson;
+}
+)";
+  constexpr char kWorklet2ExtraCode[] = R"(
+const sellerSignalsJson =
+    JSON.stringify(directFromSellerSignals.sellerSignals);
+if (sellerSignalsJson !== '{"worklet":2}') {
+  throw 'Wrong directFromSellerSignals.sellerSignals ' +
+      sellerSignalsJson;
+}
+const auctionSignalsJson =
+    JSON.stringify(directFromSellerSignals.auctionSignals);
+if (auctionSignalsJson !== '{"worklet":2}') {
+  throw 'Wrong directFromSellerSignals.auctionSignals ' +
+      auctionSignalsJson;
+}
+)";
+  constexpr char kDirectFromSellerSignalsHeaders[] =
+      "X-Allow-FLEDGE: true\nX-FLEDGE-Auction-Only: true";
+
+  direct_from_seller_seller_signals_ = GURL("https://url.test/sellersignals");
+  direct_from_seller_auction_signals_ = GURL("https://url.test/auctionsignals");
+
+  mojo::Remote<mojom::SellerWorklet> seller_worklet1 = CreateWorklet();
+  AddResponse(&url_loader_factory_, *direct_from_seller_seller_signals_,
+              kJsonMimeType, /*charset=*/absl::nullopt, kWorklet1JsonResponse,
+              kDirectFromSellerSignalsHeaders);
+  AddResponse(&url_loader_factory_, *direct_from_seller_auction_signals_,
+              kJsonMimeType, /*charset=*/absl::nullopt, kWorklet1JsonResponse,
+              kDirectFromSellerSignalsHeaders);
+  AddJavascriptResponse(
+      &url_loader_factory_, decision_logic_url_,
+      CreateScoreAdScript("1", /*extra_code=*/kWorklet1ExtraCode));
+
+  // For the second worklet, use a different `decision_logic_url_` (to set up
+  // different expectations), but use the same DirectFromSellerSignals URLs.
+  decision_logic_url_ = GURL("https://url2.test/");
+  mojo::Remote<mojom::SellerWorklet> seller_worklet2 = CreateWorklet(
+      /*pause_for_debugger_on_start=*/false,
+      /*out_seller_worklet_impl=*/nullptr,
+      /*use_alternate_url_loader_factory=*/true);
+  AddResponse(&alternate_url_loader_factory_,
+              *direct_from_seller_seller_signals_, kJsonMimeType,
+              /*charset=*/absl::nullopt, kWorklet2JsonResponse,
+              kDirectFromSellerSignalsHeaders);
+  AddResponse(&alternate_url_loader_factory_,
+              *direct_from_seller_auction_signals_, kJsonMimeType,
+              /*charset=*/absl::nullopt, kWorklet2JsonResponse,
+              kDirectFromSellerSignalsHeaders);
+  AddJavascriptResponse(
+      &alternate_url_loader_factory_, decision_logic_url_,
+      CreateScoreAdScript("1", /*extra_code=*/kWorklet2ExtraCode));
+  auto run_loop = std::make_unique<base::RunLoop>();
+  RunScoreAdOnWorkletAsync(
+      seller_worklet1.get(), /*expected_score=*/1.0,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_reject_reason=*/
+      mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{}, run_loop->QuitClosure());
+  run_loop->Run();
+
+  run_loop = std::make_unique<base::RunLoop>();
+  RunScoreAdOnWorkletAsync(
+      seller_worklet2.get(), /*expected_score=*/1.0,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_reject_reason=*/
+      mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{}, run_loop->QuitClosure());
+  run_loop->Run();
+}
+
 // Test multiple ReportWin() calls on a single worklet, in parallel. Do this
 // twice, once before the worklet has loaded its Javascript, and once after, to
 // make sure both cases work.
@@ -1842,7 +2023,7 @@ TEST_F(SellerWorkletTest, ReportResult) {
       /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:10 Uncaught ReferenceError: "
+      {"https://url.test/:11 Uncaught ReferenceError: "
        "shrimp is not defined."});
 }
 
@@ -1862,7 +2043,7 @@ TEST_F(SellerWorkletTest, ReportResultSendReportTo) {
       /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:9 Uncaught TypeError: "
+      {"https://url.test/:10 Uncaught TypeError: "
        "sendReportTo must be passed a valid HTTPS url."});
   RunReportResultCreatedScriptExpectingResult(
       "1", R"(sendReportTo("file:///foo/"))",
@@ -1870,7 +2051,7 @@ TEST_F(SellerWorkletTest, ReportResultSendReportTo) {
       /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:9 Uncaught TypeError: "
+      {"https://url.test/:10 Uncaught TypeError: "
        "sendReportTo must be passed a valid HTTPS url."});
 
   // Multiple calls.
@@ -1881,7 +2062,7 @@ TEST_F(SellerWorkletTest, ReportResultSendReportTo) {
       /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:9 Uncaught TypeError: "
+      {"https://url.test/:10 Uncaught TypeError: "
        "sendReportTo may be called at most once."});
 
   // No message if caught, but still no URL.
@@ -1900,7 +2081,7 @@ TEST_F(SellerWorkletTest, ReportResultSendReportTo) {
       /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:9 Uncaught TypeError: "
+      {"https://url.test/:10 Uncaught TypeError: "
        "sendReportTo must be passed a valid HTTPS url."});
   RunReportResultCreatedScriptExpectingResult(
       "1", R"(sendReportTo(null))",
@@ -1908,7 +2089,7 @@ TEST_F(SellerWorkletTest, ReportResultSendReportTo) {
       /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:9 Uncaught TypeError: "
+      {"https://url.test/:10 Uncaught TypeError: "
        "sendReportTo requires 1 string parameter."});
   RunReportResultCreatedScriptExpectingResult(
       "1", R"(sendReportTo([5]))",
@@ -1916,7 +2097,7 @@ TEST_F(SellerWorkletTest, ReportResultSendReportTo) {
       /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:9 Uncaught TypeError: "
+      {"https://url.test/:10 Uncaught TypeError: "
        "sendReportTo requires 1 string parameter."});
 }
 
@@ -1927,7 +2108,7 @@ TEST_F(SellerWorkletTest, ReportResultDateNotAvailable) {
       /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:9 Uncaught ReferenceError: Date is not defined."});
+      {"https://url.test/:10 Uncaught ReferenceError: Date is not defined."});
 }
 
 TEST_F(SellerWorkletTest, ReportResultTopWindowOrigin) {
@@ -2160,7 +2341,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:13 Uncaught TypeError: registerAdBeacon may be "
+      {"https://url.test/:14 Uncaught TypeError: registerAdBeacon may be "
        "called at most once."});
 
   // If called twice and the error is caught, use the first result.
@@ -2194,7 +2375,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:9 Uncaught TypeError: registerAdBeacon requires 1 "
+      {"https://url.test/:10 Uncaught TypeError: registerAdBeacon requires 1 "
        "object parameter."});
 
   // Error if parameter is not an object
@@ -2204,7 +2385,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:9 Uncaught TypeError: registerAdBeacon requires 1 "
+      {"https://url.test/:10 Uncaught TypeError: registerAdBeacon requires 1 "
        "object parameter."});
 
   // Error if parameter is not an object
@@ -2214,7 +2395,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:9 Uncaught TypeError: registerAdBeacon requires 1 "
+      {"https://url.test/:10 Uncaught TypeError: registerAdBeacon requires 1 "
        "object parameter."});
 
   // Error if parameter attributes are not strings
@@ -2228,7 +2409,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:9 Uncaught TypeError: registerAdBeacon object "
+      {"https://url.test/:10 Uncaught TypeError: registerAdBeacon object "
        "attributes must be strings."});
 
   // Error if invalid reporting URL
@@ -2242,7 +2423,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:9 Uncaught TypeError: registerAdBeacon invalid "
+      {"https://url.test/:10 Uncaught TypeError: registerAdBeacon invalid "
        "reporting url for key 'view': 'gopher://view.example.com/'."});
 
   // Error if not trustworthy reporting URL
@@ -2256,7 +2437,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
-      {"https://url.test/:9 Uncaught TypeError: registerAdBeacon invalid "
+      {"https://url.test/:10 Uncaught TypeError: registerAdBeacon invalid "
        "reporting url for key 'view': 'http://view.example.com/'."});
 }
 
@@ -2431,6 +2612,69 @@ TEST_F(SellerWorkletTest, ReportResultDataVersion) {
       /*expected_report_url=*/absl::nullopt);
 }
 
+// It shouldn't matter the order in which network fetches complete. For each
+// required and optional reportResult() URL load prerequisite, ensure that
+// reportResult() completes when that URL is the last loaded URL.
+TEST_F(SellerWorkletTest, ReportResultLoadCompletionOrder) {
+  constexpr char kJsonResponse[] = "{}";
+  constexpr char kDirectFromSellerSignalsHeaders[] =
+      "X-Allow-FLEDGE: true\nX-FLEDGE-Auction-Only: true";
+
+  direct_from_seller_seller_signals_ = GURL("https://url.test/sellersignals");
+  direct_from_seller_auction_signals_ = GURL("https://url.test/auctionsignals");
+
+  struct Response {
+    GURL response_url;
+    std::string response_type;
+    std::string headers;
+    std::string content;
+  };
+
+  const Response kResponses[] = {
+      {decision_logic_url_, kJavascriptMimeType, kAllowFledgeHeader,
+       CreateReportToScript(
+           "1",
+           /*extra_code=*/R"(sendReportTo("https://foo.test"))")},
+      {*direct_from_seller_seller_signals_, kJsonMimeType,
+       kDirectFromSellerSignalsHeaders, kJsonResponse},
+      {*direct_from_seller_auction_signals_, kJsonMimeType,
+       kDirectFromSellerSignalsHeaders, kJsonResponse}};
+
+  // Cycle such that each response in `kResponses` gets to be the last response,
+  // like so:
+  //
+  // 0,1,2
+  // 1,2,0
+  // 2,0,1
+  for (size_t offset = 0; offset < std::size(kResponses); ++offset) {
+    SCOPED_TRACE(offset);
+    mojo::Remote<mojom::SellerWorklet> seller_worklet = CreateWorklet();
+    url_loader_factory_.ClearResponses();
+    auto run_loop = std::make_unique<base::RunLoop>();
+    RunReportResultExpectingResultAsync(
+        seller_worklet.get(), "1", GURL("https://foo.test/"),
+        /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+        /*expected_errors=*/{}, run_loop->QuitClosure());
+    for (size_t i = 0; i < std::size(kResponses); ++i) {
+      SCOPED_TRACE(i);
+      const Response& response =
+          kResponses[(i + offset) % std::size(kResponses)];
+      AddResponse(
+          &url_loader_factory_, response.response_url, response.response_type,
+          /*charset=*/absl::nullopt, response.content, response.headers);
+      task_environment_.RunUntilIdle();
+      if (i < std::size(kResponses) - 1) {
+        // Some URLs haven't finished loading -- generateBid() should be
+        // blocked.
+        EXPECT_FALSE(run_loop->AnyQuitCalled());
+      }
+    }
+    // The last URL for this generateBid() call has completed -- check that
+    // generateBid() returns.
+    run_loop->Run();
+  }
+}
+
 // Subsequent runs of the same script should not affect each other. Same is true
 // for different scripts, but it follows from the single script case.
 TEST_F(SellerWorkletTest, ScriptIsolation) {
@@ -2465,6 +2709,8 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
       base::RunLoop run_loop;
       seller_worklet->ScoreAd(
           ad_metadata_, bid_, auction_ad_config_non_shared_params_,
+          direct_from_seller_seller_signals_,
+          direct_from_seller_auction_signals_,
           browser_signals_other_seller_.Clone(),
           browser_signal_interest_group_owner_, browser_signal_render_url_,
           browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
@@ -2492,6 +2738,8 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
       base::RunLoop run_loop;
       seller_worklet->ReportResult(
           auction_ad_config_non_shared_params_,
+          direct_from_seller_seller_signals_,
+          direct_from_seller_auction_signals_,
           browser_signals_other_seller_.Clone(),
           browser_signal_interest_group_owner_, browser_signal_render_url_,
           bid_, browser_signal_desireability_,
@@ -2525,6 +2773,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
   seller_worklet->ScoreAd(
       ad_metadata_, bid_, auction_ad_config_non_shared_params_,
+      direct_from_seller_seller_signals_, direct_from_seller_auction_signals_,
       browser_signals_other_seller_.Clone(),
       browser_signal_interest_group_owner_, browser_signal_render_url_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
@@ -2549,7 +2798,8 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
 
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
   seller_worklet->ReportResult(
-      auction_ad_config_non_shared_params_,
+      auction_ad_config_non_shared_params_, direct_from_seller_seller_signals_,
+      direct_from_seller_auction_signals_,
       browser_signals_other_seller_.Clone(),
       browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
       browser_signal_desireability_, browser_signal_highest_scoring_other_bid_,
@@ -3152,6 +3402,7 @@ TEST_F(SellerWorkletTest, Cancelation) {
 
   seller_worklet->ScoreAd(
       ad_metadata_, bid_, auction_ad_config_non_shared_params_,
+      direct_from_seller_seller_signals_, direct_from_seller_auction_signals_,
       browser_signals_other_seller_.Clone(),
       browser_signal_interest_group_owner_, browser_signal_render_url_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
@@ -3209,6 +3460,7 @@ TEST_F(SellerWorkletTest, CancelBeforeFetch) {
 
   seller_worklet->ScoreAd(
       ad_metadata_, bid_, auction_ad_config_non_shared_params_,
+      direct_from_seller_seller_signals_, direct_from_seller_auction_signals_,
       browser_signals_other_seller_.Clone(),
       browser_signal_interest_group_owner_, browser_signal_render_url_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
@@ -3519,6 +3771,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
     base::RunLoop run_loop;
     seller_worklet->ScoreAd(
         ad_metadata_, i + 1, auction_ad_config_non_shared_params_,
+        direct_from_seller_seller_signals_, direct_from_seller_auction_signals_,
         browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
@@ -3801,7 +4054,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
         /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
         std::move(expected_pa_requests),
         /*expected_errors=*/
-        {"https://url.test/:11 Uncaught ReferenceError: error is not "
+        {"https://url.test/:12 Uncaught ReferenceError: error is not "
          "defined."});
   }
 
@@ -3866,7 +4119,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
         /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
         /*expected_pa_requests=*/{},
         /*expected_errors=*/
-        {"https://url.test/:11 Uncaught TypeError: enableDebugMode may be "
+        {"https://url.test/:12 Uncaught TypeError: enableDebugMode may be "
          "called at most once."});
   }
 }
@@ -3905,7 +4158,7 @@ TEST_F(SellerWorkletPrivateAggregationDisabledTest, ReportResult) {
       /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       /*expected_errors=*/
-      {"https://url.test/:9 Uncaught ReferenceError: privateAggregation is "
+      {"https://url.test/:10 Uncaught ReferenceError: privateAggregation is "
        "not defined."});
 }
 

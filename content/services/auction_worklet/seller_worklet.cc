@@ -25,6 +25,7 @@
 #include "base/trace_event/trace_event.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/context_recycler.h"
+#include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
@@ -38,6 +39,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
@@ -343,6 +345,8 @@ void SellerWorklet::ScoreAd(
     double bid,
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
+    const absl::optional<GURL>& direct_from_seller_seller_signals,
+    const absl::optional<GURL>& direct_from_seller_auction_signals,
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
@@ -376,10 +380,41 @@ void SellerWorklet::ScoreAd(
 
   // Deleting `score_ad_task` will destroy `score_ad_client` and thus
   // abort this callback, so it's safe to use Unretained(this) and
-  // `generate_bid_task` here.
+  // `score_ad_task` here.
   score_ad_task->score_ad_client.set_disconnect_handler(
       base::BindOnce(&SellerWorklet::OnScoreAdClientDestroyed,
                      base::Unretained(this), score_ad_task));
+
+  if (direct_from_seller_seller_signals) {
+    // Deleting `score_ad_task` will destroy
+    // `direct_from_seller_request_seller_signals` and thus abort this callback,
+    // so it's safe to use Unretained(this) and `score_ad_task` here.
+    score_ad_task->direct_from_seller_request_seller_signals =
+        direct_from_seller_requester_seller_signals_.LoadSignals(
+            *url_loader_factory_, *direct_from_seller_seller_signals,
+            base::BindOnce(&SellerWorklet::
+                               OnDirectFromSellerSellerSignalsDownloadedScoreAd,
+                           base::Unretained(this), score_ad_task));
+  } else {
+    score_ad_task->direct_from_seller_result_seller_signals =
+        DirectFromSellerSignalsRequester::Result();
+  }
+
+  if (direct_from_seller_auction_signals) {
+    // Deleting `score_ad_task` will destroy
+    // `direct_from_seller_request_auction_signals` and thus abort this
+    // callback, so it's safe to use Unretained(this) and `score_ad_task` here.
+    score_ad_task->direct_from_seller_request_auction_signals =
+        direct_from_seller_requester_auction_signals_.LoadSignals(
+            *url_loader_factory_, *direct_from_seller_auction_signals,
+            base::BindOnce(
+                &SellerWorklet::
+                    OnDirectFromSellerAuctionSignalsDownloadedScoreAd,
+                base::Unretained(this), score_ad_task));
+  } else {
+    score_ad_task->direct_from_seller_result_auction_signals =
+        DirectFromSellerSignalsRequester::Result();
+  }
 
   // If `trusted_signals_request_manager_` exists, there's a trusted scoring
   // signals URL which needs to be fetched before the auction can be run.
@@ -408,6 +443,8 @@ void SellerWorklet::SendPendingSignalsRequests() {
 void SellerWorklet::ReportResult(
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
+    const absl::optional<GURL>& direct_from_seller_seller_signals,
+    const absl::optional<GURL>& direct_from_seller_auction_signals,
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
@@ -453,14 +490,42 @@ void SellerWorklet::ReportResult(
   }
   report_result_task->callback = std::move(callback);
 
+  if (direct_from_seller_seller_signals) {
+    // Deleting `report_result_task` will destroy
+    // `direct_from_seller_request_seller_signals` and thus abort this callback,
+    // so it's safe to use Unretained(this) and `report_result_task` here.
+    report_result_task->direct_from_seller_request_seller_signals =
+        direct_from_seller_requester_seller_signals_.LoadSignals(
+            *url_loader_factory_, *direct_from_seller_seller_signals,
+            base::BindOnce(
+                &SellerWorklet::
+                    OnDirectFromSellerSellerSignalsDownloadedReportResult,
+                base::Unretained(this), report_result_task));
+  } else {
+    report_result_task->direct_from_seller_result_seller_signals =
+        DirectFromSellerSignalsRequester::Result();
+  }
+
+  if (direct_from_seller_auction_signals) {
+    // Deleting `report_result_task` will destroy
+    // `direct_from_seller_request_auction_signals` and thus abort this
+    // callback, so it's safe to use Unretained(this) and `report_result_task`
+    // here.
+    report_result_task->direct_from_seller_request_auction_signals =
+        direct_from_seller_requester_auction_signals_.LoadSignals(
+            *url_loader_factory_, *direct_from_seller_auction_signals,
+            base::BindOnce(
+                &SellerWorklet::
+                    OnDirectFromSellerAuctionSignalsDownloadedReportResult,
+                base::Unretained(this), report_result_task));
+  } else {
+    report_result_task->direct_from_seller_result_auction_signals =
+        DirectFromSellerSignalsRequester::Result();
+  }
+
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "waiting_for_seller_script",
                                     trace_id);
-
-  // If not yet ready, need to wait for load to complete.
-  if (!IsCodeReady())
-    return;
-
-  RunReportResult(report_result_task);
+  RunReportResultIfReady(report_result_task);
 }
 
 void SellerWorklet::ConnectDevToolsAgent(
@@ -510,6 +575,10 @@ void SellerWorklet::V8State::ScoreAd(
     double bid,
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
+    DirectFromSellerSignalsRequester::Result
+        direct_from_seller_result_seller_signals,
+    DirectFromSellerSignalsRequester::Result
+        direct_from_seller_result_auction_signals,
     scoped_refptr<TrustedSignals::Result> trusted_scoring_signals,
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const url::Origin& browser_signal_interest_group_owner,
@@ -603,8 +672,25 @@ void SellerWorklet::V8State::ScoreAd(
   }
   args.push_back(browser_signals);
 
-  v8::Local<v8::Value> score_ad_result;
+  v8::Local<v8::Object> direct_from_seller_signals = v8::Object::New(isolate);
+  gin::Dictionary direct_from_seller_signals_dict(isolate,
+                                                  direct_from_seller_signals);
   std::vector<std::string> errors_out;
+  v8::Local<v8::Value> seller_signals =
+      direct_from_seller_result_seller_signals.GetSignals(*v8_helper_, context,
+                                                          errors_out);
+  v8::Local<v8::Value> auction_signals =
+      direct_from_seller_result_auction_signals.GetSignals(*v8_helper_, context,
+                                                           errors_out);
+  if (!direct_from_seller_signals_dict.Set("sellerSignals", seller_signals) ||
+      !direct_from_seller_signals_dict.Set("auctionSignals", auction_signals)) {
+    PostScoreAdCallbackToUserThreadOnError(std::move(callback),
+                                           /*errors=*/std::move(errors_out));
+    return;
+  }
+  args.push_back(direct_from_seller_signals);
+
+  v8::Local<v8::Value> score_ad_result;
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
       *debug_id_, "beforeSellerWorkletScoringStart");
 
@@ -794,6 +880,10 @@ void SellerWorklet::V8State::ScoreAd(
 void SellerWorklet::V8State::ReportResult(
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
+    DirectFromSellerSignalsRequester::Result
+        direct_from_seller_result_seller_signals,
+    DirectFromSellerSignalsRequester::Result
+        direct_from_seller_result_auction_signals,
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
@@ -883,8 +973,29 @@ void SellerWorklet::V8State::ReportResult(
   }
   args.push_back(browser_signals);
 
-  v8::Local<v8::Value> signals_for_winner_value;
   std::vector<std::string> errors_out;
+  v8::Local<v8::Object> direct_from_seller_signals = v8::Object::New(isolate);
+  gin::Dictionary direct_from_seller_signals_dict(isolate,
+                                                  direct_from_seller_signals);
+  v8::Local<v8::Value> seller_signals =
+      direct_from_seller_result_seller_signals.GetSignals(*v8_helper_, context,
+                                                          errors_out);
+  v8::Local<v8::Value> auction_signals =
+      direct_from_seller_result_auction_signals.GetSignals(*v8_helper_, context,
+                                                           errors_out);
+  if (!direct_from_seller_signals_dict.Set("sellerSignals", seller_signals) ||
+      !direct_from_seller_signals_dict.Set("auctionSignals", auction_signals)) {
+    PostReportResultCallbackToUserThread(std::move(callback),
+                                         /*signals_for_winner=*/absl::nullopt,
+                                         /*report_url=*/absl::nullopt,
+                                         /*ad_beacon_map=*/{},
+                                         /*pa_requests=*/{},
+                                         /*errors=*/errors_out);
+    return;
+  }
+  args.push_back(direct_from_seller_signals);
+
+  v8::Local<v8::Value> signals_for_winner_value;
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
       *debug_id_, "beforeSellerWorkletReportingStart");
 
@@ -1062,7 +1173,7 @@ void SellerWorklet::OnDownloadComplete(WorkletLoader::Result worklet_script,
 
   for (auto report_result_task = report_result_tasks_.begin();
        report_result_task != report_result_tasks_.end(); ++report_result_task) {
-    RunReportResult(report_result_task);
+    RunReportResultIfReady(report_result_task);
   }
 }
 
@@ -1086,10 +1197,10 @@ void SellerWorklet::OnTrustedScoringSignalsDownloaded(
 }
 
 void SellerWorklet::OnScoreAdClientDestroyed(ScoreAdTaskList::iterator task) {
-  // If the task hasn't finished loading trusted signals or loading the code,
-  // it also hasn't posted the iterator off-thread, so we can just remove the
-  // object and have it cancel everything else.
-  if (task->trusted_scoring_signals_request || !IsCodeReady()) {
+  // If IsReadyToScoreAd() is false, it also hasn't posted the iterator
+  // off-thread, so we can just remove the object and have it cancel everything
+  // else.
+  if (!IsReadyToScoreAd(*task)) {
     score_ad_tasks_.erase(task);
   } else {
     // Otherwise, there should be a pending V8 call. Try to cancel that, but if
@@ -1100,10 +1211,38 @@ void SellerWorklet::OnScoreAdClientDestroyed(ScoreAdTaskList::iterator task) {
   }
 }
 
+void SellerWorklet::OnDirectFromSellerSellerSignalsDownloadedScoreAd(
+    ScoreAdTaskList::iterator task,
+    DirectFromSellerSignalsRequester::Result result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+
+  task->direct_from_seller_result_seller_signals = std::move(result);
+  task->direct_from_seller_request_seller_signals.reset();
+
+  ScoreAdIfReady(task);
+}
+
+void SellerWorklet::OnDirectFromSellerAuctionSignalsDownloadedScoreAd(
+    ScoreAdTaskList::iterator task,
+    DirectFromSellerSignalsRequester::Result result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+
+  task->direct_from_seller_result_auction_signals = std::move(result);
+  task->direct_from_seller_request_auction_signals.reset();
+
+  ScoreAdIfReady(task);
+}
+
+bool SellerWorklet::IsReadyToScoreAd(const ScoreAdTask& task) const {
+  return !task.trusted_scoring_signals_request &&
+         !task.direct_from_seller_request_seller_signals &&
+         !task.direct_from_seller_request_auction_signals && IsCodeReady();
+}
+
 void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
-  if (task->trusted_scoring_signals_request || !IsCodeReady())
+  if (!IsReadyToScoreAd(*task))
     return;
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "waiting_for_seller_script",
@@ -1126,6 +1265,8 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
           &SellerWorklet::V8State::ScoreAd, base::Unretained(v8_state_.get()),
           task->ad_metadata_json, task->bid,
           std::move(task->auction_ad_config_non_shared_params),
+          std::move(task->direct_from_seller_result_seller_signals),
+          std::move(task->direct_from_seller_result_auction_signals),
           std::move(task->trusted_scoring_signals_result),
           std::move(task->browser_signals_other_seller),
           std::move(task->browser_signal_interest_group_owner),
@@ -1175,8 +1316,37 @@ void SellerWorklet::CleanUpScoreAdTaskOnUserThread(
   score_ad_tasks_.erase(task);
 }
 
-void SellerWorklet::RunReportResult(ReportResultTaskList::iterator task) {
-  DCHECK(IsCodeReady());
+void SellerWorklet::OnDirectFromSellerSellerSignalsDownloadedReportResult(
+    ReportResultTaskList::iterator task,
+    DirectFromSellerSignalsRequester::Result result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+
+  task->direct_from_seller_result_seller_signals = std::move(result);
+  task->direct_from_seller_request_seller_signals.reset();
+
+  RunReportResultIfReady(task);
+}
+
+void SellerWorklet::OnDirectFromSellerAuctionSignalsDownloadedReportResult(
+    ReportResultTaskList::iterator task,
+    DirectFromSellerSignalsRequester::Result result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+
+  task->direct_from_seller_result_auction_signals = std::move(result);
+  task->direct_from_seller_request_auction_signals.reset();
+
+  RunReportResultIfReady(task);
+}
+
+bool SellerWorklet::IsReadyToReportResult(const ReportResultTask& task) const {
+  return IsCodeReady() && !task.direct_from_seller_request_seller_signals &&
+         !task.direct_from_seller_request_auction_signals;
+}
+
+void SellerWorklet::RunReportResultIfReady(
+    ReportResultTaskList::iterator task) {
+  if (!IsReadyToReportResult(*task))
+    return;
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "waiting_for_seller_script",
                                   task->trace_id);
@@ -1188,6 +1358,8 @@ void SellerWorklet::RunReportResult(ReportResultTaskList::iterator task) {
           &SellerWorklet::V8State::ReportResult,
           base::Unretained(v8_state_.get()),
           std::move(task->auction_ad_config_non_shared_params),
+          std::move(task->direct_from_seller_result_seller_signals),
+          std::move(task->direct_from_seller_result_auction_signals),
           std::move(task->browser_signals_other_seller),
           std::move(task->browser_signal_interest_group_owner),
           std::move(task->browser_signal_render_url), task->browser_signal_bid,

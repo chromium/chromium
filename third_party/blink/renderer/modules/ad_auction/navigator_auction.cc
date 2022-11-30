@@ -745,22 +745,24 @@ bool CopyDirectFromSellerSignalsFromIdlToMojo(
       mojom::blink::DirectFromSellerSignals::New();
   mojo_direct_from_seller_signals->prefix = direct_from_seller_signals_prefix;
 
-  for (scoped_refptr<const SecurityOrigin> buyer :
-       *output.auction_ad_config_non_shared_params->interest_group_buyers) {
-    // Replace "/" with "%2F" to match the behavior of
-    // base::EscapeQueryParamValue(). Also, the subresource won't be found if
-    // the URL doesn't match.
-    const KURL subresource_url(
-        direct_from_seller_signals_prefix.GetString() + "?perBuyerSignals=" +
-        EncodeWithURLEscapeSequences(buyer->ToString()).Replace("/", "%2F"));
-    mojom::blink::DirectFromSellerSignalsSubresourcePtr maybe_mojo_bundle =
-        TryToBuildDirectFromSellerSignalsSubresource(
-            subresource_url, *output.seller, exception_state, input,
-            resource_fetcher);
-    if (!maybe_mojo_bundle)
-      continue;  // The bundle wasn't found, try the next one.
-    mojo_direct_from_seller_signals->per_buyer_signals.insert(
-        buyer, std::move(maybe_mojo_bundle));
+  if (output.auction_ad_config_non_shared_params->interest_group_buyers) {
+    for (scoped_refptr<const SecurityOrigin> buyer :
+         *output.auction_ad_config_non_shared_params->interest_group_buyers) {
+      // Replace "/" with "%2F" to match the behavior of
+      // base::EscapeQueryParamValue(). Also, the subresource won't be found if
+      // the URL doesn't match.
+      const KURL subresource_url(
+          direct_from_seller_signals_prefix.GetString() + "?perBuyerSignals=" +
+          EncodeWithURLEscapeSequences(buyer->ToString()).Replace("/", "%2F"));
+      mojom::blink::DirectFromSellerSignalsSubresourcePtr maybe_mojo_bundle =
+          TryToBuildDirectFromSellerSignalsSubresource(
+              subresource_url, *output.seller, exception_state, input,
+              resource_fetcher);
+      if (!maybe_mojo_bundle)
+        continue;  // The bundle wasn't found, try the next one.
+      mojo_direct_from_seller_signals->per_buyer_signals.insert(
+          buyer, std::move(maybe_mojo_bundle));
+    }
   }
 
   {

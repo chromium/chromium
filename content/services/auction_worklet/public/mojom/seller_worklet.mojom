@@ -149,6 +149,20 @@ interface SellerWorklet {
   // `auction_ad_config_non_shared_params` Values in an AuctionConfig that can
   //  vary between auctions that can share a SellerWorklet.
   //
+  // `direct_from_seller_seller_signals` The subresource URL of the
+  // DirectFromSellerSignals for the seller, as produced by concatenating the
+  // `directFromSellerSignals` URL prefix field passed from runAdAuction() with
+  // "?sellerSignals". Since this is fetched from a subresource bundle, it may
+  // only be fetched using the URLLoaderFactory passed in when creating the
+  // worklet.
+  //
+  // `direct_from_seller_auction_signals` The subresource URL of the
+  // directFromSellerSignals for the seller and all buyers, as produced by
+  // concatenating the `directFromSellerSignals` URL prefix field passed from
+  // runAdAuction() with "?auctionSignals". Since this is fetched from a
+  // subresource bundle, it may only be fetched using the URLLoaderFactory
+  // passed in when creating the worklet.
+  //
   // `browser_signals_other_seller` The origin of the other seller associated
   //  with the bid. If this is a component seller worklet, it's the
   //  top-level seller. If this is a top-level seller scoring a bid from a
@@ -182,6 +196,8 @@ interface SellerWorklet {
           double bid,
           blink.mojom.AuctionAdConfigNonSharedParams
               auction_ad_config_non_shared_params,
+          url.mojom.Url? direct_from_seller_seller_signals,
+          url.mojom.Url? direct_from_seller_auction_signals,
           ComponentAuctionOtherSeller? browser_signals_other_seller,
           url.mojom.Origin browser_signal_interest_group_owner,
           url.mojom.Url browser_signal_render_url,
@@ -211,6 +227,20 @@ interface SellerWorklet {
   // Arguments:
   // `auction_ad_config_non_shared_params` Values in an AuctionConfig that can
   //  vary between auctions that can share a SellerWorklet.
+  //
+  // `direct_from_seller_seller_signals` The subresource URL of the
+  // DirectFromSellerSignals for the seller, as produced by concatenating the
+  // `directFromSellerSignals` URL prefix field passed from runAdAuction() with
+  // "?sellerSignals". Since this is fetched from a subresource bundle, it may
+  // only be fetched using the URLLoaderFactory passed in when creating the
+  // worklet.
+  //
+  // `direct_from_seller_auction_signals` The subresource URL of the
+  // directFromSellerSignals for the seller and all buyers, as produced by
+  // concatenating the `directFromSellerSignals` URL prefix field passed from
+  // runAdAuction() with "?auctionSignals". Since this is fetched from a
+  // subresource bundle, it may only be fetched using the URLLoaderFactory
+  // passed in when creating the worklet.
   //
   // `browser_signals_other_seller` The origin of the other seller associated
   //  with the bid. If this is a component seller worklet, it's the
@@ -264,6 +294,8 @@ interface SellerWorklet {
   ReportResult(
       blink.mojom.AuctionAdConfigNonSharedParams
           auction_ad_config_non_shared_params,
+      url.mojom.Url? direct_from_seller_seller_signals,
+      url.mojom.Url? direct_from_seller_auction_signals,
       ComponentAuctionOtherSeller? browser_signals_other_seller,
       url.mojom.Origin browser_signal_interest_group_owner,
       url.mojom.Url browser_signal_render_url,

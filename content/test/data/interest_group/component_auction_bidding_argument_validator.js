@@ -4,12 +4,13 @@
 
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
-    browserSignals) {
+    browserSignals, directFromSellerSignals) {
   validateInterestGroup(interestGroup);
   validateAuctionSignals(auctionSignals);
   validatePerBuyerSignals(perBuyerSignals);
   validateTrustedBiddingSignals(trustedBiddingSignals);
   validateBrowserSignals(browserSignals, /*isGenerateBid=*/true);
+  validateDirectFromSellerSignals(directFromSellerSignals);
 
   // Bid 2 to outbid other parties bidding 1 at auction.
   const ad = interestGroup.ads[0];
@@ -23,11 +24,12 @@ function generateBid(
 }
 
 function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
-                   browserSignals) {
+                   browserSignals, directFromSellerSignals) {
   validateAuctionSignals(auctionSignals);
   validatePerBuyerSignals(perBuyerSignals);
   validateSellerSignals(sellerSignals);
   validateBrowserSignals(browserSignals, /*isGenerateBid=*/false);
+  validateDirectFromSellerSignals(directFromSellerSignals);
 
   sendReportTo(browserSignals.interestGroupOwner + '/echo?report_bidder');
 }
@@ -179,4 +181,20 @@ function validateSellerSignals(sellerSignals) {
   const sellerSignalsJson = JSON.stringify(sellerSignals);
   if (sellerSignalsJson !== '["component seller signals for winner"]')
     throw 'Wrong sellerSignals ' + sellerSignals;
+}
+
+function validateDirectFromSellerSignals(directFromSellerSignals) {
+  const perBuyerSignalsJSON =
+      JSON.stringify(directFromSellerSignals.perBuyerSignals);
+  if (perBuyerSignalsJSON !== '{"from":"component","json":"for","buyer":[1]}') {
+    throw 'Wrong directFromSellerSignals.perBuyerSignals ' +
+        perBuyerSignalsJSON;
+  }
+  const auctionSignalsJSON =
+      JSON.stringify(directFromSellerSignals.auctionSignals);
+  if (auctionSignalsJSON !==
+      '{"from":"component","json":"for","all":["parties"]}') {
+    throw 'Wrong directFromSellerSignals.auctionSignals ' +
+        auctionSignalsJSON;
+  }
 }

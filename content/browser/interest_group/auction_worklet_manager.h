@@ -91,7 +91,8 @@ class CONTENT_EXPORT AuctionWorkletManager {
         const GURL& url,
         const net::NetworkAnonymizationKey& network_anonymization_key) = 0;
 
-    // Get containing frame. (Passed to debugging hooks).
+    // Get containing frame. (Passed to debugging hooks, and also used to get
+    // the renderer process ID for subresource loading).
     virtual RenderFrameHostImpl* GetFrame() = 0;
 
     // Returns the SiteInstance representing the frame running the auction.

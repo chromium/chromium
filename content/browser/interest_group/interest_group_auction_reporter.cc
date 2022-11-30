@@ -155,7 +155,12 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
   }
 
   seller_worklet_handle_->GetSellerWorklet()->ReportResult(
-      seller_info->auction_config->non_shared_params, std::move(other_seller),
+      seller_info->auction_config->non_shared_params,
+      InterestGroupAuction::GetDirectFromSellerSellerSignals(
+          *seller_info->subresource_url_builder),
+      InterestGroupAuction::GetDirectFromSellerAuctionSignals(
+          *seller_info->subresource_url_builder),
+      std::move(other_seller),
       winning_bid_info_.storage_interest_group->interest_group.owner,
       winning_bid_info_.render_url, seller_info->bid, seller_info->score,
       seller_info->highest_scoring_other_bid,
@@ -326,8 +331,13 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
 
   bidder_worklet_handle_->GetBidderWorklet()->ReportWin(
       group_name, auction_config->non_shared_params.auction_signals,
-      per_buyer_signals, signals_for_winner, winning_bid_info_.render_url,
-      winning_bid_info_.bid,
+      per_buyer_signals,
+      InterestGroupAuction::GetDirectFromSellerPerBuyerSignals(
+          *seller_info.subresource_url_builder,
+          winning_bid_info_.storage_interest_group->interest_group.owner),
+      InterestGroupAuction::GetDirectFromSellerAuctionSignals(
+          *seller_info.subresource_url_builder),
+      signals_for_winner, winning_bid_info_.render_url, winning_bid_info_.bid,
       /*browser_signal_highest_scoring_other_bid=*/
       seller_info.highest_scoring_other_bid,
       seller_info.highest_scoring_other_bid_owner.has_value() &&

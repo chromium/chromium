@@ -3,19 +3,21 @@
 // found in the LICENSE file.
 
 function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
-                 browserSignals) {
+                 browserSignals, directFromSellerSignals) {
   validateAdMetadata(adMetadata);
   validateBid(bid);
   validateAuctionConfig(auctionConfig);
   validateTrustedScoringSignals(trustedScoringSignals);
   validateBrowserSignals(browserSignals, /*isScoreAd=*/true);
+  validateDirectFromSellerSignals(directFromSellerSignals);
   return {desirability: 13, allowComponentAuction: true,
           bid:42, ad:['Replaced metadata']};
 }
 
-function reportResult(auctionConfig, browserSignals) {
+function reportResult(auctionConfig, browserSignals, directFromSellerSignals) {
   validateAuctionConfig(auctionConfig);
   validateBrowserSignals(browserSignals, /*isScoreAd=*/false);
+  validateDirectFromSellerSignals(directFromSellerSignals);
 
   sendReportTo(auctionConfig.seller + '/echo?report_component_seller');
   return ['component seller signals for winner'];
@@ -160,5 +162,22 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
         JSON.stringify(browserSignals.topLevelSellerSignals);
     if (topLevelSellerSignals !== '["top-level seller signals for winner"]')
       throw 'Wrong topLevelSellerSignals ' + topLevelSellerSignals;
+  }
+}
+
+function validateDirectFromSellerSignals(directFromSellerSignals) {
+  const sellerSignalsJSON =
+      JSON.stringify(directFromSellerSignals.sellerSignals);
+  if (sellerSignalsJSON !==
+      '{"from":"component","json":"for","the":["seller"]}') {
+    throw 'Wrong directFromSellerSignals.sellerSignals ' +
+        sellerSignalsJSON;
+  }
+  const auctionSignalsJSON =
+      JSON.stringify(directFromSellerSignals.auctionSignals);
+  if (auctionSignalsJSON !==
+      '{"from":"component","json":"for","all":["parties"]}') {
+    throw 'Wrong directFromSellerSignals.auctionSignals ' +
+        auctionSignalsJSON;
   }
 }

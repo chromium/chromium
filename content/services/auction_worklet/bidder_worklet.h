@@ -17,11 +17,13 @@
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
@@ -35,6 +37,7 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -118,6 +121,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
       const url::Origin& interest_group_join_origin,
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
+      const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
+      const absl::optional<GURL>& direct_from_seller_auction_signals,
       const absl::optional<base::TimeDelta> per_buyer_timeout,
       const url::Origin& browser_signal_seller_origin,
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
@@ -131,6 +136,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
       const std::string& interest_group_name,
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
+      const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
+      const absl::optional<GURL>& direct_from_seller_auction_signals,
       const std::string& seller_signals_json,
       const GURL& browser_signal_render_url,
       double browser_signal_bid,
@@ -181,6 +188,19 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
     // generateBid() method will not be run until that happens.
     bool signals_received_callback_invoked = false;
 
+    // Set while loading is in progress.
+    std::unique_ptr<DirectFromSellerSignalsRequester::Request>
+        direct_from_seller_request_per_buyer_signals;
+    std::unique_ptr<DirectFromSellerSignalsRequester::Request>
+        direct_from_seller_request_auction_signals;
+    // Results of loading DirectFromSellerSignals.
+    DirectFromSellerSignalsRequester::Result
+        direct_from_seller_result_per_buyer_signals;
+    DirectFromSellerSignalsRequester::Result
+        direct_from_seller_result_auction_signals;
+    // DirectFromSellerSignals errors are fatal, so no error information is
+    // stored here.
+
     mojo::AssociatedRemote<mojom::GenerateBidClient> generate_bid_client;
   };
 
@@ -202,6 +222,19 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
     absl::optional<url::Origin> browser_signal_top_level_seller_origin;
     absl::optional<uint32_t> bidding_signals_data_version;
     uint64_t trace_id;
+
+    // Set while loading is in progress.
+    std::unique_ptr<DirectFromSellerSignalsRequester::Request>
+        direct_from_seller_request_per_buyer_signals;
+    std::unique_ptr<DirectFromSellerSignalsRequester::Request>
+        direct_from_seller_request_auction_signals;
+    // Results of loading DirectFromSellerSignals.
+    DirectFromSellerSignalsRequester::Result
+        direct_from_seller_result_per_buyer_signals;
+    DirectFromSellerSignalsRequester::Result
+        direct_from_seller_result_auction_signals;
+    // DirectFromSellerSignals errors are fatal, so no error information is
+    // stored here.
 
     ReportWinCallback callback;
   };
@@ -280,6 +313,10 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
     void ReportWin(const std::string& interest_group_name,
                    const absl::optional<std::string>& auction_signals_json,
                    const absl::optional<std::string>& per_buyer_signals_json,
+                   DirectFromSellerSignalsRequester::Result
+                       direct_from_seller_result_per_buyer_signals,
+                   DirectFromSellerSignalsRequester::Result
+                       direct_from_seller_result_auction_signals,
                    const std::string& seller_signals_json,
                    const GURL& browser_signal_render_url,
                    double browser_signal_bid,
@@ -298,6 +335,10 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
         const url::Origin& interest_group_join_origin,
         const absl::optional<std::string>& auction_signals_json,
         const absl::optional<std::string>& per_buyer_signals_json,
+        DirectFromSellerSignalsRequester::Result
+            direct_from_seller_result_per_buyer_signals,
+        DirectFromSellerSignalsRequester::Result
+            direct_from_seller_result_auction_signals,
         const absl::optional<base::TimeDelta> per_buyer_timeout,
         const url::Origin& browser_signal_seller_origin,
         const absl::optional<url::Origin>&
@@ -323,6 +364,10 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
         const url::Origin& interest_group_join_origin,
         const std::string* auction_signals_json,
         const std::string* per_buyer_signals_json,
+        const DirectFromSellerSignalsRequester::Result&
+            direct_from_seller_result_per_buyer_signals,
+        const DirectFromSellerSignalsRequester::Result&
+            direct_from_seller_result_auction_signals,
         const absl::optional<base::TimeDelta> per_buyer_timeout,
         const url::Origin& browser_signal_seller_origin,
         const url::Origin* browser_signal_top_level_seller_origin,
@@ -398,14 +443,37 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
   // GenerateBidIfReady().
   void SignalsReceivedCallback(GenerateBidTaskList::iterator task);
 
-  // Checks if the script has been loaded successfully, and the
-  // TrustedSignals load has finished (successfully or not). If so, calls
-  // generateBid(), and invokes `load_script_and_generate_bid_callback_` with
-  // the resulting bid, if any. May only be called once BidderWorklet has
-  // successfully loaded.
+  void OnDirectFromSellerPerBuyerSignalsDownloadedGenerateBid(
+      GenerateBidTaskList::iterator task,
+      DirectFromSellerSignalsRequester::Result result);
+
+  void OnDirectFromSellerAuctionSignalsDownloadedGenerateBid(
+      GenerateBidTaskList::iterator task,
+      DirectFromSellerSignalsRequester::Result result);
+
+  // Returns true iff all generateBid()'s prerequisite loading tasks have
+  // completed.
+  bool IsReadyToGenerateBid(const GenerateBidTask& task) const;
+
+  // Checks if IsReadyToGenerateBid(). If so, calls generateBid(), and invokes
+  // the task callback with the resulting bid, if any.
   void GenerateBidIfReady(GenerateBidTaskList::iterator task);
 
-  void RunReportWin(ReportWinTaskList::iterator task);
+  void OnDirectFromSellerPerBuyerSignalsDownloadedReportWin(
+      ReportWinTaskList::iterator task,
+      DirectFromSellerSignalsRequester::Result result);
+
+  void OnDirectFromSellerAuctionSignalsDownloadedReportWin(
+      ReportWinTaskList::iterator task,
+      DirectFromSellerSignalsRequester::Result result);
+
+  // Returns true iff all reportWin()'s prerequisite loading tasks have
+  // completed.
+  bool IsReadyToReportWin(const ReportWinTask& task) const;
+
+  // Checks IsReadyToReportWin(). If so, calls reportWin(), and invokes the task
+  // callback with the reporting information.
+  void RunReportWinIfReady(ReportWinTaskList::iterator task);
 
   // Invokes the `callback` of `task` with the provided values, and removes
   // `task` from `generate_bid_tasks_`.
@@ -457,6 +525,13 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
   // `trusted_scoring_signals_url`.
   std::unique_ptr<TrustedSignalsRequestManager>
       trusted_signals_request_manager_;
+
+  // Used for fetching DirectFromSellerSignals from subresource bundles (and
+  // caching responses).
+  DirectFromSellerSignalsRequester
+      direct_from_seller_requester_per_buyer_signals_;
+  DirectFromSellerSignalsRequester
+      direct_from_seller_requester_auction_signals_;
 
   // Top window origin for the auctions sharing this BidderWorklet.
   const url::Origin top_window_origin_;

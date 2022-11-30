@@ -15,12 +15,14 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -90,6 +92,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       double bid,
       const blink::AuctionConfig::NonSharedParams&
           auction_ad_config_non_shared_params,
+      const absl::optional<GURL>& direct_from_seller_seller_signals,
+      const absl::optional<GURL>& direct_from_seller_auction_signals,
       mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
       const url::Origin& browser_signal_interest_group_owner,
       const GURL& browser_signal_render_url,
@@ -103,6 +107,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   void ReportResult(
       const blink::AuctionConfig::NonSharedParams&
           auction_ad_config_non_shared_params,
+      const absl::optional<GURL>& direct_from_seller_seller_signals,
+      const absl::optional<GURL>& direct_from_seller_auction_signals,
       mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
       const url::Origin& browser_signal_interest_group_owner,
       const GURL& browser_signal_render_url,
@@ -155,6 +161,19 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     // Error message from downloading trusted scoring signals, if any. Prepended
     // to errors passed to the ScoreAdCallback.
     absl::optional<std::string> trusted_scoring_signals_error_msg;
+
+    // Set while loading is in progress.
+    std::unique_ptr<DirectFromSellerSignalsRequester::Request>
+        direct_from_seller_request_seller_signals;
+    std::unique_ptr<DirectFromSellerSignalsRequester::Request>
+        direct_from_seller_request_auction_signals;
+    // Results of loading DirectFromSellerSignals.
+    DirectFromSellerSignalsRequester::Result
+        direct_from_seller_result_seller_signals;
+    DirectFromSellerSignalsRequester::Result
+        direct_from_seller_result_auction_signals;
+    // DirectFromSellerSignals errors are fatal, so no error information is
+    // stored here.
   };
 
   using ScoreAdTaskList = std::list<ScoreAdTask>;
@@ -179,6 +198,19 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         browser_signals_component_auction_report_result_params;
     absl::optional<uint32_t> scoring_signals_data_version;
     uint64_t trace_id;
+
+    // Set while loading is in progress.
+    std::unique_ptr<DirectFromSellerSignalsRequester::Request>
+        direct_from_seller_request_seller_signals;
+    std::unique_ptr<DirectFromSellerSignalsRequester::Request>
+        direct_from_seller_request_auction_signals;
+    // Results of loading DirectFromSellerSignals.
+    DirectFromSellerSignalsRequester::Result
+        direct_from_seller_result_seller_signals;
+    DirectFromSellerSignalsRequester::Result
+        direct_from_seller_result_auction_signals;
+    // DirectFromSellerSignals errors are fatal, so no error information is
+    // stored here.
 
     ReportResultCallback callback;
   };
@@ -225,6 +257,10 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         double bid,
         const blink::AuctionConfig::NonSharedParams&
             auction_ad_config_non_shared_params,
+        DirectFromSellerSignalsRequester::Result
+            direct_from_seller_result_seller_signals,
+        DirectFromSellerSignalsRequester::Result
+            direct_from_seller_result_auction_signals,
         scoped_refptr<TrustedSignals::Result> trusted_scoring_signals,
         mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
         const url::Origin& browser_signal_interest_group_owner,
@@ -239,6 +275,10 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     void ReportResult(
         const blink::AuctionConfig::NonSharedParams&
             auction_ad_config_non_shared_params,
+        DirectFromSellerSignalsRequester::Result
+            direct_from_seller_result_seller_signals,
+        DirectFromSellerSignalsRequester::Result
+            direct_from_seller_result_auction_signals,
         mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
         const url::Origin& browser_signal_interest_group_owner,
         const GURL& browser_signal_render_url,
@@ -327,10 +367,22 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   // Cancels bid generation.
   void OnScoreAdClientDestroyed(ScoreAdTaskList::iterator task);
 
-  // Checks if the script has been loaded successfully, and the
-  // TrustedSignals load has finished, if needed (successfully or not). If so,
-  // calls scoreAd().
-  void ScoreAdIfReady(ScoreAdTaskList::iterator task);
+  void OnDirectFromSellerSellerSignalsDownloadedScoreAd(
+      ScoreAdTaskList::iterator task,
+      DirectFromSellerSignalsRequester::Result result);
+
+  void OnDirectFromSellerAuctionSignalsDownloadedScoreAd(
+      ScoreAdTaskList::iterator task,
+      DirectFromSellerSignalsRequester::Result result);
+
+  // Returns true iff all scoreAd()'s prerequisite loading tasks have
+  // completed.
+  bool IsReadyToScoreAd(const ScoreAdTask& task) const;
+
+  // Checks if the script has been loaded successfully, the
+  // DirectFromSellerSignals loads have finished and the TrustedSignals load has
+  // finished, if needed (successfully or not). If so, calls scoreAd().
+  void ScoreAdIfReady(const ScoreAdTaskList::iterator task);
 
   void DeliverScoreAdCallbackOnUserThread(
       ScoreAdTaskList::iterator task,
@@ -349,9 +401,21 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   // parameter getting destroyed.)
   void CleanUpScoreAdTaskOnUserThread(ScoreAdTaskList::iterator task);
 
-  // Runs the specified queued ReportWinTask. All code must already be loaded by
-  // the time this is invoked.
-  void RunReportResult(ReportResultTaskList::iterator task);
+  void OnDirectFromSellerSellerSignalsDownloadedReportResult(
+      ReportResultTaskList::iterator task,
+      DirectFromSellerSignalsRequester::Result result);
+
+  void OnDirectFromSellerAuctionSignalsDownloadedReportResult(
+      ReportResultTaskList::iterator task,
+      DirectFromSellerSignalsRequester::Result result);
+
+  // Returns true iff all reportResult()'s prerequisite loading tasks have
+  // completed.
+  bool IsReadyToReportResult(const ReportResultTask& task) const;
+
+  // Checks if the code is ready, and the DirectFromSellerSignals loads have
+  // finished. If so, runs the specified queued ReportResultTask.
+  void RunReportResultIfReady(ReportResultTaskList::iterator task);
 
   void DeliverReportResultCallbackOnUserThread(
       ReportResultTaskList::iterator task,
@@ -376,6 +440,12 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   // `trusted_scoring_signals_url`.
   std::unique_ptr<TrustedSignalsRequestManager>
       trusted_signals_request_manager_;
+
+  // Used for fetching DirectFromSellerSignals from subresource bundles (and
+  // caching responses).
+  DirectFromSellerSignalsRequester direct_from_seller_requester_seller_signals_;
+  DirectFromSellerSignalsRequester
+      direct_from_seller_requester_auction_signals_;
 
   bool paused_;
 

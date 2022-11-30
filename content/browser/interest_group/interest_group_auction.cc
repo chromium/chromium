@@ -578,6 +578,10 @@ class InterestGroupAuction::BuyerHelper
         auction_->config_->non_shared_params.auction_signals,
         GetPerBuyerSignals(*auction_->config_,
                            bid_state->bidder.interest_group.owner),
+        GetDirectFromSellerPerBuyerSignals(
+            *auction_->subresource_url_builder_,
+            bid_state->bidder.interest_group.owner),
+        GetDirectFromSellerAuctionSignals(*auction_->subresource_url_builder_),
         auction_->PerBuyerTimeout(bid_state), auction_->config_->seller,
         auction_->parent_ ? auction_->parent_->config_->seller
                           : absl::optional<url::Origin>(),
@@ -1502,6 +1506,29 @@ absl::optional<std::string> InterestGroupAuction::GetPerBuyerSignals(
   return absl::nullopt;
 }
 
+absl::optional<GURL> InterestGroupAuction::GetDirectFromSellerAuctionSignals(
+    const SubresourceUrlBuilder& subresource_url_builder) {
+  if (subresource_url_builder.auction_signals())
+    return subresource_url_builder.auction_signals()->subresource_url;
+  return absl::nullopt;
+}
+
+absl::optional<GURL> InterestGroupAuction::GetDirectFromSellerPerBuyerSignals(
+    const SubresourceUrlBuilder& subresource_url_builder,
+    const url::Origin& owner) {
+  auto it = subresource_url_builder.per_buyer_signals().find(owner);
+  if (it == subresource_url_builder.per_buyer_signals().end())
+    return absl::nullopt;
+  return it->second.subresource_url;
+}
+
+absl::optional<GURL> InterestGroupAuction::GetDirectFromSellerSellerSignals(
+    const SubresourceUrlBuilder& subresource_url_builder) {
+  if (subresource_url_builder.seller_signals())
+    return subresource_url_builder.seller_signals()->subresource_url;
+  return absl::nullopt;
+}
+
 InterestGroupAuction::LeaderInfo::LeaderInfo() = default;
 InterestGroupAuction::LeaderInfo::~LeaderInfo() = default;
 
@@ -1775,6 +1802,8 @@ void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
       this, score_ad_remote.InitWithNewPipeAndPassReceiver(), std::move(bid));
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
       bid_raw->ad_metadata, bid_raw->bid, config_->non_shared_params,
+      GetDirectFromSellerSellerSignals(*subresource_url_builder_),
+      GetDirectFromSellerAuctionSignals(*subresource_url_builder_),
       GetOtherSellerParam(*bid_raw), bid_raw->interest_group->owner,
       bid_raw->render_url, bid_raw->ad_components,
       bid_raw->bid_duration.InMilliseconds(), SellerTimeout(),

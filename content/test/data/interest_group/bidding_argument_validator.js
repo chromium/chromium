@@ -4,10 +4,11 @@
 
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
-    browserSignals) {
+    browserSignals, directFromSellerSignals) {
   validateInterestGroup(interestGroup);
   validateAuctionSignals(auctionSignals);
   validatePerBuyerSignals(perBuyerSignals);
+  validateDirectFromSellerSignals(directFromSellerSignals);
   validateTrustedBiddingSignals(trustedBiddingSignals);
   validateBrowserSignals(browserSignals);
 
@@ -116,7 +117,22 @@ function validateAuctionSignals(auctionSignals) {
 function validatePerBuyerSignals(perBuyerSignals) {
   const perBuyerSignalsJson = JSON.stringify(perBuyerSignals);
   if (perBuyerSignalsJson !== '{"signalsForBuyer":1}')
-    throw 'Wrong perBuyerSignas ' + perBuyerSignalsJson;
+    throw 'Wrong perBuyerSignals ' + perBuyerSignalsJson;
+}
+
+function validateDirectFromSellerSignals(directFromSellerSignals) {
+  const perBuyerSignalsJSON =
+      JSON.stringify(directFromSellerSignals.perBuyerSignals);
+  if (perBuyerSignalsJSON !== '{"json":"for","buyer":[1]}') {
+    throw 'Wrong directFromSellerSignals.perBuyerSignals ' +
+        perBuyerSignalsJSON;
+  }
+  const auctionSignalsJSON =
+      JSON.stringify(directFromSellerSignals.auctionSignals);
+  if (auctionSignalsJSON !== '{"json":"for","all":["parties"]}') {
+    throw 'Wrong directFromSellerSignals.auctionSignals ' +
+        auctionSignalsJSON;
+  }
 }
 
 function validateTrustedBiddingSignals(trustedBiddingSignals) {

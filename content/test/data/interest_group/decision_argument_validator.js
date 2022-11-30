@@ -4,12 +4,13 @@
 
 function scoreAd(
     adMetadata, bid, auctionConfig, trustedScoringSignals,
-    browserSignals) {
+    browserSignals, directFromSellerSignals) {
   validateAdMetadata(adMetadata);
   validateBid(bid);
   validateAuctionConfig(auctionConfig);
   validateTrustedScoringSignals(trustedScoringSignals);
   validateBrowserSignals(browserSignals);
+  validateDirectFromSellerSignals(directFromSellerSignals);
   return bid;
 }
 
@@ -130,4 +131,19 @@ function validateBrowserSignals(browserSignals) {
     throw 'Wrong adComponents ' + browserSignals.adComponents;
   if (browserSignals.biddingDurationMsec < 0)
     throw 'Wrong biddingDurationMsec ' + browserSignals.biddingDurationMsec;
+}
+
+function validateDirectFromSellerSignals(directFromSellerSignals) {
+  const sellerSignalsJSON =
+      JSON.stringify(directFromSellerSignals.sellerSignals);
+  if (sellerSignalsJSON !== '{"json":"for","the":["seller"]}') {
+    throw 'Wrong directFromSellerSignals.sellerSignals ' +
+        sellerSignalsJSON;
+  }
+  const auctionSignalsJSON =
+      JSON.stringify(directFromSellerSignals.auctionSignals);
+  if (auctionSignalsJSON !== '{"json":"for","all":["parties"]}') {
+    throw 'Wrong directFromSellerSignals.auctionSignals ' +
+        auctionSignalsJSON;
+  }
 }
