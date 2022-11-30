@@ -332,6 +332,15 @@ void ViewTransition::SkipTransitionInternal(
         ViewTransitionRequest::CreateRelease(document_tag_));
   }
 
+  // We always need to call the transition state callback (mojo seems to require
+  // this contract), so do so if we have one and we haven't called it yet.
+  if (transition_state_callback_) {
+    DCHECK_EQ(creation_type_, CreationType::kForSnapshot);
+    ViewTransitionState view_transition_state;
+    view_transition_state.navigation_id = navigation_id_;
+    std::move(transition_state_callback_).Run(std::move(view_transition_state));
+  }
+
   // Resume rendering, and finalize the rest of the state.
   ResumeRendering();
   style_tracker_->Abort();

@@ -140,9 +140,8 @@ void ViewTransitionSupplement::StartTransition(
     Document& document,
     ViewTransition::ViewTransitionStateCallback callback) {
   if (transition_) {
-    // We may have a transition which was created to animate to this Document at
-    // this point if another navigation starts before the animations finish.
-    DCHECK(transition_->IsForNavigationSnapshot());
+    // We should skip a transition if one exists, regardless of how it was
+    // created, since navigation transition takes precedence.
     transition_->skipTransition();
   }
   DCHECK(!transition_)

@@ -15,9 +15,9 @@ namespace content {
 namespace {
 
 void OnSnapshotAck(base::OnceClosure closure,
-                   NavigationRequest* navigation_request,
+                   base::WeakPtr<NavigationRequest> navigation_request,
                    const blink::ViewTransitionState& view_transition_state) {
-  if (!view_transition_state.elements.empty()) {
+  if (navigation_request && !view_transition_state.elements.empty()) {
     navigation_request->SetViewTransitionState(
         std::move(view_transition_state));
   }
@@ -68,8 +68,8 @@ ViewTransitionCommitDeferringCondition::WillCommitNavigation(
 
   // TODO(crbug.com/1372584):  Implement a timeout, to avoid blocking the
   // navigation for too long.
-  render_frame_host->SnapshotDocumentForViewTransition(
-      base::BindOnce(&OnSnapshotAck, std::move(resume), navigation_request));
+  render_frame_host->SnapshotDocumentForViewTransition(base::BindOnce(
+      &OnSnapshotAck, std::move(resume), navigation_request->GetWeakPtr()));
   return Result::kDefer;
 }
 
