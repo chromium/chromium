@@ -104,17 +104,20 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
 
   ScriptPromise MatchImpl(ScriptState*,
                           const Request*,
-                          const CacheQueryOptions*);
+                          const CacheQueryOptions*,
+                          ExceptionState&);
   ScriptPromise MatchAllImpl(ScriptState*,
                              const Request*,
-                             const CacheQueryOptions*);
+                             const CacheQueryOptions*,
+                             ExceptionState&);
   ScriptPromise AddAllImpl(ScriptState*,
                            const String& method_name,
                            const HeapVector<Member<Request>>&,
                            ExceptionState&);
   ScriptPromise DeleteImpl(ScriptState*,
                            const Request*,
-                           const CacheQueryOptions*);
+                           const CacheQueryOptions*,
+                           ExceptionState&);
   void PutImpl(ScriptPromiseResolver*,
                const String& method_name,
                const HeapVector<Member<Request>>&,
@@ -124,7 +127,8 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
                int64_t trace_id);
   ScriptPromise KeysImpl(ScriptState*,
                          const Request*,
-                         const CacheQueryOptions*);
+                         const CacheQueryOptions*,
+                         ExceptionState&);
 
   Member<GlobalFetch::ScopedFetcher> scoped_fetcher_;
   Member<CacheStorageBlobClientList> blob_client_list_;

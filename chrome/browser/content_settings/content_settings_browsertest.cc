@@ -608,7 +608,8 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookiesAlsoBlocksCacheStorage) {
   settings->SetCookieSetting(GetPageURL(), CONTENT_SETTING_BLOCK);
 
   const char kBaseExpected[] =
-      "%s - SecurityError: An attempt was made to break through the security "
+      "%s - SecurityError: Failed to execute '%s' on 'CacheStorage': An "
+      "attempt was made to break through the security "
       "policy of the user agent.";
 
   const char kBaseScript[] =
@@ -622,21 +623,25 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookiesAlsoBlocksCacheStorage) {
       "  return `${name} - success`;"
       "}())";
 
-  const std::vector<std::string> kTestOps({
-      "caches.open('foo')",
-      "caches.has('foo')",
-      "caches.keys()",
-      "caches.delete('foo')",
-      "caches.match('/')",
-  });
+  struct TestOp {
+    const char* cmd;
+    const char* name;
+  };
+
+  const TestOp kTestOps[] = {
+      {.cmd = "caches.open('foo')", .name = "open"},
+      {.cmd = "caches.has('foo')", .name = "has"},
+      {.cmd = "caches.keys()", .name = "keys"},
+      {.cmd = "caches.delete('foo')", .name = "delete"},
+      {.cmd = "caches.match('/')", .name = "match"},
+  };
 
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
   for (auto& op : kTestOps) {
-    EXPECT_EQ(
-        base::StringPrintf(kBaseExpected, op.data()),
-        EvalJs(tab, base::StringPrintf(kBaseScript, op.data(), op.data())));
+    EXPECT_EQ(base::StringPrintf(kBaseExpected, op.cmd, op.name),
+              EvalJs(tab, base::StringPrintf(kBaseScript, op.cmd, op.cmd)));
   }
 }
 

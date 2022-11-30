@@ -57,41 +57,39 @@ void RejectCacheStorageWithError(ScriptPromiseResolver* resolver,
       NOTREACHED();
       return;
     case mojom::CacheStorageError::kErrorExists:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidAccessError, final_message));
+      resolver->RejectWithDOMException(DOMExceptionCode::kInvalidAccessError,
+                                       final_message);
       return;
     case mojom::CacheStorageError::kErrorStorage:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kUnknownError, final_message));
+      resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError,
+                                       final_message);
       return;
     case mojom::CacheStorageError::kErrorNotFound:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotFoundError, final_message));
+      resolver->RejectWithDOMException(DOMExceptionCode::kNotFoundError,
+                                       final_message);
       return;
     case mojom::CacheStorageError::kErrorQuotaExceeded:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kQuotaExceededError, final_message));
+      resolver->RejectWithDOMException(DOMExceptionCode::kQuotaExceededError,
+                                       final_message);
       return;
     case mojom::CacheStorageError::kErrorCacheNameNotFound:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotFoundError, final_message));
+      resolver->RejectWithDOMException(DOMExceptionCode::kNotFoundError,
+                                       final_message);
       return;
     case mojom::CacheStorageError::kErrorQueryTooLarge:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kAbortError, final_message));
+      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
+                                       final_message);
       return;
     case mojom::CacheStorageError::kErrorNotImplemented:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError, final_message));
+      resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                       final_message);
       return;
     case mojom::CacheStorageError::kErrorDuplicateOperation:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidStateError, final_message));
+      resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                       final_message);
       return;
     case mojom::CacheStorageError::kErrorCrossOriginResourcePolicy:
-      ScriptState::Scope scope(resolver->GetScriptState());
-      resolver->Reject(V8ThrowException::CreateTypeError(
-          resolver->GetScriptState()->GetIsolate(), message));
+      resolver->RejectWithTypeError(message);
       return;
   }
 }
