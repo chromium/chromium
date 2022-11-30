@@ -27,7 +27,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -213,15 +212,6 @@ base::Time GetFileLastModifiedTime(const base::FilePath& filename) {
   return base::Time();
 }
 
-base::Time GetFileCreationTime(const base::FilePath& filename) {
-  if (base::PathExists(filename)) {
-    base::File::Info info;
-    if (base::GetFileInfo(filename, &info))
-      return info.creation_time;
-  }
-  return base::Time();
-}
-
 std::pair<base::FilePath, base::Time> ReadResourceFilePathAndLastModifiedTime(
     const extensions::ExtensionResource& resource,
     const base::FilePath& directory) {
@@ -229,17 +219,6 @@ std::pair<base::FilePath, base::Time> ReadResourceFilePathAndLastModifiedTime(
   // tolerates blocking operations.
   base::FilePath file_path = resource.GetFilePath();
   base::Time last_modified_time = GetFileLastModifiedTime(file_path);
-  base::Time dir_creation_time = GetFileCreationTime(directory);
-  int64_t delta_seconds = (last_modified_time - dir_creation_time).InSeconds();
-  if (delta_seconds >= 0) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.ResourceLastModifiedDelta",
-                                delta_seconds, 1, base::Days(30).InSeconds(),
-                                50);
-  } else {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.ResourceLastModifiedNegativeDelta",
-                                -delta_seconds, 1, base::Days(30).InSeconds(),
-                                50);
-  }
   return std::make_pair(file_path, last_modified_time);
 }
 
@@ -486,21 +465,6 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
   FileLoaderObserver(const FileLoaderObserver&) = delete;
   FileLoaderObserver& operator=(const FileLoaderObserver&) = delete;
 
-  ~FileLoaderObserver() override {
-    base::AutoLock auto_lock(lock_);
-    UMA_HISTOGRAM_COUNTS_1M("ExtensionUrlRequest.TotalKbRead",
-                            bytes_read_ / 1024);
-    UMA_HISTOGRAM_COUNTS_1M("ExtensionUrlRequest.SeekPosition", seek_position_);
-    if (request_timer_.get())
-      UMA_HISTOGRAM_TIMES("ExtensionUrlRequest.Latency",
-                          request_timer_->Elapsed());
-  }
-
-  void OnStart() override {
-    base::AutoLock auto_lock(lock_);
-    request_timer_ = std::make_unique<base::ElapsedTimer>();
-  }
-
   void OnSeekComplete(int64_t result) override {
     DCHECK_EQ(seek_position_, 0);
     base::AutoLock auto_lock(lock_);
@@ -537,7 +501,6 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
  private:
   int64_t bytes_read_ = 0;
   int64_t seek_position_ = 0;
-  std::unique_ptr<base::ElapsedTimer> request_timer_;
   scoped_refptr<ContentVerifyJob> verify_job_;
   // To synchronize access to all members.
   base::Lock lock_;

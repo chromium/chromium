@@ -2833,32 +2833,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ResourceLastModifiedDelta" units="seconds"
-    expires_after="2019-11-30">
-  <owner>lazyboy@chromium.org</owner>
-  <summary>
-    The difference in seconds between an extension resource's last modification
-    time and its extension base directory's creation time. Recorded on each
-    extension resource request if the difference is non-negative (i.e., the
-    resource's last modification time is more recent than the directory's
-    creation time.) For cases where the directory creation date is more recent,
-    see Extensions.ResourceLastModifiedNegativeDelta instead.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ResourceLastModifiedNegativeDelta" units="seconds"
-    expires_after="2019-11-30">
-  <owner>lazyboy@chromium.org</owner>
-  <summary>
-    The absolute difference in seconds between an extension resource's last
-    modification time and extension base directory's creation time. Recorded on
-    each extension resource request if the difference is negative (i.e., the
-    directory's creation time is more recent than the resource's last
-    modification time.) For cases where the resource modification time is more
-    recent, see Extensions.ResourceLastModifiedDelta instead.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.RuntimeHostPermissions.ExtensionHasWithheldHosts"
     enum="BooleanHasWithheldHosts" expires_after="never">
 <!-- expires-never: Monitors core extension usage. -->
@@ -3540,33 +3514,6 @@ chromium-metrics-reviews@google.com.
     The total number of extensions that have an icon in the extension toolbar,
     including those that are unpinned and only show in the extensions menu.
     Measured once per startup per (non-incognito) profile.
-  </summary>
-</histogram>
-
-<histogram name="ExtensionUrlRequest.Latency" units="ms"
-    expires_after="2020-11-30">
-  <owner>lazyboy@chromium.org</owner>
-  <summary>The time taken to complete an extension url request.</summary>
-</histogram>
-
-<histogram name="ExtensionUrlRequest.SeekPosition" units="units"
-    expires_after="2020-11-30">
-  <owner>lazyboy@chromium.org</owner>
-  <summary>
-    When fetching a chrome-extension:// URL, this indicates the first byte
-    position we read from. This will be greater than 0 in cases such as XHR's
-    with a Range header, but will normally be 0 in the typical case of reading
-    the entire file. This helps identify how frequently partial file reads are
-    taking place.
-  </summary>
-</histogram>
-
-<histogram name="ExtensionUrlRequest.TotalKbRead" units="KB"
-    expires_after="2020-11-30">
-  <owner>lazyboy@chromium.org</owner>
-  <summary>
-    The total number of bytes read for a chrome-extension:// URL, logged when
-    the job is finished (either successfully or not).
   </summary>
 </histogram>
 
