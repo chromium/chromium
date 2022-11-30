@@ -131,9 +131,12 @@ void ViewsScreenLocker::HandleAuthenticateUserWithPasswordOrPin(
     LOG(FATAL) << "Incorrect Active Directory user type "
                << user_context->GetUserType();
   }
-  ScreenLocker::default_screen_locker()->Authenticate(std::move(user_context),
-                                                      std::move(callback));
-  UpdatePinKeyboardState(account_id);
+
+  auto on_authenticated = base::BindOnce(&ViewsScreenLocker::OnAuthenticated,
+                                         weak_factory_.GetWeakPtr(), account_id,
+                                         std::move(callback));
+  ScreenLocker::default_screen_locker()->Authenticate(
+      std::move(user_context), std::move(on_authenticated));
 }
 
 void ViewsScreenLocker::HandleAuthenticateUserWithEasyUnlock(
@@ -199,6 +202,19 @@ void ViewsScreenLocker::UnregisterLockScreenAppFocusHandler() {
 
 void ViewsScreenLocker::HandleLockScreenAppFocusOut(bool reverse) {
   LoginScreen::Get()->GetModel()->HandleFocusLeavingLockScreenApps(reverse);
+}
+
+void ViewsScreenLocker::OnAuthenticated(
+    const AccountId& account_id,
+    base::OnceCallback<void(bool)> success_callback,
+    bool success) {
+  std::move(success_callback).Run(success);
+
+  if (!success) {
+    // Asynchronously update pin keyboard state. The pin might be locked due to
+    // too many attempts, in which case we might hide the pin keyboard.
+    UpdatePinKeyboardState(account_id);
+  }
 }
 
 void ViewsScreenLocker::UpdatePinKeyboardState(const AccountId& account_id) {
