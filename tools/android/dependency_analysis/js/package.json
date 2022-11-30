@@ -24,7 +24,7 @@
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.3.0",
     "http-server": "^0.12.3",
-    "node-sass": "^4.14.1",
+    "sass": "^1.56.1",
     "sass-loader": "^9.0.3",
     "vue-loader": "^15.9.3",
     "vue-style-loader": "^4.1.2",
