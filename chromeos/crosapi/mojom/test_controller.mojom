@@ -162,8 +162,8 @@ interface InputMethodTestInterface {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 22
-// Next method id: 33
+// Next version: 23
+// Next method id: 34
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -342,4 +342,9 @@ interface TestController {
   // Reads state of Shelf item. Returns a bitmask of `ShelfItemState` values.
   [MinVersion=21]
   GetShelfItemState@32(string app_id) => (uint32 state);
+
+  // Returns the size of the Tts utterance queue of the TtsController running in
+  // Ash.
+  [MinVersion=22]
+  GetTtsUtteranceQueueSize@33() => (int32 size);
 };

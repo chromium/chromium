@@ -8,6 +8,8 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/speech/tts_lacros.h"
+#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
+#include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_test_helper.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_platform.h"
@@ -82,6 +84,16 @@ class LacrosTtsApiTest : public ExtensionApiTest,
     }
   }
 
+  // Returns true if the Tts utterance queue of TtsController running in Ash is
+  // empty.
+  bool IsUtteranceQueueEmpty() const {
+    crosapi::mojom::TestControllerAsyncWaiter waiter(
+        chromeos::LacrosService::Get()
+            ->GetRemote<crosapi::mojom::TestController>()
+            .get());
+    return waiter.GetTtsUtteranceQueueSize() == 0;
+  }
+
  private:
   bool voices_changed_ = false;
 };
@@ -139,6 +151,28 @@ IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest, LoadAndUnloadLacrosTtsEngine) {
   EXPECT_FALSE(HasVoiceWithName("Alice"));
   EXPECT_FALSE(HasVoiceWithName("Pat"));
   EXPECT_FALSE(HasVoiceWithName("Cat"));
+}
+
+IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest,
+                       SpeakLacrosUtteranceWithLacrosTtsEngine) {
+  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
+          crosapi::mojom::TestController::Uuid_) <
+      static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
+                           kGetTtsUtteranceQueueSizeMinVersion)) {
+    GTEST_SKIP() << "Unsupported ash version.";
+  }
+
+  // Load tts engine extension, register the tts engine events and call
+  // tts.speak from the testing extension.
+  ASSERT_TRUE(
+      RunExtensionTest("tts_engine/lacros_tts_support/"
+                       "tts_speak_lacros_utterance_with_lacros_engine",
+                       {}, {.ignore_manifest_warnings = true}))
+      << message_;
+
+  // Verify the utterance issued from the testing extension is properly finished
+  // and the utterance queue is empty in Ash's TtsController.
+  ASSERT_TRUE(IsUtteranceQueueEmpty());
 }
 
 }  // namespace extensions

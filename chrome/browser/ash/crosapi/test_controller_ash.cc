@@ -36,6 +36,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
+#include "chrome/browser/speech/tts_crosapi_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -616,6 +617,12 @@ void TestControllerAsh::BindInputMethodTestInterface(
       std::make_unique<crosapi::InputMethodTestInterfaceAsh>(),
       std::move(receiver));
   std::move(callback).Run();
+}
+
+void TestControllerAsh::GetTtsUtteranceQueueSize(
+    GetTtsUtteranceQueueSizeCallback callback) {
+  std::move(callback).Run(
+      tts_crosapi_util::GetTtsUtteranceQueueSizeForTesting());
 }
 
 // This class waits for overview mode to either enter or exit and fires a

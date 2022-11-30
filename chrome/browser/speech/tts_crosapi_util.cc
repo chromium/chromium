@@ -194,4 +194,8 @@ void SpeakForTesting(std::unique_ptr<content::TtsUtterance> utterance) {
   content::TtsController::GetInstance()->SpeakOrEnqueue(std::move(utterance));
 }
 
+int GetTtsUtteranceQueueSizeForTesting() {
+  return content::TtsController::GetInstance()->QueueSize();
+}
+
 }  // namespace tts_crosapi_util

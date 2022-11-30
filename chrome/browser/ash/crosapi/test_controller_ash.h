@@ -105,6 +105,9 @@ class TestControllerAsh : public mojom::TestController,
       mojo::PendingReceiver<crosapi::mojom::InputMethodTestInterface> receiver,
       BindInputMethodTestInterfaceCallback callback) override;
 
+  void GetTtsUtteranceQueueSize(
+      GetTtsUtteranceQueueSizeCallback callback) override;
+
   mojo::Remote<mojom::StandaloneBrowserTestController>&
   GetStandaloneBrowserTestController() {
     DCHECK(standalone_browser_test_controller_.is_bound());

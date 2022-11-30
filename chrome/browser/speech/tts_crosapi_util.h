@@ -37,6 +37,14 @@ void GetAllVoicesForTesting(content::BrowserContext* browser_context,
 // This function allows ash browser test to call StandaloneBrowserTestController
 // to speak a Lacros utterance, which is a workaround for crbug/1368284.
 void SpeakForTesting(std::unique_ptr<content::TtsUtterance> utterance);
+
+// This function allows TestControllerAsh located under chrome/browser/ash to
+// retrieve the utterance queue size via content::TtsController::QueueSize(),
+// which can not be called directly from TestControllerAsh since
+// chrome/browser/DEPS disallows content/public/browser/tts_controller.h
+// explicitly.
+int GetTtsUtteranceQueueSizeForTesting();
+
 }  // namespace tts_crosapi_util
 
 #endif  // CHROME_BROWSER_SPEECH_TTS_CROSAPI_UTIL_H_
