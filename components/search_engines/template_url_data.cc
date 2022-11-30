@@ -78,7 +78,7 @@ TemplateURLData::TemplateURLData(
     base::StringPiece favicon_url,
     base::StringPiece encoding,
     base::StringPiece16 image_search_branding_label,
-    const base::Value& alternate_urls_list,
+    const base::Value::List& alternate_urls_list,
     bool preconnect_to_search_url,
     bool prefetch_likely_navigations,
     int prepopulate_id)
@@ -111,13 +111,11 @@ TemplateURLData::TemplateURLData(
   SetKeyword(keyword);
   SetURL(std::string(search_url));
   input_encodings.push_back(std::string(encoding));
-  if (alternate_urls_list.is_list()) {
-    for (const auto& entry : alternate_urls_list.GetList()) {
-      const std::string* alternate_url = entry.GetIfString();
-      DCHECK(alternate_url && !alternate_url->empty());
-      if (alternate_url) {
-        alternate_urls.push_back(*alternate_url);
-      }
+  for (const auto& entry : alternate_urls_list) {
+    const std::string* alternate_url = entry.GetIfString();
+    DCHECK(alternate_url && !alternate_url->empty());
+    if (alternate_url) {
+      alternate_urls.push_back(*alternate_url);
     }
   }
 }

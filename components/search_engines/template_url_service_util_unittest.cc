@@ -29,7 +29,7 @@ std::unique_ptr<TemplateURLData> CreatePrepopulateTemplateURLData(
       "" /* side_image_search_param */,
       std::vector<std::string>() /* search_intent_params */,
       "" /* favicon_url */, "UTF-8", u"" /* image_search_branding_label */,
-      base::ListValue() /* alternate_urls_list */,
+      base::Value::List() /* alternate_urls_list */,
       false /* preconnect_to_search_url */,
       false /* prefetch_likely_navigations */, prepopulate_id);
 }

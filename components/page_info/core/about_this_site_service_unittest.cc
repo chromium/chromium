@@ -193,7 +193,7 @@ TEST_F(AboutThisSiteServiceTest, NotShownWhenNoGoogleDSE) {
           base::StringPiece(), base::StringPiece(), base::StringPiece(),
           base::StringPiece(), base::StringPiece(), std::vector<std::string>(),
           base::StringPiece(), base::StringPiece(), base::StringPiece16(),
-          base::ListValue(), false, false, 0)));
+          base::Value::List(), false, false, 0)));
   templateService()->SetUserSelectedDefaultSearchProvider(template_url);
 
   auto info = service()->GetAboutThisSiteInfo(

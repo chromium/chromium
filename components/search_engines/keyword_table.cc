@@ -129,7 +129,7 @@ void BindURLToStatement(const TemplateURLData& data,
   // TODO(beaudoin): Check what it would take to use a new table to store
   // alternate_urls while keeping backups and table signature in a good state.
   // See: crbug.com/153520
-  base::ListValue alternate_urls_value;
+  base::Value::List alternate_urls_value;
   for (size_t i = 0; i < data.alternate_urls.size(); ++i)
     alternate_urls_value.Append(data.alternate_urls[i]);
   std::string alternate_urls;
@@ -522,7 +522,7 @@ bool KeywordTable::GetKeywordDataFromStatement(sql::Statement& s,
   data->alternate_urls.clear();
   absl::optional<base::Value> value(base::JSONReader::Read(s.ColumnString(15)));
   if (value && value->is_list()) {
-    for (const base::Value& alternate_url : value->GetListDeprecated()) {
+    for (const base::Value& alternate_url : value->GetList()) {
       if (alternate_url.is_string()) {
         data->alternate_urls.push_back(alternate_url.GetString());
       }

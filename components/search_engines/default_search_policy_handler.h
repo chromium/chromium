@@ -57,7 +57,7 @@ class DefaultSearchPolicyHandler : public ConfigurationPolicyHandler {
   // a blank string.
   void EnsureStringPrefExists(PrefValueMap* prefs, const std::string& path);
 
-  // Make sure that the |path| is present in |prefs_| and is a ListValue.  If
+  // Make sure that the |path| is present in |prefs_| and is a List.  If
   // not, set it to an empty list.
   void EnsureListPrefExists(PrefValueMap* prefs, const std::string& path);
 };

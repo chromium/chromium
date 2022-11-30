@@ -272,17 +272,18 @@ std::unique_ptr<base::DictionaryValue> TemplateURLDataToDictionary(
       base::NumberToString(data.last_visited.ToInternalValue()));
   url_dict->SetIntKey(DefaultSearchManager::kUsageCount, data.usage_count);
 
-  base::ListValue alternate_urls;
+  base::Value::List alternate_urls;
   for (const auto& alternate_url : data.alternate_urls)
     alternate_urls.Append(alternate_url);
 
-  url_dict->SetKey(DefaultSearchManager::kAlternateURLs,
-                   std::move(alternate_urls));
+  url_dict->GetDict().Set(DefaultSearchManager::kAlternateURLs,
+                          std::move(alternate_urls));
 
-  base::ListValue encodings;
+  base::Value::List encodings;
   for (const auto& input_encoding : data.input_encodings)
     encodings.Append(input_encoding);
-  url_dict->SetKey(DefaultSearchManager::kInputEncodings, std::move(encodings));
+  url_dict->GetDict().Set(DefaultSearchManager::kInputEncodings,
+                          std::move(encodings));
 
   url_dict->SetBoolKey(DefaultSearchManager::kCreatedByPolicy,
                        data.created_by_policy);
@@ -306,7 +307,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
     }
   }
 
-  base::ListValue alternate_urls;
+  base::Value::List alternate_urls;
   if (engine.alternate_urls) {
     for (size_t i = 0; i < engine.alternate_urls_size; ++i)
       alternate_urls.Append(std::string(engine.alternate_urls[i]));
@@ -372,8 +373,9 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
   if (!name.empty() && !keyword.empty() && !search_url.empty() &&
       !favicon_url.empty() && !encoding.empty() && id.has_value()) {
     // These fields are optional.
-    base::Value empty_list;
-    const base::Value* alternate_urls = engine.FindListKey("alternate_urls");
+    base::Value::List empty_list;
+    const base::Value::List* alternate_urls =
+        engine.GetDict().FindList("alternate_urls");
     if (!alternate_urls)
       alternate_urls = &empty_list;
 

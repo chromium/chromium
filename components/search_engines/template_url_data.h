@@ -45,7 +45,7 @@ struct TemplateURLData {
                   base::StringPiece favicon_url,
                   base::StringPiece encoding,
                   base::StringPiece16 image_search_branding_label,
-                  const base::Value& alternate_urls_list,
+                  const base::Value::List& alternate_urls_list,
                   bool preconnect_to_search_url,
                   bool prefetch_likely_navigations,
                   int prepopulate_id);
