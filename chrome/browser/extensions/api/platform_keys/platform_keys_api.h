@@ -63,8 +63,7 @@ class PlatformKeysInternalGetPublicKeyFunction : public ExtensionFunction {
   ~PlatformKeysInternalGetPublicKeyFunction() override;
   ResponseAction Run() override;
 
-  void OnGetPublicKey(
-      crosapi::mojom::DEPRECATED_GetPublicKeyResultPtr result_ptr);
+  void OnGetPublicKey(crosapi::mojom::GetPublicKeyResultPtr result_ptr);
 
   DECLARE_EXTENSION_FUNCTION("platformKeysInternal.getPublicKey",
                              PLATFORMKEYSINTERNAL_GETPUBLICKEY)

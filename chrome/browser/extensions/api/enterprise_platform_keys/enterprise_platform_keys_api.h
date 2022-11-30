@@ -80,7 +80,7 @@ class EnterprisePlatformKeysRemoveCertificateFunction
   ~EnterprisePlatformKeysRemoveCertificateFunction() override = default;
   ResponseAction Run() override;
 
-  void OnRemoveCertificate(const std::string& error);
+  void OnRemoveCertificate(bool is_error, crosapi::mojom::KeystoreError error);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.removeCertificate",
                              ENTERPRISE_PLATFORMKEYS_REMOVECERTIFICATE)
 };
@@ -103,7 +103,7 @@ class EnterprisePlatformKeysChallengeMachineKeyFunction
   ResponseAction Run() override;
 
   void OnChallengeAttestationOnlyKeystore(
-      crosapi::mojom::DEPRECATED_KeystoreStringResultPtr result);
+      crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.challengeMachineKey",
                              ENTERPRISE_PLATFORMKEYS_CHALLENGEMACHINEKEY)
 };
@@ -115,7 +115,7 @@ class EnterprisePlatformKeysChallengeUserKeyFunction
   ResponseAction Run() override;
 
   void OnChallengeAttestationOnlyKeystore(
-      crosapi::mojom::DEPRECATED_KeystoreStringResultPtr result);
+      crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.challengeUserKey",
                              ENTERPRISE_PLATFORMKEYS_CHALLENGEUSERKEY)
 };

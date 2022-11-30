@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_api.h"
 #include "chrome/browser/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/platform_keys/extension_platform_keys_service_factory.h"
+#include "chrome/browser/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys_internal.h"
@@ -115,15 +116,6 @@ std::string ValidateInput(const std::string& token_id,
   *keystore = keystore_type.value();
   return "";
 }
-
-std::vector<uint8_t> VectorFromString(const std::string& s) {
-  return std::vector<uint8_t>(s.begin(), s.end());
-}
-
-std::string StringFromVector(const std::vector<uint8_t>& v) {
-  return std::string(v.begin(), v.end());
-}
-
 }  // namespace
 
 namespace platform_keys {
@@ -301,9 +293,8 @@ EnterprisePlatformKeysRemoveCertificateFunction::Run() {
       api_epk::RemoveCertificate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::string error =
-      ValidateCrosapi(KeystoreService::kDEPRECATED_RemoveCertificateMinVersion,
-                      browser_context());
+  std::string error = ValidateCrosapi(
+      KeystoreService::kRemoveCertificateMinVersion, browser_context());
   if (!error.empty()) {
     return RespondNow(Error(error));
   }
@@ -316,17 +307,17 @@ EnterprisePlatformKeysRemoveCertificateFunction::Run() {
       &EnterprisePlatformKeysRemoveCertificateFunction::OnRemoveCertificate,
       this);
   GetKeystoreService(browser_context())
-      ->DEPRECATED_RemoveCertificate(keystore, params->certificate,
-                                     std::move(c));
+      ->RemoveCertificate(keystore, params->certificate, std::move(c));
   return RespondLater();
 }
 
 void EnterprisePlatformKeysRemoveCertificateFunction::OnRemoveCertificate(
-    const std::string& error) {
-  if (error.empty()) {
+    bool is_error,
+    crosapi::mojom::KeystoreError error) {
+  if (!is_error) {
     Respond(NoArguments());
   } else {
-    Respond(Error(error));
+    Respond(Error(chromeos::platform_keys::KeystoreErrorToString(error)));
   }
 }
 
@@ -385,7 +376,7 @@ EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string error = ValidateCrosapi(
-      KeystoreService::kDEPRECATED_ChallengeAttestationOnlyKeystoreMinVersion,
+      KeystoreService::kChallengeAttestationOnlyKeystoreMinVersion,
       browser_context());
   if (!error.empty())
     return RespondNow(Error(error));
@@ -399,17 +390,17 @@ EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
                               OnChallengeAttestationOnlyKeystore,
                           this);
   GetKeystoreService(browser_context())
-      ->DEPRECATED_ChallengeAttestationOnlyKeystore(
-          StringFromVector(params->challenge),
-          crosapi::mojom::KeystoreType::kDevice,
+      ->ChallengeAttestationOnlyKeystore(
+          crosapi::mojom::KeystoreType::kDevice, params->challenge,
           /*migrate=*/params->register_key ? *params->register_key : false,
+          crosapi::mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115,
           std::move(c));
   return RespondLater();
 }
 
 void EnterprisePlatformKeysChallengeMachineKeyFunction::
     OnChallengeAttestationOnlyKeystore(
-        crosapi::mojom::DEPRECATED_KeystoreStringResultPtr result) {
+        crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result) {
   if (result->is_error_message()) {
     Respond(Error(result->get_error_message()));
     return;
@@ -417,7 +408,7 @@ void EnterprisePlatformKeysChallengeMachineKeyFunction::
   DCHECK(result->is_challenge_response());
 
   Respond(ArgumentList(api_epk::ChallengeMachineKey::Results::Create(
-      VectorFromString(result->get_challenge_response()))));
+      result->get_challenge_response())));
 }
 
 //------------------------------------------------------------------------------
@@ -429,7 +420,7 @@ EnterprisePlatformKeysChallengeUserKeyFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string error = ValidateCrosapi(
-      KeystoreService::kDEPRECATED_ChallengeAttestationOnlyKeystoreMinVersion,
+      KeystoreService::kChallengeAttestationOnlyKeystoreMinVersion,
       browser_context());
   if (!error.empty())
     return RespondNow(Error(error));
@@ -443,23 +434,24 @@ EnterprisePlatformKeysChallengeUserKeyFunction::Run() {
                               OnChallengeAttestationOnlyKeystore,
                           this);
   GetKeystoreService(browser_context())
-      ->DEPRECATED_ChallengeAttestationOnlyKeystore(
-          StringFromVector(params->challenge),
-          crosapi::mojom::KeystoreType::kUser,
-          /*migrate=*/params->register_key, std::move(c));
+      ->ChallengeAttestationOnlyKeystore(
+          crosapi::mojom::KeystoreType::kUser, params->challenge,
+          /*migrate=*/params->register_key,
+          crosapi::mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115,
+          std::move(c));
   return RespondLater();
 }
 
 void EnterprisePlatformKeysChallengeUserKeyFunction::
     OnChallengeAttestationOnlyKeystore(
-        crosapi::mojom::DEPRECATED_KeystoreStringResultPtr result) {
+        crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result) {
   if (result->is_error_message()) {
     Respond(Error(result->get_error_message()));
     return;
   }
   DCHECK(result->is_challenge_response());
   Respond(ArgumentList(api_epk::ChallengeUserKey::Results::Create(
-      VectorFromString(result->get_challenge_response()))));
+      result->get_challenge_response())));
 }
 
 }  // namespace extensions

@@ -193,25 +193,6 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   static void DidAddKeyTags(AddKeyTagsCallback callback,
                             chromeos::platform_keys::Status status);
 
-  // Parts of deprecated methods.
-  static void DEPRECATED_DidExtensionGenerateKey(
-      DEPRECATED_ExtensionGenerateKeyCallback callback,
-      std::vector<uint8_t> public_key,
-      absl::optional<crosapi::mojom::KeystoreError> error);
-  static void DEPRECATED_DidExtensionSign(
-      DEPRECATED_ExtensionSignCallback callback,
-      std::vector<uint8_t> signature,
-      absl::optional<mojom::KeystoreError> error);
-  static void DEPRECATED_DidRemoveCertificate(
-      DEPRECATED_RemoveCertificateCallback callback,
-      chromeos::platform_keys::Status status);
-  // |challenge_key_ptr| is used as a opaque identifier to match against the
-  // unique_ptr in outstanding_challenges_. It should not be dereferenced.
-  void DEPRECATED_DidChallengeAttestationOnlyKeystore(
-      DEPRECATED_ChallengeAttestationOnlyKeystoreCallback callback,
-      void* challenge_key_ptr,
-      const ash::attestation::TpmChallengeKeyResult& result);
-
   // Can be nullptr, should not be used directly, use GetPlatformKeys() instead.
   // Stores a pointer to a specific PlatformKeysService if it was specified in
   // constructor.

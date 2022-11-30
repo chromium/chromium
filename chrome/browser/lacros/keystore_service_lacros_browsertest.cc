@@ -128,17 +128,6 @@ std::vector<uint8_t> CertToDer(scoped_refptr<net::X509Certificate> cert) {
   return std::vector<uint8_t>(cert_span.begin(), cert_span.end());
 }
 
-// During ExtensionGenerateKey* call this error means that the key was created,
-// but Ash-Chrome failed to tag it properly. It happens because Ash-Chrome is
-// trying to work with the real NSS, but in browser tests (i.e. on Linux) it
-// doesn't work the same way as on ChromeOS.
-const char kFailedToSetAttribute[] = "Setting key attribute value failed.";
-// During ExtensionSign call this error means that Ash-Chrome wasn't able to
-// find the key in a list of allowed keys.
-const char kErrorKeyNotAllowedForSigning[] =
-    "This key is not allowed for signing. Either it was used for "
-    "signing before or it was not correctly generated.";
-
 // This class provides integration testing for the keystore service crosapi.
 // TODO(https://crbug.com/1134340): The logic being tested does not rely on
 // //chrome or //content so it would be helpful if this lived in a lower-level
@@ -167,24 +156,29 @@ class KeystoreServiceLacrosBrowserTest : public InProcessBrowserTest {
   }
 };
 
-// Tests that providing an incorrectly formatted user keystore challenge returns
-// failure.
+// Tests that providing an incorrectly formatted challenge for user's keystore
+// returns error message.
 IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, WrongFormattingUser) {
-  crosapi::mojom::DEPRECATED_KeystoreStringResultPtr result;
-  std::string challenge = "asdf";
+  crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result;
+  std::vector<uint8_t> incorrect_challenge = {10, 11, 12, 13, 14, 15};
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
-  async_waiter.DEPRECATED_ChallengeAttestationOnlyKeystore(
-      challenge, crosapi::mojom::KeystoreType::kUser, /*migrate=*/false,
-      &result);
+  async_waiter.ChallengeAttestationOnlyKeystore(
+      crosapi::mojom::KeystoreType::kUser, incorrect_challenge,
+      /*migrate=*/false,
+      crosapi::mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115, &result);
+
   ASSERT_TRUE(result->is_error_message());
 
   // TODO(https://crbug.com/1134349): Currently this errors out because remote
   // attestation is disabled. We want this to error out because of a poorly
   // formatted attestation message.
+  const char expected_error_message[] =
+      "Remote attestation is not enabled for your account.";
+  EXPECT_EQ(expected_error_message, result->get_error_message());
 }
 
-// Tests that get certificates works.
+// Tests that get certificates will return empty list
 IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, GetCertificatesEmpty) {
   crosapi::mojom::GetCertificatesResultPtr result;
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
@@ -194,10 +188,10 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, GetCertificatesEmpty) {
   EXPECT_EQ(0u, result->get_certificates().size());
 }
 
-// Tests that extension generate key works.
+// Tests that generate RSA key works
 IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
-                       ExtensionGenerateKeyPKCS) {
-  crosapi::mojom::DEPRECATED_ExtensionKeystoreBinaryResultPtr result;
+                       GenerateKeyPKCSSuccess) {
+  crosapi::mojom::KeystoreBinaryResultPtr result;
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
   crosapi::mojom::KeystorePKCS115ParamsPtr params =
@@ -205,23 +199,18 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
   params->modulus_length = 1024;
   crosapi::mojom::KeystoreSigningAlgorithmPtr algo =
       crosapi::mojom::KeystoreSigningAlgorithm::NewPkcs115(std::move(params));
-  async_waiter.DEPRECATED_ExtensionGenerateKey(
-      crosapi::mojom::KeystoreType::kUser, std::move(algo),
-      /*extension_id=*/"123", &result);
-  // Errors out because Ash-Chrome is not running on ChromeOS.
-  ASSERT_TRUE(result->is_error_message());
-  EXPECT_EQ(result->get_error_message(), kFailedToSetAttribute);
+
+  async_waiter.GenerateKey(crosapi::mojom::KeystoreType::kUser, std::move(algo),
+                           &result);
+
+  ASSERT_TRUE(result->is_blob());
+  // Testing that key has some length (162 comes from the test run).
+  EXPECT_EQ(result->get_blob().size(), 162U);
 }
 
-// TODO(https://crbug.com/1134349): After the switch from PlatformKeysService to
-// ExtensionPlatformKeysService the test started to crash on cloud builders. The
-// current theory is that it is because of the added `AddKeyAttribute` call to
-// NSS. In the long term it is not clear if the test should actually try to
-// generate/modify keys in non-test NSS database on builders. But there's no
-// simple way to prevent this at the moment.
 IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
-                       DISABLED_ExtensionGenerateKeyECDSA) {
-  crosapi::mojom::DEPRECATED_ExtensionKeystoreBinaryResultPtr result;
+                       GenerateKeyECDSASuccess) {
+  crosapi::mojom::KeystoreBinaryResultPtr result;
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
   crosapi::mojom::KeystoreECDSAParamsPtr params =
@@ -229,36 +218,37 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
   params->named_curve = "P-256";
   crosapi::mojom::KeystoreSigningAlgorithmPtr algo =
       crosapi::mojom::KeystoreSigningAlgorithm::NewEcdsa(std::move(params));
-  async_waiter.DEPRECATED_ExtensionGenerateKey(
-      crosapi::mojom::KeystoreType::kUser, std::move(algo),
-      /*extension_id=*/"123", &result);
-  // Errors out because Ash-Chrome is not running on ChromeOS.
-  ASSERT_TRUE(result->is_error_message());
-  EXPECT_EQ(result->get_error_message(), kFailedToSetAttribute);
+
+  async_waiter.GenerateKey(crosapi::mojom::KeystoreType::kUser, std::move(algo),
+                           &result);
+
+  ASSERT_TRUE(result->is_blob());
+  // Testing that key has some length (91 comes from the test run).
+  EXPECT_EQ(result->get_blob().size(), 91U);
 }
 
-// Tests that extension sign works.
-IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, ExtensionSign) {
-  crosapi::mojom::DEPRECATED_ExtensionKeystoreBinaryResultPtr result;
+// Tests that sign returns error because no private key.
+IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, SignReturnError) {
+  crosapi::mojom::KeystoreBinaryResultPtr result;
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
-  async_waiter.DEPRECATED_ExtensionSign(
-      crosapi::mojom::KeystoreType::kUser,
+  bool is_keystore_provided = true;
+
+  async_waiter.Sign(
+      is_keystore_provided, crosapi::mojom::KeystoreType::kUser,
       /*public_key=*/{1, 2, 3, 4, 5},
       /*scheme=*/crosapi::mojom::KeystoreSigningScheme::kRsassaPkcs1V15Sha256,
-      /*data=*/{10, 11, 12, 13, 14, 15},
-      /*extension_id=*/"123", &result);
+      /*data=*/{10, 11, 12, 13, 14, 15}, &result);
+
   // Errors out because the public key is not valid. Currently there's no way to
   // create a valid key in Ash-Chrome during browser tests.
-  ASSERT_TRUE(result->is_error_message());
-  EXPECT_EQ(result->get_error_message(), kErrorKeyNotAllowedForSigning);
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), crosapi::mojom::KeystoreError::kKeyNotFound);
 }
 
-// Tests that trying to add/remove an incorrectly formatted certificate results
-// in failure.
+// Tests that trying to add/remove an incorrectly formatted certificate should
+// fail.
 IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, CertificateBadFormat) {
-  const char expected_error[] = "Certificate is not a valid X.509 certificate.";
-  std::string result;
   std::vector<uint8_t> dummy_certificate;
   dummy_certificate.push_back(15);
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
@@ -272,11 +262,15 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, CertificateBadFormat) {
   EXPECT_EQ(result_error_code,
             crosapi::mojom::KeystoreError::kCertificateInvalid);
 
-  result = "";
-  async_waiter.DEPRECATED_RemoveCertificate(crosapi::mojom::KeystoreType::kUser,
-                                            std::move(dummy_certificate),
-                                            &result);
-  EXPECT_EQ(result, expected_error);
+  bool is_remove_result_error = false;
+  crosapi::mojom::KeystoreError remove_result_error_code;
+  async_waiter.RemoveCertificate(
+      crosapi::mojom::KeystoreType::kUser, std::move(dummy_certificate),
+      &is_remove_result_error, &remove_result_error_code);
+
+  ASSERT_TRUE(is_remove_result_error) << "Error: " << remove_result_error_code;
+  EXPECT_EQ(remove_result_error_code,
+            crosapi::mojom::KeystoreError::kCertificateInvalid);
 }
 
 // Tests that importing a correct certificate works and that it becomes visible

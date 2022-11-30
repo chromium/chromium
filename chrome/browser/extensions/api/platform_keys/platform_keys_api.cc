@@ -297,8 +297,8 @@ PlatformKeysInternalGetPublicKeyFunction::Run() {
       api_pki::GetPublicKey::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::string error = ValidateCrosapi(
-      KeystoreService::kDEPRECATED_GetPublicKeyMinVersion, browser_context());
+  std::string error = ValidateCrosapi(KeystoreService::kGetPublicKeyMinVersion,
+                                      browser_context());
   if (!error.empty()) {
     return RespondNow(Error(error));
   }
@@ -313,15 +313,16 @@ PlatformKeysInternalGetPublicKeyFunction::Run() {
   auto cb = base::BindOnce(
       &PlatformKeysInternalGetPublicKeyFunction::OnGetPublicKey, this);
   GetKeystoreService(browser_context())
-      ->DEPRECATED_GetPublicKey(params->certificate, algorithm_name.value(),
-                                std::move(cb));
+      ->GetPublicKey(params->certificate, algorithm_name.value(),
+                     std::move(cb));
   return RespondLater();
 }
 
 void PlatformKeysInternalGetPublicKeyFunction::OnGetPublicKey(
-    crosapi::mojom::DEPRECATED_GetPublicKeyResultPtr result) {
-  if (result->is_error_message()) {
-    Respond(Error(result->get_error_message()));
+    crosapi::mojom::GetPublicKeyResultPtr result) {
+  if (result->is_error()) {
+    Respond(Error(
+        chromeos::platform_keys::KeystoreErrorToString(result->get_error())));
     return;
   }
 
