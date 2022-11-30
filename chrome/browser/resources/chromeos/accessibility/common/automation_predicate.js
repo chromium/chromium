@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview ChromeVox predicates for the automation extension API.
+ * @fileoverview Predicates for the automation extension API.
  */
 
 import {constants} from './constants.js';
@@ -337,7 +337,7 @@ export class AutomationPredicate {
       return true;
     }
 
-    // Given no other information, ChromeVox wants to visit focusable
+    // Given no other information, we want to visit focusable
     // (e.g. tabindex=0) nodes only when it has a name or is a control.
     if (node.state[State.FOCUSABLE] &&
         (node.name || node.state[State.EDITABLE] ||
