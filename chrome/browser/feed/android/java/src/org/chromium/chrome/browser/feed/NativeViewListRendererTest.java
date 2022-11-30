@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.feed;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -204,13 +205,14 @@ public class NativeViewListRendererTest {
                 helper.findLastVisibleItemPosition());
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void testLayoutHelperSetSpanCount() {
+    @Test
+    public void testLayoutHelperSetColumnCount() {
         mManager.addContents(0,
                 Arrays.asList(new NtpListContentManager.FeedContent[] {
                         createContent("1"), createContent("2"), createContent("3")}));
         mRenderer.bind(mManager);
 
-        mRenderer.getListLayoutHelper().setSpanCount(3);
+        boolean res = mRenderer.getListLayoutHelper().setColumnCount(3);
+        assertFalse("Failed to set column count.", res);
     }
 }

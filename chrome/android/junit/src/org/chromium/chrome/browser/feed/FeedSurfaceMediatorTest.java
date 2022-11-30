@@ -522,7 +522,7 @@ public class FeedSurfaceMediatorTest {
         OnSectionHeaderSelectedListener listener =
                 mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
         listener.onSectionHeaderSelected(1);
-        verify(mListLayoutHelper, times(2)).setSpanCount(2);
+        verify(mListLayoutHelper, times(2)).setColumnCount(2);
     }
 
     @Config(qualifiers = "en-sw600dp")
@@ -535,7 +535,7 @@ public class FeedSurfaceMediatorTest {
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
                 SectionHeaderListProperties.create(TOOLBAR_HEIGHT));
         mFeedSurfaceMediator.updateContent();
-        verify(mListLayoutHelper).setSpanCount(2);
+        verify(mListLayoutHelper).setColumnCount(2);
 
         // Switch to following feed with sort option. Uses 1 column.
         when(mFollowingStream.supportsOptions()).thenReturn(true);
@@ -543,7 +543,7 @@ public class FeedSurfaceMediatorTest {
         OnSectionHeaderSelectedListener listener =
                 mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
         listener.onSectionHeaderSelected(1);
-        verify(mListLayoutHelper).setSpanCount(1);
+        verify(mListLayoutHelper).setColumnCount(1);
     }
 
     @Config(qualifiers = "en-sw600dp")
@@ -558,12 +558,12 @@ public class FeedSurfaceMediatorTest {
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING,
                 SectionHeaderListProperties.create(TOOLBAR_HEIGHT));
         mFeedSurfaceMediator.updateContent();
-        verify(mListLayoutHelper).setSpanCount(1);
+        verify(mListLayoutHelper).setColumnCount(1);
 
         // Switch to latest sort. Verify 2 column
         when(mOptionsCoordinator.getSelectedOptionId()).thenReturn(ContentOrder.REVERSE_CHRON);
         mFeedSurfaceMediator.onOptionChanged();
-        verify(mListLayoutHelper).setSpanCount(2);
+        verify(mListLayoutHelper).setColumnCount(2);
     }
 
     @Config(qualifiers = "en-sw600dp")
@@ -577,7 +577,7 @@ public class FeedSurfaceMediatorTest {
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
                 SectionHeaderListProperties.create(TOOLBAR_HEIGHT));
         mFeedSurfaceMediator.updateContent();
-        verify(mListLayoutHelper).setSpanCount(2);
+        verify(mListLayoutHelper).setColumnCount(2);
 
         // Switch to following feed with sort option. Uses 1 column.
         when(mFollowingStream.supportsOptions()).thenReturn(true);
@@ -585,7 +585,7 @@ public class FeedSurfaceMediatorTest {
         OnSectionHeaderSelectedListener listener =
                 mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
         listener.onSectionHeaderSelected(1);
-        verify(mListLayoutHelper).setSpanCount(1);
+        verify(mListLayoutHelper).setColumnCount(1);
     }
 
     private OnSectionHeaderSelectedListener getOnSectionHeaderSelectedListener(

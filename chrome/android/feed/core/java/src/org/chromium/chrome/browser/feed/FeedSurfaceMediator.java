@@ -295,7 +295,7 @@ public class FeedSurfaceMediator
         }
         int spanCount = shouldUseSingleSpan(isSmallLayoutWidth) ? SPAN_COUNT_SMALL_WIDTH
                                                                 : SPAN_COUNT_LARGE_WIDTH;
-        listLayoutHelper.setSpanCount(spanCount);
+        listLayoutHelper.setColumnCount(spanCount);
     }
 
     private boolean shouldUseSingleSpan(boolean isSmallLayoutWidth) {

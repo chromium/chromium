@@ -171,9 +171,8 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
         }
 
         @Override
-        public void setSpanCount(int spanCount) {
-            throw new UnsupportedOperationException(
-                    "Cannot set span count when using linear layout.");
+        public boolean setColumnCount(int columnCount) {
+            return false;
         }
     }
 }
