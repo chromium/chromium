@@ -114,14 +114,6 @@ class CORE_EXPORT ScopedStyleResolver final
   Member<TreeScope> scope_;
 
   HeapVector<Member<CSSStyleSheet>> style_sheets_;
-
-  // A 1:1 copy of style_sheets_ (with the associated
-  // sheet->Contents()->RuleSet(), except as non-Oilpan pointers, so that we
-  // don't have to chase and decompress a lot of pointers every time we want to
-  // iterate over the set of style sheets. This helps performance
-  // significantly.
-  Vector<std::pair<CSSStyleSheet*, RuleSet*>> style_sheets_expanded_;
-
   MediaQueryResultFlags media_query_result_flags_;
 
   using KeyframesRuleMap =
