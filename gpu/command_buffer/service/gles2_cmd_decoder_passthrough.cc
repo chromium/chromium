@@ -2068,10 +2068,34 @@ GLES2DecoderPassthroughImpl::GetTranslator(GLenum type) {
   return nullptr;
 }
 
-void GLES2DecoderPassthroughImpl::BindImage(uint32_t client_texture_id,
-                                            uint32_t texture_target,
-                                            gl::GLImage* image,
-                                            bool can_bind_to_sampler) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+void GLES2DecoderPassthroughImpl::AttachImageToTextureWithDecoderBinding(
+    uint32_t client_texture_id,
+    uint32_t texture_target,
+    gl::GLImage* image) {
+  BindImageInternal(client_texture_id, texture_target, image,
+                    /*can_bind_to_sampler=*/false);
+}
+#else
+void GLES2DecoderPassthroughImpl::AttachImageToTextureWithClientBinding(
+    uint32_t client_texture_id,
+    uint32_t texture_target,
+    gl::GLImage* image) {
+  BindImageInternal(client_texture_id, texture_target, image,
+                    /*can_bind_to_sampler=*/true);
+}
+#endif
+
+void GLES2DecoderPassthroughImpl::BindImageInternal(uint32_t client_texture_id,
+                                                    uint32_t texture_target,
+                                                    gl::GLImage* image,
+                                                    bool can_bind_to_sampler) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  CHECK(!can_bind_to_sampler);
+#else
+  CHECK(can_bind_to_sampler);
+#endif
+
   scoped_refptr<TexturePassthrough> passthrough_texture;
   if (!resources_->texture_object_map.GetServiceID(client_texture_id,
                                                    &passthrough_texture) ||

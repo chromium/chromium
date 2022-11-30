@@ -1224,10 +1224,25 @@ class GLES2DecoderImpl : public GLES2Decoder,
   void DoBeginSharedImageAccessDirectCHROMIUM(GLuint client_id, GLenum mode);
   void DoEndSharedImageAccessDirectCHROMIUM(GLuint client_id);
 
-  void BindImage(uint32_t client_texture_id,
-                 uint32_t texture_target,
-                 gl::GLImage* image,
-                 bool can_bind_to_sampler) override;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  void AttachImageToTextureWithDecoderBinding(uint32_t client_texture_id,
+                                              uint32_t texture_target,
+                                              gl::GLImage* image) override;
+#else
+  void AttachImageToTextureWithClientBinding(uint32_t client_texture_id,
+                                             uint32_t texture_target,
+                                             gl::GLImage* image) override;
+#endif
+
+  // Attaches |image| to the texture referred to by |client_texture_id|, marking
+  // the image as needing on-demand binding by the decoder if
+  // |can_bind_to_sampler| is false and as not needing on-demand binding by the
+  // decoder otherwise. |can_bind_to_sampler| is always false on Mac/Win and
+  // always true on all other platforms.
+  void BindImageInternal(uint32_t client_texture_id,
+                         uint32_t texture_target,
+                         gl::GLImage* image,
+                         bool can_bind_to_sampler);
 
   void DoTraceEndCHROMIUM(void);
 
@@ -18548,10 +18563,34 @@ void GLES2DecoderImpl::DoPushGroupMarkerEXT(
 void GLES2DecoderImpl::DoPopGroupMarkerEXT(void) {
 }
 
-void GLES2DecoderImpl::BindImage(uint32_t client_texture_id,
-                                 uint32_t texture_target,
-                                 gl::GLImage* image,
-                                 bool can_bind_to_sampler) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+void GLES2DecoderImpl::AttachImageToTextureWithDecoderBinding(
+    uint32_t client_texture_id,
+    uint32_t texture_target,
+    gl::GLImage* image) {
+  BindImageInternal(client_texture_id, texture_target, image,
+                    /*can_bind_to_sampler=*/false);
+}
+#else
+void GLES2DecoderImpl::AttachImageToTextureWithClientBinding(
+    uint32_t client_texture_id,
+    uint32_t texture_target,
+    gl::GLImage* image) {
+  BindImageInternal(client_texture_id, texture_target, image,
+                    /*can_bind_to_sampler=*/true);
+}
+#endif
+
+void GLES2DecoderImpl::BindImageInternal(uint32_t client_texture_id,
+                                         uint32_t texture_target,
+                                         gl::GLImage* image,
+                                         bool can_bind_to_sampler) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  CHECK(!can_bind_to_sampler);
+#else
+  CHECK(can_bind_to_sampler);
+#endif
+
   TextureRef* ref = texture_manager()->GetTexture(client_texture_id);
   if (!ref) {
     return;

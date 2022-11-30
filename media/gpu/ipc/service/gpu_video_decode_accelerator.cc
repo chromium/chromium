@@ -71,8 +71,8 @@ static bool BindDecoderManagedImage(
   }
 
   gpu::DecoderContext* command_decoder = stub->decoder_context();
-  command_decoder->BindImage(client_texture_id, texture_target, image.get(),
-                             /*can_bind_to_sampler=*/false);
+  command_decoder->AttachImageToTextureWithDecoderBinding(
+      client_texture_id, texture_target, image.get());
   return true;
 }
 #else
@@ -87,8 +87,9 @@ static bool BindClientManagedImage(
   }
 
   gpu::DecoderContext* command_decoder = stub->decoder_context();
-  command_decoder->BindImage(client_texture_id, texture_target, image.get(),
-                             /*can_bind_to_sampler=*/true);
+  command_decoder->AttachImageToTextureWithClientBinding(
+      client_texture_id, texture_target, image.get());
+
   return true;
 }
 #endif

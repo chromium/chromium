@@ -16,6 +16,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/debug_marker_manager.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
@@ -369,10 +370,15 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   const ContextState* GetContextState() override;
   scoped_refptr<ShaderTranslatorInterface> GetTranslator(GLenum type) override;
 
-  void BindImage(uint32_t client_texture_id,
-                 uint32_t texture_target,
-                 gl::GLImage* image,
-                 bool can_bind_to_sampler) override;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  void AttachImageToTextureWithDecoderBinding(uint32_t client_texture_id,
+                                              uint32_t texture_target,
+                                              gl::GLImage* image) override;
+#else
+  void AttachImageToTextureWithClientBinding(uint32_t client_texture_id,
+                                             uint32_t texture_target,
+                                             gl::GLImage* image) override;
+#endif
 
   void OnDebugMessage(GLenum source,
                       GLenum type,
@@ -393,6 +399,16 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
  private:
   // Allow unittests to inspect internal state tracking
   friend class GLES2DecoderPassthroughTestBase;
+
+  // Attaches |image| to the texture referred to by |client_texture_id|, marking
+  // the image as needing on-demand binding by the decoder if
+  // |can_bind_to_sampler| is false and as not needing on-demand binding by the
+  // decoder otherwise. |can_bind_to_sampler| is always false on Mac/Win and
+  // always true on all other platforms.
+  void BindImageInternal(uint32_t client_texture_id,
+                         uint32_t texture_target,
+                         gl::GLImage* image,
+                         bool can_bind_to_sampler);
 
   const char* GetCommandName(unsigned int command_id) const;
 

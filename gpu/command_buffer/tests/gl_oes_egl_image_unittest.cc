@@ -132,8 +132,12 @@ TEST_F(GpuOESEGLImageTest, EGLImageToTexture) {
       texture_id, 0 /* level */, image->GetInternalFormat(), size.width(),
       size.height(), 1 /* depth */, image->GetDataFormat(),
       image->GetDataType(), gfx::Rect(size));
-  gl_.decoder()->BindImage(texture_id, GL_TEXTURE_2D, image.get(),
-                           true /* can_bind_to_sampler */);
+
+  // TODO(crbug.com/1323341): This call is likely unnecessary, but it's not
+  // currently possible to actually run the test to completion to verify. See
+  // https://chromium-review.googlesource.com/c/chromium/src/+/4055269/comment/e8eed809_ffcdfc9c/.
+  gl_.decoder()->AttachImageToTextureWithClientBinding(
+      texture_id, GL_TEXTURE_2D, image.get());
 
   // Build program, buffers and draw the texture.
   GLuint vertex_shader =
@@ -164,8 +168,11 @@ TEST_F(GpuOESEGLImageTest, EGLImageToTexture) {
   EXPECT_TRUE(GL_NO_ERROR == glGetError());
 
   // Release the image.
-  gl_.decoder()->BindImage(texture_id, GL_TEXTURE_2D, image.get(),
-                           false /* can_bind_to_sampler */);
+  // TODO(crbug.com/1323341): This call is likely unnecessary, but it's not
+  // currently possible to actually run the test to completion to verify. See
+  // https://chromium-review.googlesource.com/c/chromium/src/+/4055269/comment/e8eed809_ffcdfc9c/.
+  gl_.decoder()->AttachImageToTextureWithClientBinding(
+      texture_id, GL_TEXTURE_2D, image.get());
   image->ReleaseTexImage(GL_TEXTURE_2D);
 
   // Clean up.

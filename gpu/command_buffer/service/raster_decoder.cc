@@ -469,10 +469,17 @@ class RasterDecoderImpl final : public RasterDecoder,
                           int num_entries,
                           int* entries_processed) override;
   base::StringPiece GetLogPrefix() override;
-  void BindImage(uint32_t client_texture_id,
-                 uint32_t texture_target,
-                 gl::GLImage* image,
-                 bool can_bind_to_sampler) override;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  void AttachImageToTextureWithDecoderBinding(uint32_t client_texture_id,
+                                              uint32_t texture_target,
+                                              gl::GLImage* image) override;
+#else
+  void AttachImageToTextureWithClientBinding(uint32_t client_texture_id,
+                                             uint32_t texture_target,
+                                             gl::GLImage* image) override;
+#endif
+
   gles2::ContextGroup* GetContextGroup() override;
   gles2::ErrorState* GetErrorState() override;
   std::unique_ptr<gles2::AbstractTexture> CreateAbstractTexture(
@@ -1569,12 +1576,21 @@ base::StringPiece RasterDecoderImpl::GetLogPrefix() {
   return logger_.GetLogPrefix();
 }
 
-void RasterDecoderImpl::BindImage(uint32_t client_texture_id,
-                                  uint32_t texture_target,
-                                  gl::GLImage* image,
-                                  bool can_bind_to_sampler) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+void RasterDecoderImpl::AttachImageToTextureWithDecoderBinding(
+    uint32_t client_texture_id,
+    uint32_t texture_target,
+    gl::GLImage* image) {
   NOTIMPLEMENTED();
 }
+#else
+void RasterDecoderImpl::AttachImageToTextureWithClientBinding(
+    uint32_t client_texture_id,
+    uint32_t texture_target,
+    gl::GLImage* image) {
+  NOTIMPLEMENTED();
+}
+#endif
 
 gles2::ContextGroup* RasterDecoderImpl::GetContextGroup() {
   return nullptr;
