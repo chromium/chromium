@@ -29,7 +29,7 @@ const bool kFakeDebugMode = false;
 const char kFakeGaiaId[] = "123";
 const char kFakeDeviceType[] = "Chromebook";
 const bool kFakeMeasureLatency = false;
-const bool kFakeSendStartSignaling = false;
+const bool kFakeSendStartSignaling = true;
 const bool kFakeDisableStunServer = false;
 
 void ParseJson(const std::string& json,
