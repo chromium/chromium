@@ -20,12 +20,12 @@ const int kCandidateSquareSide = 20;
 const views::Label::CustomFont kCandidateTextFont = {
     .font_list = gfx::FontList(gfx::FontList({"Roboto"},
                                              gfx::Font::NORMAL,
-                                             13,
-                                             gfx::Font::Weight::NORMAL))};
+                                             14,
+                                             gfx::Font::Weight::MEDIUM))};
 const views::Label::CustomFont kIndexFont = {
     .font_list = gfx::FontList(gfx::FontList({"Roboto"},
                                              gfx::Font::NORMAL,
-                                             11,
+                                             10,
                                              gfx::Font::Weight::NORMAL))};
 
 IndexedSuggestionCandidateButton::IndexedSuggestionCandidateButton(
@@ -107,7 +107,10 @@ void IndexedSuggestionCandidateButton::BuildCandidate(
   //   |   |
   //   | 1 | <-- label being created
   //   +---+
-  AddChildView(std::make_unique<views::Label>(index_text, kIndexFont));
+  auto* candidate_text_label =
+      AddChildView(std::make_unique<views::Label>(index_text, kIndexFont));
+  candidate_text_label->SetEnabledColor(
+      ResolveSemanticColor(cros_styles::ColorName::kTextColorSecondary));
 }
 
 IndexedSuggestionCandidateButton::~IndexedSuggestionCandidateButton() = default;
