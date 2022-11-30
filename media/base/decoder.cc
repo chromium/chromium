@@ -74,7 +74,7 @@ std::string GetDecoderName(AudioDecoderType type) {
     case AudioDecoderType::kTesting:
       return "Testing or Mock Audio decoder";
     case AudioDecoderType::kAudioToolbox:
-      return "AudioToolbox";
+      return "AudioToolboxAudioDecoder";
     case AudioDecoderType::kMediaFoundation:
       return "MediaFoundationAudioDecoder";
   }
