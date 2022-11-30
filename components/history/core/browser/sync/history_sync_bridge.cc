@@ -756,6 +756,16 @@ void HistorySyncBridge::OnVisitDeleted(const VisitRow& visit_row) {
 void HistorySyncBridge::SetSyncTransportState(
     syncer::SyncService::TransportState state) {
   sync_transport_state_ = state;
+
+  // TODO(crbug.com/1383912): Currently ApplyStopSyncChanges() doesn't always
+  // get called with a non-null MetadataChangeList when Sync is turned off. This
+  // is a workaround to still clear foreign history in that case. Remove once
+  // that bug is fixed.
+  if (sync_transport_state_ == syncer::SyncService::TransportState::DISABLED) {
+    // DeleteAllForeignVisits() is cheap if there is no foreign history in the
+    // DB, so it's okay to call this somewhat too often.
+    history_backend_->DeleteAllForeignVisits();
+  }
 }
 
 void HistorySyncBridge::OnDatabaseError() {

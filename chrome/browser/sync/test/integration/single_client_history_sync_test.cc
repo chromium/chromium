@@ -639,6 +639,93 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   EXPECT_EQ(url_row2.url(), url2);
 }
 
+// Signing out or turning off Sync isn't possible in ChromeOS-Ash.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+                       ClearsForeignHistoryOnTurningSyncOff) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  // Before Sync gets enabled, one URL exists locally, one remotely.
+  const GURL url_local("https://www.url-local.com");
+  const GURL url_remote("https://www.url-remote.com");
+
+  typed_urls_helper::AddUrlToHistory(/*index=*/0, url_local);
+
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(CreateSpecifics(
+      base::Time::Now() - base::Minutes(5), "other_cache_guid", url_remote)));
+
+  // Turn on Sync - this will cause the remote URL to get downloaded.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Make sure the "local" and "remote" URLs both exist in the DB.
+  history::URLRow row;
+  ASSERT_TRUE(
+      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_local, &row));
+  ASSERT_TRUE(
+      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
+
+  // Turn Sync off by removing the primary account.
+  GetClient(0)->SignOutPrimaryAccount();
+  ASSERT_EQ(GetSyncService(0)->GetTransportState(),
+            syncer::SyncService::TransportState::DISABLED);
+
+  // This should have triggered the deletion of foreign history (but left
+  // local history alone).
+  EXPECT_TRUE(
+      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_local, &row));
+  EXPECT_FALSE(
+      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+                       ClearsForeignHistoryOnTurningSyncOffInTwoSteps) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  // Before Sync gets enabled, one URL exists locally, one remotely.
+  const GURL url_local("https://www.url-local.com");
+  const GURL url_remote("https://www.url-remote.com");
+
+  typed_urls_helper::AddUrlToHistory(/*index=*/0, url_local);
+
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(CreateSpecifics(
+      base::Time::Now() - base::Minutes(5), "other_cache_guid", url_remote)));
+
+  // Turn on Sync - this will cause the remote URL to get downloaded.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Make sure the "local" and "remote" URLs both exist in the DB.
+  history::URLRow row;
+  ASSERT_TRUE(
+      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_local, &row));
+  ASSERT_TRUE(
+      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
+
+  // Turn Sync off *in two steps* (similar to what actually happens in practice,
+  // see crbug.com/1383912#c5):
+  // 1) Remove the Sync-consent bit (but leave the primary account around).
+  // 2) Actually remove the primary account.
+  // After step 1, Sync will *not* be fully disabled, but rather try to start up
+  // again in transport-only mode.
+  signin::RevokeSyncConsent(
+      IdentityManagerFactory::GetForProfile(GetProfile(0)));
+  ASSERT_NE(GetSyncService(0)->GetTransportState(),
+            syncer::SyncService::TransportState::DISABLED);
+
+  GetClient(0)->SignOutPrimaryAccount();
+  ASSERT_EQ(GetSyncService(0)->GetTransportState(),
+            syncer::SyncService::TransportState::DISABLED);
+
+  // This should have triggered the deletion of foreign history (but left
+  // local history alone).
+  EXPECT_TRUE(
+      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_local, &row));
+  EXPECT_FALSE(
+      typed_urls_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 // On Android, switches::kSyncUserForTest isn't supported (the passed-in
 // username gets ignored in SyncSigninDelegateAndroid::SigninFake()), so it's
 // not currently possible to simulate a non-@gmail.com account.

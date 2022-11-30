@@ -513,8 +513,7 @@ TEST_F(HistorySyncBridgeTest, ClearsDataWhenSyncStopped) {
   ASSERT_EQ(backend()->GetVisits().size(), 1u);
 }
 
-TEST_F(HistorySyncBridgeTest,
-       DeletesForeignVisitsOnlyWhenSyncStoppedPermanently) {
+TEST_F(HistorySyncBridgeTest, DeletesForeignVisitsWhenTypeStoppedPermanently) {
   sync_pb::HistorySpecifics remote_entity =
       CreateSpecifics(base::Time::Now() - base::Minutes(1), "remote_cache_guid",
                       GURL("https://remote.com"));
@@ -523,17 +522,73 @@ TEST_F(HistorySyncBridgeTest,
   ApplyInitialSyncChanges({remote_entity});
   ASSERT_EQ(backend()->GetVisits().size(), 1u);
 
-  // Stop Sync temporarily, i.e. without deleting metadata.
+  // Stop the data type temporarily, i.e. without deleting metadata, and without
+  // changing the transport state.
   bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
 
   // This should *not* have cleared foreign visits from the DB.
   EXPECT_EQ(backend()->delete_all_foreign_visits_call_count(), 0);
 
-  // Resume Sync, then stop it permanently.
+  // Resume syncing, then stop the data type permanently.
   bridge()->OnSyncStarting(syncer::DataTypeActivationRequest());
   ApplyStopSyncChangesIncludingDeletingMetadata();
 
   // Now foreign visits should've been cleared.
+  EXPECT_EQ(backend()->delete_all_foreign_visits_call_count(), 1);
+}
+
+TEST_F(HistorySyncBridgeTest, DeletesForeignVisitsWhenSyncStoppedPermanently) {
+  sync_pb::HistorySpecifics remote_entity =
+      CreateSpecifics(base::Time::Now() - base::Minutes(1), "remote_cache_guid",
+                      GURL("https://remote.com"));
+
+  // Start Sync, so the remote data gets written to the local DB.
+  ApplyInitialSyncChanges({remote_entity});
+  ASSERT_EQ(backend()->GetVisits().size(), 1u);
+
+  // Enter the Sync-paused state.
+  bridge()->SetSyncTransportState(syncer::SyncService::TransportState::PAUSED);
+  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
+
+  // This should *not* have cleared foreign visits from the DB.
+  EXPECT_EQ(backend()->delete_all_foreign_visits_call_count(), 0);
+
+  // Resume syncing.
+  bridge()->OnSyncStarting(syncer::DataTypeActivationRequest());
+  bridge()->SetSyncTransportState(syncer::SyncService::TransportState::ACTIVE);
+
+  // Stop Sync permanently.
+  ApplyStopSyncChangesIncludingDeletingMetadata();
+  bridge()->SetSyncTransportState(
+      syncer::SyncService::TransportState::DISABLED);
+
+  // Now foreign visits should've been cleared. Note that due to a workaround
+  // for crbug.com/1383912, there are actually two calls, even though one would
+  // suffice.
+  EXPECT_EQ(backend()->delete_all_foreign_visits_call_count(), 2);
+}
+
+TEST_F(
+    HistorySyncBridgeTest,
+    DeletesForeignVisitsWhenSyncStoppedPermanentlyEvenWithoutClearingMetadata) {
+  sync_pb::HistorySpecifics remote_entity =
+      CreateSpecifics(base::Time::Now() - base::Minutes(1), "remote_cache_guid",
+                      GURL("https://remote.com"));
+
+  // Start Sync, so the remote data gets written to the local DB.
+  ApplyInitialSyncChanges({remote_entity});
+  ASSERT_EQ(backend()->GetVisits().size(), 1u);
+
+  ASSERT_EQ(backend()->delete_all_foreign_visits_call_count(), 0);
+
+  // Stop Sync permanently, but without clearing metadata. This "shouldn't"
+  // happen (metadata should get cleared in that case), but due to
+  // crbug.com/1383912 it can actually happen.
+  bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
+  bridge()->SetSyncTransportState(
+      syncer::SyncService::TransportState::DISABLED);
+
+  // Foreign visits should've been cleared.
   EXPECT_EQ(backend()->delete_all_foreign_visits_call_count(), 1);
 }
 
