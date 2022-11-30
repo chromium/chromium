@@ -442,6 +442,7 @@ gpu_win_builder(
         "ci/GPU FYI Win x64 Builder",
         "ci/Win10 FYI x64 Release (AMD RX 5500 XT)",
     ],
+    goma_backend = None,
 )
 
 gpu_win_builder(
@@ -451,6 +452,7 @@ gpu_win_builder(
         "ci/GPU FYI Win x64 Builder",
         "ci/Win10 FYI x64 Exp Release (Intel HD 630)",
     ],
+    goma_backend = None,
 )
 
 gpu_win_builder(
@@ -480,6 +482,7 @@ gpu_win_builder(
         "ci/GPU FYI Win x64 DX12 Vulkan Builder (dbg)",
         "ci/Win10 FYI x64 DX12 Vulkan Debug (NVIDIA)",
     ],
+    goma_backend = None,
 )
 
 gpu_win_builder(
@@ -489,6 +492,7 @@ gpu_win_builder(
         "ci/GPU FYI Win x64 DX12 Vulkan Builder",
         "ci/Win10 FYI x64 DX12 Vulkan Release (NVIDIA)",
     ],
+    goma_backend = None,
 )
 
 gpu_win_builder(
@@ -498,6 +502,7 @@ gpu_win_builder(
         "ci/GPU FYI Win x64 Builder",
         "ci/Win10 FYI x64 Exp Release (NVIDIA)",
     ],
+    goma_backend = None,
 )
 
 gpu_win_builder(
@@ -507,6 +512,7 @@ gpu_win_builder(
         "ci/GPU FYI Win Builder",
         "ci/Win10 FYI x86 Release (NVIDIA)",
     ],
+    goma_backend = None,
 )
 
 gpu_win_builder(
@@ -516,4 +522,5 @@ gpu_win_builder(
         "ci/GPU FYI Win x64 Builder",
         "ci/Win10 FYI x64 Release (NVIDIA)",
     ],
+    goma_backend = None,
 )

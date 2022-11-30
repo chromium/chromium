@@ -1102,9 +1102,9 @@
       'dawn-mac-x64-deps-rel': 'dawn_tests_release_trybot_alloc_none',
       'dawn-try-mac-amd-exp': 'dawn_tests_release_trybot_alloc_none',
       'dawn-try-mac-intel-exp': 'dawn_tests_release_trybot_alloc_none',
-      'dawn-try-win10-x64-asan-rel': 'dawn_tests_asan_release_trybot',
-      'dawn-try-win10-x86-rel': 'dawn_tests_release_trybot_x86',
-      'dawn-win10-x64-deps-rel': 'dawn_tests_release_trybot',
+      'dawn-try-win10-x64-asan-rel': 'dawn_tests_asan_release_trybot_reclient',
+      'dawn-try-win10-x86-rel': 'dawn_tests_release_trybot_x86_reclient',
+      'dawn-win10-x64-deps-rel': 'dawn_tests_release_trybot_reclient',
       'dawn-win10-x86-deps-rel': 'dawn_tests_release_trybot_x86_reclient',
       'linux-dawn-rel': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
       'mac-dawn-rel': 'dawn_tests_release_trybot_alloc_none',
@@ -1328,15 +1328,15 @@
     },
 
     'tryserver.chromium.win': {
-      'gpu-fyi-try-win10-amd-rel-64': 'gpu_fyi_tests_release_trybot',
-      'gpu-fyi-try-win10-intel-exp-64': 'gpu_fyi_tests_release_trybot',
+      'gpu-fyi-try-win10-amd-rel-64': 'gpu_fyi_tests_release_trybot_reclient',
+      'gpu-fyi-try-win10-intel-exp-64': 'gpu_fyi_tests_release_trybot_reclient',
       'gpu-fyi-try-win10-intel-rel-64': 'gpu_fyi_tests_release_trybot_reclient',
       'gpu-fyi-try-win10-nvidia-dbg-64': 'gpu_fyi_tests_debug_trybot_reclient',
-      'gpu-fyi-try-win10-nvidia-dx12vk-dbg-64': 'gpu_fyi_tests_dx12vk_debug_trybot',
-      'gpu-fyi-try-win10-nvidia-dx12vk-rel-64': 'gpu_fyi_tests_dx12vk_release_trybot',
-      'gpu-fyi-try-win10-nvidia-exp-64': 'gpu_fyi_tests_release_trybot',
-      'gpu-fyi-try-win10-nvidia-rel-32': 'gpu_fyi_tests_release_trybot_x86',
-      'gpu-fyi-try-win10-nvidia-rel-64': 'gpu_fyi_tests_release_trybot',
+      'gpu-fyi-try-win10-nvidia-dx12vk-dbg-64': 'gpu_fyi_tests_dx12vk_debug_trybot_reclient',
+      'gpu-fyi-try-win10-nvidia-dx12vk-rel-64': 'gpu_fyi_tests_dx12vk_release_trybot_reclient',
+      'gpu-fyi-try-win10-nvidia-exp-64': 'gpu_fyi_tests_release_trybot_reclient',
+      'gpu-fyi-try-win10-nvidia-rel-32': 'gpu_fyi_tests_release_trybot_x86_reclient',
+      'gpu-fyi-try-win10-nvidia-rel-64': 'gpu_fyi_tests_release_trybot_reclient',
       'win-annotator-rel': 'release_trybot',
       'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release_reclient',
       'win-celab-try-rel': 'release_bot_minimal_symbols_reclient',
@@ -2432,8 +2432,8 @@
       'dawn_tests', 'asan', 'release_trybot_minimal_symbols_reclient',
     ],
 
-    'dawn_tests_asan_release_trybot': [
-      'dawn_tests', 'asan', 'release_trybot',
+    'dawn_tests_asan_release_trybot_reclient': [
+      'dawn_tests', 'asan', 'release_trybot_reclient',
     ],
 
     # https://crbug.com/dawn/1200: temporarily avoid using partition alloc
@@ -2450,10 +2450,6 @@
       'dawn_tests', 'release_trybot_minimal_symbols_reclient', 'x86',
     ],
 
-    'dawn_tests_release_trybot': [
-      'dawn_tests', 'release_trybot',
-    ],
-
     # https://crbug.com/dawn/1200: temporarily avoid using partition alloc
     # while we investigate a crash in the mac AMD shader compiler.
     'dawn_tests_release_trybot_alloc_none': [
@@ -2462,10 +2458,6 @@
 
     'dawn_tests_release_trybot_reclient': [
       'dawn_tests', 'release_trybot_reclient',
-    ],
-
-    'dawn_tests_release_trybot_x86': [
-      'dawn_tests', 'release_trybot', 'x86',
     ],
 
     'dawn_tests_release_trybot_x86_reclient': [
@@ -2562,16 +2554,8 @@
       'gpu_fyi_tests', 'debug_bot_reclient', 'disable_nacl',
     ],
 
-    'gpu_fyi_tests_dx12vk_debug_trybot': [
-      'gpu_fyi_tests', 'dx12vk', 'debug_bot', 'disable_nacl',
-    ],
-
     'gpu_fyi_tests_dx12vk_debug_trybot_reclient': [
       'gpu_fyi_tests', 'dx12vk', 'debug_bot_reclient', 'disable_nacl',
-    ],
-
-    'gpu_fyi_tests_dx12vk_release_trybot': [
-      'gpu_fyi_tests', 'dx12vk', 'release_trybot_minimal_symbols', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_dx12vk_release_trybot_reclient': [
@@ -2604,10 +2588,6 @@
 
     'gpu_fyi_tests_release_trybot_tsan_reclient': [
       'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'tsan', 'disable_nacl',
-    ],
-
-    'gpu_fyi_tests_release_trybot_x86': [
-      'gpu_fyi_tests', 'release_trybot_minimal_symbols', 'x86', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_release_trybot_x86_reclient': [
