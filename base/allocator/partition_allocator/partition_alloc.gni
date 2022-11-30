@@ -51,11 +51,16 @@ declare_args() {
 
 declare_args() {
   # Build support for Use-after-Free protection via BackupRefPtr (BRP) or
-  # MTECheckedPtr. To be effective, these need to be paired with raw_ptr<>.
+  # MTECheckedPtr, and switch the raw_ptr<T> implementation to BackupRefPtrImpl
+  # and MTECheckedPtrImp, respectively. They're mutually exclusive.
   #
   # These are effective only for memory allocated from PartitionAlloc, so it is
   # recommended to enable PA-E above, but isn't strictly necessary. Embedders
   # can create and use PA partitions explicitly.
+  #
+  # Note that |enable_backup_ref_ptr_support = true| doesn't necessarily enable
+  # BRP protection. It'll be enabled only for partition created with
+  # partition_alloc::PartitionOptions::BackupRefPtr::kEnabled.
   enable_backup_ref_ptr_support =
       use_partition_alloc && enable_backup_ref_ptr_support_default
   enable_mte_checked_ptr_support =
