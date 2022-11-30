@@ -10,41 +10,32 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 mojom("mojo_bindings") {
   sources = [ "browser_command.mojom" ]
   webui_module_path = "chrome://resources/js/browser_command"
+  use_typescript_sources = true
 }
-
-# Output folder used to copy() output.
-tmp_folder =
-    "$root_gen_dir/ui/webui/resources/preprocessed/js/browser_command_tmp"
 
 # Output folder used to hold ts_library() output.
 preprocess_folder =
     "$root_gen_dir/ui/webui/resources/preprocessed/js/browser_command"
 
 ts_library("build_ts") {
-  root_dir = tmp_folder
+  root_dir = target_gen_dir
   out_dir = preprocess_folder
   composite = true
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "browser_command_proxy.ts",
-    "browser_command.mojom-webui.js",
+    "browser_command.mojom-webui.ts",
   ]
   deps = [ "//ui/webui/resources/mojo:library" ]
   extra_deps = [
-    ":copy_mojom",
+    ":mojo_bindings_ts__generator",
     ":preprocess_src",
   ]
 }
 
-copy("copy_mojom") {
-  deps = [ ":mojo_bindings_js__generator" ]
-  sources = [ "$root_gen_dir/mojom-webui/ui/webui/resources/js/browser_command/browser_command.mojom-webui.js" ]
-  outputs = [ "$tmp_folder/{{source_file_part}}" ]
-}
-
 preprocess_if_expr("preprocess_src") {
   in_folder = "."
-  out_folder = tmp_folder
+  out_folder = target_gen_dir
   in_files = [ "browser_command_proxy.ts" ]
 }
 
