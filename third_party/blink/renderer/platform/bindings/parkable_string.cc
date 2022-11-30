@@ -650,8 +650,9 @@ void ParkableStringImpl::PostBackgroundCompressionTask() {
       this, string_.Bytes(), string_.CharactersSizeInBytes(),
       manager.task_runner());
   worker_pool::PostTask(
-      FROM_HERE, CrossThreadBindOnce(&ParkableStringImpl::CompressInBackground,
-                                     std::move(params)));
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      CrossThreadBindOnce(&ParkableStringImpl::CompressInBackground,
+                          std::move(params)));
 }
 
 // static
