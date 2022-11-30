@@ -191,12 +191,12 @@ TEST_P(It2MeConfirmationDialogChromeOSTest,
   EXPECT_EQ(result_future.Get(), It2MeConfirmationDialog::Result::OK);
 }
 
-INSTANTIATE_TEST_CASE_P(EnterpriseDialog,
-                        It2MeConfirmationDialogChromeOSTest,
-                        testing::Values(DialogStyle::kEnterprise));
+INSTANTIATE_TEST_SUITE_P(EnterpriseDialog,
+                         It2MeConfirmationDialogChromeOSTest,
+                         testing::Values(DialogStyle::kEnterprise));
 
-INSTANTIATE_TEST_CASE_P(ConsumerDialog,
-                        It2MeConfirmationDialogChromeOSTest,
-                        testing::Values(DialogStyle::kConsumer));
+INSTANTIATE_TEST_SUITE_P(ConsumerDialog,
+                         It2MeConfirmationDialogChromeOSTest,
+                         testing::Values(DialogStyle::kConsumer));
 
 }  // namespace remoting
