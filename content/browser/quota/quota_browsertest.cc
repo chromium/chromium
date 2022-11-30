@@ -91,6 +91,15 @@ IN_PROC_BROWSER_TEST_F(QuotaBrowserTest, PRE_QuotaDatabaseBootstrapTest) {
                                 "/service_worker/create_service_worker.html")));
   EXPECT_EQ("DONE", EvalJs(shell(), "register('empty.js');"));
 
+// WebSQL (WebSQL is disabled on Fuchsia crbug.com/1317431)
+#if !BUILDFLAG(IS_FUCHSIA)
+  EXPECT_EQ(true, EvalJs(shell(), R"(
+    new Promise((resolve) => {
+      let db = window.openDatabase('notes_db', "1.0", "", 1);
+      resolve(db ? true : false);
+    });)"));
+#endif
+
   // Verify that the WebStorage directory and QuotaDatabase exists as a result
   // of accessing Storage APIs.
   base::FilePath web_storage_dir_path =
@@ -134,6 +143,14 @@ IN_PROC_BROWSER_TEST_F(QuotaBrowserTest, QuotaDatabaseBootstrapTest) {
       service_worker_dir.Append(storage::kScriptCacheDirectory);
   EXPECT_TRUE(base::PathExists(script_dir));
   EXPECT_FALSE(base::IsDirectoryEmpty(script_dir));
+
+// WebSQL
+#if !BUILDFLAG(IS_FUCHSIA)
+  base::FilePath websql_dir =
+      profile_path().Append(FILE_PATH_LITERAL("databases"));
+  EXPECT_TRUE(base::PathExists(websql_dir));
+  EXPECT_FALSE(base::IsDirectoryEmpty(websql_dir));
+#endif
 
   // Delete WebStorage directory to force a new database creation if one exists
   // so it triggers the bootstrap task. This is done after shutdown to ensure
