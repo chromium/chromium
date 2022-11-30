@@ -1542,8 +1542,7 @@
     "args": [
       "--enable-blink-features=SpeculationRulesPrefetchProxy,SpeculationRulesFetchFromHeader,SpeculationRulesReferrerPolicyKey,SpeculationRulesDocumentRules",
       "--enable-features=SpeculationRulesPrefetchProxy,PrefetchUseContentRefactor",
-      "--bypass-prefetch-proxy-for-host=not-web-platform.test",
-      "--isolated-prerender-allow-all-domains"
+      "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
     "expires": "Jul 1, 2023"
   },
