@@ -84,6 +84,7 @@ android_library("javatests") {
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragmentV3Test.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/v4/AdMeasurementFragmentV4Test.java",
+    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/v4/FledgeFragmentV4Test.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/v4/TopicsFragmentV4Test.java",
   ]
   deps = [
