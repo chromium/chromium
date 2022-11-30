@@ -496,6 +496,8 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
     DCompLayerContent(
         Microsoft::WRL::ComPtr<IDCompositionSurface> dcomp_surface,
         uint64_t surface_serial);
+    DCompLayerContent(const DCompLayerContent&);
+    DCompLayerContent& operator=(const DCompLayerContent&);
     ~DCompLayerContent();
 
     IUnknown* content() const { return content_.Get(); }

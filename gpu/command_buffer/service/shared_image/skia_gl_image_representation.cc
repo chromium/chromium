@@ -98,7 +98,7 @@ SkiaGLImageRepresentation::SkiaGLImageRepresentation(
 
 SkiaGLImageRepresentation::~SkiaGLImageRepresentation() {
   DCHECK_EQ(RepresentationAccessMode::kNone, mode_);
-  surfaces_.clear();
+  ClearCachedSurfaces();
 
   DCHECK_EQ(!has_context(), context_state_->context_lost());
   if (!has_context())
@@ -136,7 +136,10 @@ std::vector<sk_sp<SkSurface>> SkiaGLImageRepresentation::BeginWriteAccess(
         context_state_->gr_context(),
         promise_textures_[plane_index]->backendTexture(), surface_origin(),
         final_msaa_count, sk_color_type,
-        backing()->color_space().ToSkColorSpace(), &surface_props);
+        backing()->color_space().ToSkColorSpace(
+            // TODO(crbug/1385874): Read SDR white level from current frame
+            gfx::ColorSpace::kDefaultSDRWhiteLevel),
+        &surface_props);
     if (!surface)
       return {};
     surfaces.push_back(surface);
@@ -193,6 +196,10 @@ void SkiaGLImageRepresentation::EndReadAccess() {
 
   gl_representation_->EndAccess();
   mode_ = RepresentationAccessMode::kNone;
+}
+
+void SkiaGLImageRepresentation::ClearCachedSurfaces() {
+  surfaces_.clear();
 }
 
 void SkiaGLImageRepresentation::CheckContext() {

@@ -339,6 +339,11 @@ OverlayImageRepresentation::DCompLayerContent::DCompLayerContent(
     Microsoft::WRL::ComPtr<IDCompositionSurface> dcomp_surface,
     uint64_t surface_serial)
     : content_(std::move(dcomp_surface)), surface_serial_(surface_serial) {}
+OverlayImageRepresentation::DCompLayerContent::DCompLayerContent(
+    const OverlayImageRepresentation::DCompLayerContent&) = default;
+OverlayImageRepresentation::DCompLayerContent&
+OverlayImageRepresentation::DCompLayerContent::operator=(
+    const OverlayImageRepresentation::DCompLayerContent&) = default;
 OverlayImageRepresentation::DCompLayerContent::~DCompLayerContent() = default;
 
 OverlayImageRepresentation::DCompLayerContent

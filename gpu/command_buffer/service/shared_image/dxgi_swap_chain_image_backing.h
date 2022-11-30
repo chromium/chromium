@@ -77,11 +77,9 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
   }
 
   friend class SkiaGLImageRepresentationDXGISwapChain;
-  void set_swap_rect(const gfx::Rect& swap_rect) {
-    DCHECK(!swap_rect_.has_value())
-        << "Swap chain has already been drawn to this frame";
-    swap_rect_ = swap_rect;
-  }
+  // Called by the Skia representation to indicate where it intends to draw.
+  void AddSwapRect(const gfx::Rect& swap_rect);
+  absl::optional<gfx::Rect> pending_swap_rect_;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain_;
@@ -89,8 +87,6 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
   scoped_refptr<gles2::TexturePassthrough> gl_texture_;
 
   bool first_swap_ = true;
-
-  absl::optional<gfx::Rect> swap_rect_;
 };
 
 }  // namespace gpu
