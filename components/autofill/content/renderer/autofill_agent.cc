@@ -785,10 +785,12 @@ void AutofillAgent::ShowSuggestions(const WebFormControlElement& element,
   }
 
   // Don't attempt to autofill with values that are too large or if filling
-  // criteria are not met.
+  // criteria are not met. Keyboard Accessory may still be shown when the
+  // |value| is empty, do not attempt to hide it.
   WebString value = element.EditingValue();
   if (value.length() > kMaxStringLength ||
-      (!options.autofill_on_empty_values && value.IsEmpty()) ||
+      (!options.autofill_on_empty_values && value.IsEmpty() &&
+       !IsKeyboardAccessoryEnabled()) ||
       (options.requires_caret_at_end &&
        (element.SelectionStart() != element.SelectionEnd() ||
         element.SelectionEnd() != static_cast<int>(value.length())))) {
