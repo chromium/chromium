@@ -1524,8 +1524,14 @@ BASE_FEATURE(kProcessHtmlDataImmediately,
              "ProcessHtmlDataImmediately",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kProcessHtmlDataImmediatelyChildFrame{
+    &kProcessHtmlDataImmediately, "child", false};
+
 const base::FeatureParam<bool> kProcessHtmlDataImmediatelyFirstChunk{
     &kProcessHtmlDataImmediately, "first", false};
+
+const base::FeatureParam<bool> kProcessHtmlDataImmediatelyMainFrame{
+    &kProcessHtmlDataImmediately, "main", false};
 
 const base::FeatureParam<bool> kProcessHtmlDataImmediatelySubsequentChunks{
     &kProcessHtmlDataImmediately, "rest", false};

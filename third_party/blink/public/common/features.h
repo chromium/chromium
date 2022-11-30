@@ -794,10 +794,20 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRunTextInputUpdatePostLifecycle);
 // is not deferred).
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kProcessHtmlDataImmediately);
 
+// If set, kProcessHtmlDataImmediately impacts child frames. If not set,
+// kProcessHtmlDataImmediately does not apply to child frames.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kProcessHtmlDataImmediatelyChildFrame;
+
 // If set, the first chunk of data available for html processing is processed
 // immediately.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kProcessHtmlDataImmediatelyFirstChunk;
+
+// If set, kProcessHtmlDataImmediately impacts the main frame. If not set,
+// kProcessHtmlDataImmediately does not apply to the main frame.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kProcessHtmlDataImmediatelyMainFrame;
 
 // If set, subsequent chunks of data available for html processing are processed
 // immediately.
