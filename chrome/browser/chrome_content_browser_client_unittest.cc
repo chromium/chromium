@@ -521,9 +521,9 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectSettingsURL) {
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(settings_url, dest_url);
 
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(static_cast<int>(policy::SystemFeature::kBrowserSettings));
-  testing_local_state_.Get()->Set(
+  testing_local_state_.Get()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList, std::move(list));
 
   dest_url = settings_url;
@@ -539,9 +539,9 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectOSSettingsURL) {
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(os_settings_url, dest_url);
 
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(static_cast<int>(policy::SystemFeature::kOsSettings));
-  testing_local_state_.Get()->Set(
+  testing_local_state_.Get()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList, std::move(list));
 
   dest_url = os_settings_url;
@@ -562,9 +562,9 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectScanningAppURL) {
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(scanning_app_url, dest_url);
 
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(static_cast<int>(policy::SystemFeature::kScanning));
-  testing_local_state_.Get()->Set(
+  testing_local_state_.Get()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList, std::move(list));
 
   dest_url = scanning_app_url;
@@ -581,9 +581,9 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectCameraAppURL) {
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(camera_app_url, dest_url);
 
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(static_cast<int>(policy::SystemFeature::kCamera));
-  testing_local_state_.Get()->Set(
+  testing_local_state_.Get()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList, std::move(list));
 
   dest_url = camera_app_url;
@@ -598,9 +598,9 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectHelpURL) {
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(GURL("chrome://settings/help"), dest_url);
 
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append(static_cast<int>(policy::SystemFeature::kBrowserSettings));
-  testing_local_state_.Get()->Set(
+  testing_local_state_.Get()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList, std::move(list));
 
   dest_url = help_url;
