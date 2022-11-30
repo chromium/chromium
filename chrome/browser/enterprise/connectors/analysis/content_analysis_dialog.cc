@@ -851,7 +851,15 @@ void ContentAnalysisDialog::AddLearnMoreLinkToDialog() {
   contents_layout_->AddRows(1, views::TableLayout::kFixedSize);
   contents_layout_->AddChildView(std::make_unique<views::View>());
 
-  learn_more_link_ = contents_layout_->AddChildView(
+  // Since `learn_more_link_` is not as wide as the column it's a part of,
+  // instead of being added directly to it, it has a parent with a BoxLayout so
+  // that its width corresponds to its own text size instead of the full column
+  // width.
+  views::View* learn_more_column =
+      contents_layout_->AddChildView(std::make_unique<views::View>());
+  learn_more_column->SetLayoutManager(std::make_unique<views::BoxLayout>());
+
+  learn_more_link_ = learn_more_column->AddChildView(
       std::make_unique<views::Link>(l10n_util::GetStringUTF16(
           IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE_LEARN_MORE_LINK)));
   learn_more_link_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
