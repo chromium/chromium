@@ -60,11 +60,39 @@ typedef interface IUpdaterInternalCallback IUpdaterInternalCallback;
 #endif 	/* __IUpdaterInternalCallback_FWD_DEFINED__ */
 
 
+#ifndef __IUpdaterInternalCallbackUser_FWD_DEFINED__
+#define __IUpdaterInternalCallbackUser_FWD_DEFINED__
+typedef interface IUpdaterInternalCallbackUser IUpdaterInternalCallbackUser;
+
+#endif 	/* __IUpdaterInternalCallbackUser_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterInternalCallbackSystem_FWD_DEFINED__
+#define __IUpdaterInternalCallbackSystem_FWD_DEFINED__
+typedef interface IUpdaterInternalCallbackSystem IUpdaterInternalCallbackSystem;
+
+#endif 	/* __IUpdaterInternalCallbackSystem_FWD_DEFINED__ */
+
+
 #ifndef __IUpdaterInternal_FWD_DEFINED__
 #define __IUpdaterInternal_FWD_DEFINED__
 typedef interface IUpdaterInternal IUpdaterInternal;
 
 #endif 	/* __IUpdaterInternal_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterInternalUser_FWD_DEFINED__
+#define __IUpdaterInternalUser_FWD_DEFINED__
+typedef interface IUpdaterInternalUser IUpdaterInternalUser;
+
+#endif 	/* __IUpdaterInternalUser_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterInternalSystem_FWD_DEFINED__
+#define __IUpdaterInternalSystem_FWD_DEFINED__
+typedef interface IUpdaterInternalSystem IUpdaterInternalSystem;
+
+#endif 	/* __IUpdaterInternalSystem_FWD_DEFINED__ */
 
 
 #ifndef __UpdaterInternalUserClass_FWD_DEFINED__
@@ -98,11 +126,39 @@ typedef interface IUpdaterInternal IUpdaterInternal;
 #endif 	/* __IUpdaterInternal_FWD_DEFINED__ */
 
 
+#ifndef __IUpdaterInternalUser_FWD_DEFINED__
+#define __IUpdaterInternalUser_FWD_DEFINED__
+typedef interface IUpdaterInternalUser IUpdaterInternalUser;
+
+#endif 	/* __IUpdaterInternalUser_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterInternalSystem_FWD_DEFINED__
+#define __IUpdaterInternalSystem_FWD_DEFINED__
+typedef interface IUpdaterInternalSystem IUpdaterInternalSystem;
+
+#endif 	/* __IUpdaterInternalSystem_FWD_DEFINED__ */
+
+
 #ifndef __IUpdaterInternalCallback_FWD_DEFINED__
 #define __IUpdaterInternalCallback_FWD_DEFINED__
 typedef interface IUpdaterInternalCallback IUpdaterInternalCallback;
 
 #endif 	/* __IUpdaterInternalCallback_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterInternalCallbackUser_FWD_DEFINED__
+#define __IUpdaterInternalCallbackUser_FWD_DEFINED__
+typedef interface IUpdaterInternalCallbackUser IUpdaterInternalCallbackUser;
+
+#endif 	/* __IUpdaterInternalCallbackUser_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterInternalCallbackSystem_FWD_DEFINED__
+#define __IUpdaterInternalCallbackSystem_FWD_DEFINED__
+typedef interface IUpdaterInternalCallbackSystem IUpdaterInternalCallbackSystem;
+
+#endif 	/* __IUpdaterInternalCallbackSystem_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -196,6 +252,170 @@ EXTERN_C const IID IID_IUpdaterInternalCallback;
 
 
 #endif 	/* __IUpdaterInternalCallback_INTERFACE_DEFINED__ */
+
+
+#ifndef __IUpdaterInternalCallbackUser_INTERFACE_DEFINED__
+#define __IUpdaterInternalCallbackUser_INTERFACE_DEFINED__
+
+/* interface IUpdaterInternalCallbackUser */
+/* [unique][helpstring][uuid][dual][object] */ 
+
+
+EXTERN_C const IID IID_IUpdaterInternalCallbackUser;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("618D9B82-9F51-4490-AF24-BB80489E1537")
+    IUpdaterInternalCallbackUser : public IUpdaterInternalCallback
+    {
+    public:
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IUpdaterInternalCallbackUserVtbl
+    {
+        BEGIN_INTERFACE
+        
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IUpdaterInternalCallbackUser * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IUpdaterInternalCallbackUser * This);
+        
+        DECLSPEC_XFGVIRT(IUnknown, Release)
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IUpdaterInternalCallbackUser * This);
+        
+        DECLSPEC_XFGVIRT(IUpdaterInternalCallback, Run)
+        HRESULT ( STDMETHODCALLTYPE *Run )( 
+            IUpdaterInternalCallbackUser * This,
+            /* [in] */ LONG result);
+        
+        END_INTERFACE
+    } IUpdaterInternalCallbackUserVtbl;
+
+    interface IUpdaterInternalCallbackUser
+    {
+        CONST_VTBL struct IUpdaterInternalCallbackUserVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IUpdaterInternalCallbackUser_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IUpdaterInternalCallbackUser_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IUpdaterInternalCallbackUser_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IUpdaterInternalCallbackUser_Run(This,result)	\
+    ( (This)->lpVtbl -> Run(This,result) ) 
+
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IUpdaterInternalCallbackUser_INTERFACE_DEFINED__ */
+
+
+#ifndef __IUpdaterInternalCallbackSystem_INTERFACE_DEFINED__
+#define __IUpdaterInternalCallbackSystem_INTERFACE_DEFINED__
+
+/* interface IUpdaterInternalCallbackSystem */
+/* [unique][helpstring][uuid][dual][object] */ 
+
+
+EXTERN_C const IID IID_IUpdaterInternalCallbackSystem;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("7E806C73-B2A4-4BC5-BDAD-2249D87F67FC")
+    IUpdaterInternalCallbackSystem : public IUpdaterInternalCallback
+    {
+    public:
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IUpdaterInternalCallbackSystemVtbl
+    {
+        BEGIN_INTERFACE
+        
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IUpdaterInternalCallbackSystem * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IUpdaterInternalCallbackSystem * This);
+        
+        DECLSPEC_XFGVIRT(IUnknown, Release)
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IUpdaterInternalCallbackSystem * This);
+        
+        DECLSPEC_XFGVIRT(IUpdaterInternalCallback, Run)
+        HRESULT ( STDMETHODCALLTYPE *Run )( 
+            IUpdaterInternalCallbackSystem * This,
+            /* [in] */ LONG result);
+        
+        END_INTERFACE
+    } IUpdaterInternalCallbackSystemVtbl;
+
+    interface IUpdaterInternalCallbackSystem
+    {
+        CONST_VTBL struct IUpdaterInternalCallbackSystemVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IUpdaterInternalCallbackSystem_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IUpdaterInternalCallbackSystem_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IUpdaterInternalCallbackSystem_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IUpdaterInternalCallbackSystem_Run(This,result)	\
+    ( (This)->lpVtbl -> Run(This,result) ) 
+
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IUpdaterInternalCallbackSystem_INTERFACE_DEFINED__ */
 
 
 #ifndef __IUpdaterInternal_INTERFACE_DEFINED__
@@ -293,12 +513,206 @@ EXTERN_C const IID IID_IUpdaterInternal;
 #endif 	/* __IUpdaterInternal_INTERFACE_DEFINED__ */
 
 
+#ifndef __IUpdaterInternalUser_INTERFACE_DEFINED__
+#define __IUpdaterInternalUser_INTERFACE_DEFINED__
+
+/* interface IUpdaterInternalUser */
+/* [unique][helpstring][uuid][dual][object] */ 
+
+
+EXTERN_C const IID IID_IUpdaterInternalUser;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("C82AFDA3-CA76-46EE-96E9-474717BFA7BA")
+    IUpdaterInternalUser : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE Run( 
+            /* [in] */ IUpdaterInternalCallbackUser *callback) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE Hello( 
+            /* [in] */ IUpdaterInternalCallbackUser *callback) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IUpdaterInternalUserVtbl
+    {
+        BEGIN_INTERFACE
+        
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IUpdaterInternalUser * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IUpdaterInternalUser * This);
+        
+        DECLSPEC_XFGVIRT(IUnknown, Release)
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IUpdaterInternalUser * This);
+        
+        DECLSPEC_XFGVIRT(IUpdaterInternalUser, Run)
+        HRESULT ( STDMETHODCALLTYPE *Run )( 
+            IUpdaterInternalUser * This,
+            /* [in] */ IUpdaterInternalCallbackUser *callback);
+        
+        DECLSPEC_XFGVIRT(IUpdaterInternalUser, Hello)
+        HRESULT ( STDMETHODCALLTYPE *Hello )( 
+            IUpdaterInternalUser * This,
+            /* [in] */ IUpdaterInternalCallbackUser *callback);
+        
+        END_INTERFACE
+    } IUpdaterInternalUserVtbl;
+
+    interface IUpdaterInternalUser
+    {
+        CONST_VTBL struct IUpdaterInternalUserVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IUpdaterInternalUser_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IUpdaterInternalUser_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IUpdaterInternalUser_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IUpdaterInternalUser_Run(This,callback)	\
+    ( (This)->lpVtbl -> Run(This,callback) ) 
+
+#define IUpdaterInternalUser_Hello(This,callback)	\
+    ( (This)->lpVtbl -> Hello(This,callback) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IUpdaterInternalUser_INTERFACE_DEFINED__ */
+
+
+#ifndef __IUpdaterInternalSystem_INTERFACE_DEFINED__
+#define __IUpdaterInternalSystem_INTERFACE_DEFINED__
+
+/* interface IUpdaterInternalSystem */
+/* [unique][helpstring][uuid][dual][object] */ 
+
+
+EXTERN_C const IID IID_IUpdaterInternalSystem;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("E690EB97-6E46-4361-AF8F-90A4F5496475")
+    IUpdaterInternalSystem : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE Run( 
+            /* [in] */ IUpdaterInternalCallbackSystem *callback) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE Hello( 
+            /* [in] */ IUpdaterInternalCallbackSystem *callback) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IUpdaterInternalSystemVtbl
+    {
+        BEGIN_INTERFACE
+        
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IUpdaterInternalSystem * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IUpdaterInternalSystem * This);
+        
+        DECLSPEC_XFGVIRT(IUnknown, Release)
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IUpdaterInternalSystem * This);
+        
+        DECLSPEC_XFGVIRT(IUpdaterInternalSystem, Run)
+        HRESULT ( STDMETHODCALLTYPE *Run )( 
+            IUpdaterInternalSystem * This,
+            /* [in] */ IUpdaterInternalCallbackSystem *callback);
+        
+        DECLSPEC_XFGVIRT(IUpdaterInternalSystem, Hello)
+        HRESULT ( STDMETHODCALLTYPE *Hello )( 
+            IUpdaterInternalSystem * This,
+            /* [in] */ IUpdaterInternalCallbackSystem *callback);
+        
+        END_INTERFACE
+    } IUpdaterInternalSystemVtbl;
+
+    interface IUpdaterInternalSystem
+    {
+        CONST_VTBL struct IUpdaterInternalSystemVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IUpdaterInternalSystem_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IUpdaterInternalSystem_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IUpdaterInternalSystem_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IUpdaterInternalSystem_Run(This,callback)	\
+    ( (This)->lpVtbl -> Run(This,callback) ) 
+
+#define IUpdaterInternalSystem_Hello(This,callback)	\
+    ( (This)->lpVtbl -> Hello(This,callback) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IUpdaterInternalSystem_INTERFACE_DEFINED__ */
+
+
 
 #ifndef __UpdaterInternalLib_LIBRARY_DEFINED__
 #define __UpdaterInternalLib_LIBRARY_DEFINED__
 
 /* library UpdaterInternalLib */
 /* [helpstring][version][uuid] */ 
+
+
+
+
 
 
 

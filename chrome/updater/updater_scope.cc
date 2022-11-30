@@ -76,4 +76,8 @@ UpdaterScope GetUpdaterScope() {
   return GetUpdaterScopeForCommandLine(*base::CommandLine::ForCurrentProcess());
 }
 
+bool IsSystemInstall() {
+  return GetUpdaterScope() == UpdaterScope::kSystem;
+}
+
 }  // namespace updater

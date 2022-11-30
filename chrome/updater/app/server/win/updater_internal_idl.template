@@ -23,6 +23,26 @@ interface IUpdaterInternalCallback : IUnknown {
 [
   object,
   dual,
+  uuid(PLACEHOLDER-GUID-618D9B82-9F51-4490-AF24-BB80489E1537),
+  helpstring("IUpdaterInternalCallbackUser Interface"),
+  pointer_default(unique)
+]
+interface IUpdaterInternalCallbackUser : IUpdaterInternalCallback {
+};
+
+[
+  object,
+  dual,
+  uuid(PLACEHOLDER-GUID-7E806C73-B2A4-4BC5-BDAD-2249D87F67FC),
+  helpstring("IUpdaterInternalCallbackSystem Interface"),
+  pointer_default(unique)
+]
+interface IUpdaterInternalCallbackSystem : IUpdaterInternalCallback {
+};
+
+[
+  object,
+  dual,
   uuid(PLACEHOLDER-GUID-526DA036-9BD3-4697-865A-DA12D37DFFCA),
   helpstring("IUpdaterInternal Interface"),
   pointer_default(unique)
@@ -30,6 +50,30 @@ interface IUpdaterInternalCallback : IUnknown {
 interface IUpdaterInternal : IUnknown {
   HRESULT Run([in] IUpdaterInternalCallback* callback);
   HRESULT Hello([in] IUpdaterInternalCallback* callback);
+};
+
+[
+  object,
+  dual,
+  uuid(PLACEHOLDER-GUID-C82AFDA3-CA76-46EE-96E9-474717BFA7BA),
+  helpstring("IUpdaterInternalUser Interface"),
+  pointer_default(unique)
+]
+interface IUpdaterInternalUser : IUnknown {
+  HRESULT Run([in] IUpdaterInternalCallbackUser* callback);
+  HRESULT Hello([in] IUpdaterInternalCallbackUser* callback);
+};
+
+[
+  object,
+  dual,
+  uuid(PLACEHOLDER-GUID-E690EB97-6E46-4361-AF8F-90A4F5496475),
+  helpstring("IUpdaterInternalSystem Interface"),
+  pointer_default(unique)
+]
+interface IUpdaterInternalSystem : IUnknown {
+  HRESULT Run([in] IUpdaterInternalCallbackSystem* callback);
+  HRESULT Hello([in] IUpdaterInternalCallbackSystem* callback);
 };
 
 [
@@ -59,5 +103,9 @@ library UpdaterInternalLib {
   }
 
   interface IUpdaterInternal;
+  interface IUpdaterInternalUser;
+  interface IUpdaterInternalSystem;
   interface IUpdaterInternalCallback;
+  interface IUpdaterInternalCallbackUser;
+  interface IUpdaterInternalCallbackSystem;
 };

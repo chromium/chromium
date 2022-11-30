@@ -693,6 +693,89 @@ service supports. This is used as:
 [application commands](functional_spec.md#application-commands-applicable-to-the-windows-version-of-the-updater)
 in the functional spec.
 
+#### COM Marshaling
+
+Typelib marshaling is used to marshal the updater interfaces. Each interface is
+registered with the typelib marshaler `{00020424-0000-0000-C000-000000000046}`
+as the proxy/stub.
+
+The type libraries are stored in three distinct typelibs
+within `updater.exe` with resource index `1, 2, 3` respectively for the active,
+side-by-side, and legacy interfaces respectively. The typelib registrations in
+the registry are made accordingly with the complete path to updater.exe suffixed
+with the typelib resource index.
+
+For instance, the typelib registration for the active interfaces would be of the
+form `C:\Path\To\updater.exe\1`.
+
+##### Side-by-side user/system interface registration
+The updater has marshaling and registration logic to make different (but
+binary-identical) COM interfaces for user and system respectively to work
+seamlessly.
+
+The distinct interface IDs are suffixed with `User` and `System` respectively.
+Most of the codebase uses the interface without the `User` or `System` suffix,
+except for the code that does the marshaling.
+
+The interfaces with `User` and `System` suffixes have (and always need to have)
+the exact same vtable and parameter layout as the interfaces without the
+suffixes, which is what makes it possible for the marshaling framework to think
+that it is marshaling the distinct `User` or `System` interfaces, while the
+majority of the codebase thinks it is working with the non-suffixed interfaces.
+
+The `User` interfaces are only registered for the user case in HKCU, while
+the corresponding `System` interfaces are only registered for the system case
+in HKLM.
+
+This isolates the installs from causing side-effects, and makes user and system
+installs fully SxS.
+
+Without this change, marshaling can load the typelib from `HKCU` for a system
+install with UAC off, because when COM looks up registration, entries in `HKCU`
+take priority over `HKLM` entries when UAC is off.
+
+When introducing a new interface, or making an existing interface to be SxS,
+the following steps need to be followed:
+* Add corresponding interfaces with `User` and `System` suffixes that are
+  binary-identical to the non-suffixed interface, to the `.template` IDL file
+  and BUILD files.
+* IDL file changes use the following rules:
+  * If there are no interface parameters in any of the methods of the interface,
+    simply derive the `User` and `System` suffixed interfaces from the
+    non-suffixed interface. 
+
+    Example: `IUpdaterInternalCallbackUser` and `IUpdaterInternalCallbackSystem`
+    derive from `IUpdaterInternalCallback` in `updater_internal_idl.template`.
+  * If there are interface parameters in any of the methods of the interface,
+    make an exact copy of the non-suffixed interface, but replace any interface
+    parameters with the `User` and `System` suffixed interface equivalents.
+
+    Example: `IUpdaterInternalUser` and `IUpdaterInternalSystem` are copies of
+    `IUpdaterInternal`, but with the interface parameters of type
+    `IUpdaterInternalCallback` replaced with `IUpdaterInternalCallbackUser` and
+    `IUpdaterInternalCallbackSystem` respectively for the methods `Run` and
+    `Hello` in `updater_internal_idl.template`.
+* Code changes:
+  * Derive the COM class that implements interface `T` from
+    `DynamicIIDsImpl<T, user_iid, system_iid>`. `user_iid` and `system_iid`
+    are aliases for interface `T` for user and system installs respectively.
+
+    Example: class `UpdaterInternalImpl` derives from
+    `DynamicIIDsImpl<IUpdaterInternal, IUpdaterInternalUser, IUpdaterInternalSystem>`
+
+  * Use the distinct `User` or `System` IID when querying for the non-suffixed interface.
+
+    Example:
+
+    ```
+        Microsoft::WRL::ComPtr<Interface> server_interface;
+        REFIID iid = scope_ == UpdaterScope::kSystem ? __uuidof(InterfaceSystem)
+                                                     : __uuidof(InterfaceUser);
+        hr = server.CopyTo(iid, IID_PPV_ARGS_Helper(&server_interface));
+    ```
+  * Register either the `User` or the `System` interface (but not both) with COM
+    in setup. The non-suffixed interface is not registered with COM at all.
+
 #### COM Security
 
 The legacy COM classes in

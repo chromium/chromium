@@ -287,9 +287,10 @@ void CheckInstallation(UpdaterScope scope,
     }
   }
 
-  for (const IID& iid : JoinVectors(
-           GetSideBySideInterfaces(),
-           is_active_and_sxs ? GetActiveInterfaces() : std::vector<IID>())) {
+  for (const IID& iid :
+       JoinVectors(GetSideBySideInterfaces(scope),
+                   is_active_and_sxs ? GetActiveInterfaces(scope)
+                                     : std::vector<IID>())) {
     EXPECT_EQ(is_installed, RegKeyExistsCOM(root, GetComIidRegistryPath(iid)));
     EXPECT_EQ(is_installed,
               RegKeyExistsCOM(root, GetComTypeLibRegistryPath(iid)));
@@ -614,8 +615,8 @@ void Clean(UpdaterScope scope) {
       EXPECT_TRUE(DeleteRegKeyCOM(root, GetComServerAppidRegistryPath(clsid)));
   }
 
-  for (const IID& iid :
-       JoinVectors(GetSideBySideInterfaces(), GetActiveInterfaces())) {
+  for (const IID& iid : JoinVectors(GetSideBySideInterfaces(scope),
+                                    GetActiveInterfaces(scope))) {
     EXPECT_TRUE(DeleteRegKeyCOM(root, GetComIidRegistryPath(iid)));
     EXPECT_TRUE(DeleteRegKeyCOM(root, GetComTypeLibRegistryPath(iid)));
   }
@@ -758,7 +759,7 @@ bool WaitForUpdaterExit(UpdaterScope /*scope*/) {
 // typelib.
 void VerifyInterfacesRegistryEntries(UpdaterScope scope) {
   for (const auto is_internal : {true, false}) {
-    for (const auto& iid : GetInterfaces(is_internal)) {
+    for (const auto& iid : GetInterfaces(is_internal, scope)) {
       const HKEY root = UpdaterScopeToHKeyRoot(scope);
       const std::wstring iid_reg_path = GetComIidRegistryPath(iid);
       const std::wstring typelib_reg_path = GetComTypeLibRegistryPath(iid);
@@ -846,7 +847,10 @@ void ExpectInterfacesRegistered(UpdaterScope scope) {
                                        : __uuidof(UpdaterInternalUserClass),
         updater_internal_server));
     Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
-    EXPECT_HRESULT_SUCCEEDED(updater_internal_server.As(&updater_internal));
+    EXPECT_HRESULT_SUCCEEDED(updater_internal_server.CopyTo(
+        scope == UpdaterScope::kSystem ? __uuidof(IUpdaterInternalSystem)
+                                       : __uuidof(IUpdaterInternalUser),
+        IID_PPV_ARGS_Helper(&updater_internal)));
   }
 
   VerifyInterfacesRegistryEntries(scope);
@@ -856,8 +860,10 @@ void ExpectMarshalInterfaceSucceeds(UpdaterScope scope) {
   // Create proxy/stubs for the IUpdaterInternal interface.
   // Look up the ProxyStubClsid32.
   CLSID psclsid = {};
-  EXPECT_HRESULT_SUCCEEDED(
-      ::CoGetPSClsid(__uuidof(IUpdaterInternal), &psclsid));
+  REFIID iupdaterinternal_iid = scope == UpdaterScope::kSystem
+                                    ? __uuidof(IUpdaterInternalSystem)
+                                    : __uuidof(IUpdaterInternalUser);
+  EXPECT_HRESULT_SUCCEEDED(::CoGetPSClsid(iupdaterinternal_iid, &psclsid));
   EXPECT_EQ(base::ToUpperASCII(base::win::WStringFromGUID(psclsid)),
             L"{00020424-0000-0000-C000-000000000046}");
 
@@ -869,14 +875,14 @@ void ExpectMarshalInterfaceSucceeds(UpdaterScope scope) {
   // Create the interface proxy.
   Microsoft::WRL::ComPtr<IRpcProxyBuffer> proxy_buffer;
   Microsoft::WRL::ComPtr<IUpdaterInternal> object;
-  EXPECT_HRESULT_SUCCEEDED(
-      psfb->CreateProxy(nullptr, __uuidof(IUpdaterInternal), &proxy_buffer,
-                        IID_PPV_ARGS_Helper(&object)));
+  EXPECT_HRESULT_SUCCEEDED(psfb->CreateProxy(nullptr, iupdaterinternal_iid,
+                                             &proxy_buffer,
+                                             IID_PPV_ARGS_Helper(&object)));
 
   // Create the interface stub.
   Microsoft::WRL::ComPtr<IRpcStubBuffer> stub_buffer;
   EXPECT_HRESULT_SUCCEEDED(
-      psfb->CreateStub(__uuidof(IUpdaterInternal), nullptr, &stub_buffer));
+      psfb->CreateStub(iupdaterinternal_iid, nullptr, &stub_buffer));
 
   // Marshal and unmarshal an IUpdaterInternal object.
   Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
@@ -886,7 +892,7 @@ void ExpectMarshalInterfaceSucceeds(UpdaterScope scope) {
 
   Microsoft::WRL::ComPtr<IStream> stream;
   EXPECT_HRESULT_SUCCEEDED(::CoMarshalInterThreadInterfaceInStream(
-      __uuidof(IUpdaterInternal), updater_internal.Get(), &stream));
+      iupdaterinternal_iid, updater_internal.Get(), &stream));
 
   base::WaitableEvent unmarshal_complete_event;
 
@@ -895,16 +901,18 @@ void ExpectMarshalInterfaceSucceeds(UpdaterScope scope) {
           FROM_HERE,
           base::BindOnce(
               [](Microsoft::WRL::ComPtr<IStream> stream,
-                 base::WaitableEvent& event) {
+                 REFIID iupdaterinternal_iid, base::WaitableEvent& event) {
                 const base::ScopedClosureRunner signal_event(base::BindOnce(
                     [](base::WaitableEvent& event) { event.Signal(); },
                     std::ref(event)));
 
                 Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
                 EXPECT_HRESULT_SUCCEEDED(::CoUnmarshalInterface(
-                    stream.Get(), IID_PPV_ARGS(&updater_internal)));
+                    stream.Get(), iupdaterinternal_iid,
+                    IID_PPV_ARGS_Helper(&updater_internal)));
               },
-              stream, std::ref(unmarshal_complete_event)));
+              stream, iupdaterinternal_iid,
+              std::ref(unmarshal_complete_event)));
 
   EXPECT_TRUE(
       unmarshal_complete_event.TimedWait(TestTimeouts::action_max_timeout()));

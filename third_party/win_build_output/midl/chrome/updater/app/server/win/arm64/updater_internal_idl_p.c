@@ -46,8 +46,8 @@
 
 #include "updater_internal_idl.h"
 
-#define TYPE_FORMAT_STRING_SIZE   21                                
-#define PROC_FORMAT_STRING_SIZE   127                               
+#define TYPE_FORMAT_STRING_SIZE   57                                
+#define PROC_FORMAT_STRING_SIZE   295                               
 #define EXPR_FORMAT_STRING_SIZE   1                                 
 #define TRANSMIT_AS_TABLE_SIZE    0            
 #define WIRE_MARSHAL_TABLE_SIZE   0            
@@ -142,8 +142,36 @@ extern const MIDL_STUBLESS_PROXY_INFO IUpdaterInternalCallback_ProxyInfo;
 extern const MIDL_STUB_DESC Object_StubDesc;
 
 
+extern const MIDL_SERVER_INFO IUpdaterInternalCallbackUser_ServerInfo;
+extern const MIDL_STUBLESS_PROXY_INFO IUpdaterInternalCallbackUser_ProxyInfo;
+
+
+extern const MIDL_STUB_DESC Object_StubDesc;
+
+
+extern const MIDL_SERVER_INFO IUpdaterInternalCallbackSystem_ServerInfo;
+extern const MIDL_STUBLESS_PROXY_INFO IUpdaterInternalCallbackSystem_ProxyInfo;
+
+
+extern const MIDL_STUB_DESC Object_StubDesc;
+
+
 extern const MIDL_SERVER_INFO IUpdaterInternal_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IUpdaterInternal_ProxyInfo;
+
+
+extern const MIDL_STUB_DESC Object_StubDesc;
+
+
+extern const MIDL_SERVER_INFO IUpdaterInternalUser_ServerInfo;
+extern const MIDL_STUBLESS_PROXY_INFO IUpdaterInternalUser_ProxyInfo;
+
+
+extern const MIDL_STUB_DESC Object_StubDesc;
+
+
+extern const MIDL_SERVER_INFO IUpdaterInternalSystem_ServerInfo;
+extern const MIDL_STUBLESS_PROXY_INFO IUpdaterInternalSystem_ProxyInfo;
 
 
 
@@ -262,6 +290,146 @@ static const updater_internal_idl_MIDL_PROC_FORMAT_STRING updater_internal_idl__
 /* 124 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
+	/* Procedure Run */
+
+/* 126 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 128 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 132 */	NdrFcShort( 0x3 ),	/* 3 */
+/* 134 */	NdrFcShort( 0x18 ),	/* ARM64 Stack size/offset = 24 */
+/* 136 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 138 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 140 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x2,		/* 2 */
+/* 142 */	0xe,		/* 14 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 144 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 146 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 148 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 150 */	NdrFcShort( 0x2 ),	/* 2 */
+/* 152 */	0x2,		/* 2 */
+			0x80,		/* 128 */
+/* 154 */	0x81,		/* 129 */
+			0x0,		/* 0 */
+
+	/* Parameter callback */
+
+/* 156 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 158 */	NdrFcShort( 0x8 ),	/* ARM64 Stack size/offset = 8 */
+/* 160 */	NdrFcShort( 0x14 ),	/* Type Offset=20 */
+
+	/* Return value */
+
+/* 162 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 164 */	NdrFcShort( 0x10 ),	/* ARM64 Stack size/offset = 16 */
+/* 166 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure Hello */
+
+/* 168 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 170 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 174 */	NdrFcShort( 0x4 ),	/* 4 */
+/* 176 */	NdrFcShort( 0x18 ),	/* ARM64 Stack size/offset = 24 */
+/* 178 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 180 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 182 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x2,		/* 2 */
+/* 184 */	0xe,		/* 14 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 186 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 188 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 190 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 192 */	NdrFcShort( 0x2 ),	/* 2 */
+/* 194 */	0x2,		/* 2 */
+			0x80,		/* 128 */
+/* 196 */	0x81,		/* 129 */
+			0x0,		/* 0 */
+
+	/* Parameter callback */
+
+/* 198 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 200 */	NdrFcShort( 0x8 ),	/* ARM64 Stack size/offset = 8 */
+/* 202 */	NdrFcShort( 0x14 ),	/* Type Offset=20 */
+
+	/* Return value */
+
+/* 204 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 206 */	NdrFcShort( 0x10 ),	/* ARM64 Stack size/offset = 16 */
+/* 208 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure Run */
+
+/* 210 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 212 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 216 */	NdrFcShort( 0x3 ),	/* 3 */
+/* 218 */	NdrFcShort( 0x18 ),	/* ARM64 Stack size/offset = 24 */
+/* 220 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 222 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 224 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x2,		/* 2 */
+/* 226 */	0xe,		/* 14 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 228 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 230 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 232 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 234 */	NdrFcShort( 0x2 ),	/* 2 */
+/* 236 */	0x2,		/* 2 */
+			0x80,		/* 128 */
+/* 238 */	0x81,		/* 129 */
+			0x0,		/* 0 */
+
+	/* Parameter callback */
+
+/* 240 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 242 */	NdrFcShort( 0x8 ),	/* ARM64 Stack size/offset = 8 */
+/* 244 */	NdrFcShort( 0x26 ),	/* Type Offset=38 */
+
+	/* Return value */
+
+/* 246 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 248 */	NdrFcShort( 0x10 ),	/* ARM64 Stack size/offset = 16 */
+/* 250 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure Hello */
+
+/* 252 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 254 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 258 */	NdrFcShort( 0x4 ),	/* 4 */
+/* 260 */	NdrFcShort( 0x18 ),	/* ARM64 Stack size/offset = 24 */
+/* 262 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 264 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 266 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x2,		/* 2 */
+/* 268 */	0xe,		/* 14 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 270 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 272 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 274 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 276 */	NdrFcShort( 0x2 ),	/* 2 */
+/* 278 */	0x2,		/* 2 */
+			0x80,		/* 128 */
+/* 280 */	0x81,		/* 129 */
+			0x0,		/* 0 */
+
+	/* Parameter callback */
+
+/* 282 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 284 */	NdrFcShort( 0x8 ),	/* ARM64 Stack size/offset = 8 */
+/* 286 */	NdrFcShort( 0x26 ),	/* Type Offset=38 */
+
+	/* Return value */
+
+/* 288 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 290 */	NdrFcShort( 0x10 ),	/* ARM64 Stack size/offset = 16 */
+/* 292 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
 			0x0
         }
     };
@@ -285,6 +453,34 @@ static const updater_internal_idl_MIDL_TYPE_FORMAT_STRING updater_internal_idl__
 			0x22,		/* 34 */
 /* 18 */	0xbe,		/* 190 */
 			0x65,		/* 101 */
+/* 20 */	
+			0x2f,		/* FC_IP */
+			0x5a,		/* FC_CONSTANT_IID */
+/* 22 */	NdrFcLong( 0x618d9b82 ),	/* 1636670338 */
+/* 26 */	NdrFcShort( 0x9f51 ),	/* -24751 */
+/* 28 */	NdrFcShort( 0x4490 ),	/* 17552 */
+/* 30 */	0xaf,		/* 175 */
+			0x24,		/* 36 */
+/* 32 */	0xbb,		/* 187 */
+			0x80,		/* 128 */
+/* 34 */	0x48,		/* 72 */
+			0x9e,		/* 158 */
+/* 36 */	0x15,		/* 21 */
+			0x37,		/* 55 */
+/* 38 */	
+			0x2f,		/* FC_IP */
+			0x5a,		/* FC_CONSTANT_IID */
+/* 40 */	NdrFcLong( 0x7e806c73 ),	/* 2122345587 */
+/* 44 */	NdrFcShort( 0xb2a4 ),	/* -19804 */
+/* 46 */	NdrFcShort( 0x4bc5 ),	/* 19397 */
+/* 48 */	0xbd,		/* 189 */
+			0xad,		/* 173 */
+/* 50 */	0x22,		/* 34 */
+			0x49,		/* 73 */
+/* 52 */	0xd8,		/* 216 */
+			0x7f,		/* 127 */
+/* 54 */	0x67,		/* 103 */
+			0xfc,		/* 252 */
 
 			0x0
         }
@@ -345,6 +541,120 @@ const CInterfaceStubVtbl _IUpdaterInternalCallbackStubVtbl =
 };
 
 
+/* Object interface: IUpdaterInternalCallbackUser, ver. 0.0,
+   GUID={0x618D9B82,0x9F51,0x4490,{0xAF,0x24,0xBB,0x80,0x48,0x9E,0x15,0x37}} */
+
+#pragma code_seg(".orpc")
+static const unsigned short IUpdaterInternalCallbackUser_FormatStringOffsetTable[] =
+    {
+    0,
+    0
+    };
+
+static const MIDL_STUBLESS_PROXY_INFO IUpdaterInternalCallbackUser_ProxyInfo =
+    {
+    &Object_StubDesc,
+    updater_internal_idl__MIDL_ProcFormatString.Format,
+    &IUpdaterInternalCallbackUser_FormatStringOffsetTable[-3],
+    0,
+    0,
+    0
+    };
+
+
+static const MIDL_SERVER_INFO IUpdaterInternalCallbackUser_ServerInfo = 
+    {
+    &Object_StubDesc,
+    0,
+    updater_internal_idl__MIDL_ProcFormatString.Format,
+    &IUpdaterInternalCallbackUser_FormatStringOffsetTable[-3],
+    0,
+    0,
+    0,
+    0};
+CINTERFACE_PROXY_VTABLE(4) _IUpdaterInternalCallbackUserProxyVtbl = 
+{
+    0,
+    &IID_IUpdaterInternalCallbackUser,
+    IUnknown_QueryInterface_Proxy,
+    IUnknown_AddRef_Proxy,
+    IUnknown_Release_Proxy ,
+    0 /* forced delegation IUpdaterInternalCallback::Run */
+};
+
+
+static const PRPC_STUB_FUNCTION IUpdaterInternalCallbackUser_table[] =
+{
+    NdrStubCall2
+};
+
+CInterfaceStubVtbl _IUpdaterInternalCallbackUserStubVtbl =
+{
+    &IID_IUpdaterInternalCallbackUser,
+    &IUpdaterInternalCallbackUser_ServerInfo,
+    4,
+    &IUpdaterInternalCallbackUser_table[-3],
+    CStdStubBuffer_DELEGATING_METHODS
+};
+
+
+/* Object interface: IUpdaterInternalCallbackSystem, ver. 0.0,
+   GUID={0x7E806C73,0xB2A4,0x4BC5,{0xBD,0xAD,0x22,0x49,0xD8,0x7F,0x67,0xFC}} */
+
+#pragma code_seg(".orpc")
+static const unsigned short IUpdaterInternalCallbackSystem_FormatStringOffsetTable[] =
+    {
+    0,
+    0
+    };
+
+static const MIDL_STUBLESS_PROXY_INFO IUpdaterInternalCallbackSystem_ProxyInfo =
+    {
+    &Object_StubDesc,
+    updater_internal_idl__MIDL_ProcFormatString.Format,
+    &IUpdaterInternalCallbackSystem_FormatStringOffsetTable[-3],
+    0,
+    0,
+    0
+    };
+
+
+static const MIDL_SERVER_INFO IUpdaterInternalCallbackSystem_ServerInfo = 
+    {
+    &Object_StubDesc,
+    0,
+    updater_internal_idl__MIDL_ProcFormatString.Format,
+    &IUpdaterInternalCallbackSystem_FormatStringOffsetTable[-3],
+    0,
+    0,
+    0,
+    0};
+CINTERFACE_PROXY_VTABLE(4) _IUpdaterInternalCallbackSystemProxyVtbl = 
+{
+    0,
+    &IID_IUpdaterInternalCallbackSystem,
+    IUnknown_QueryInterface_Proxy,
+    IUnknown_AddRef_Proxy,
+    IUnknown_Release_Proxy ,
+    0 /* forced delegation IUpdaterInternalCallback::Run */
+};
+
+
+static const PRPC_STUB_FUNCTION IUpdaterInternalCallbackSystem_table[] =
+{
+    NdrStubCall2
+};
+
+CInterfaceStubVtbl _IUpdaterInternalCallbackSystemStubVtbl =
+{
+    &IID_IUpdaterInternalCallbackSystem,
+    &IUpdaterInternalCallbackSystem_ServerInfo,
+    4,
+    &IUpdaterInternalCallbackSystem_table[-3],
+    CStdStubBuffer_DELEGATING_METHODS
+};
+
+
 /* Object interface: IUpdaterInternal, ver. 0.0,
    GUID={0x526DA036,0x9BD3,0x4697,{0x86,0x5A,0xDA,0x12,0xD3,0x7D,0xFF,0xCA}} */
 
@@ -396,6 +706,110 @@ const CInterfaceStubVtbl _IUpdaterInternalStubVtbl =
     CStdStubBuffer_METHODS
 };
 
+
+/* Object interface: IUpdaterInternalUser, ver. 0.0,
+   GUID={0xC82AFDA3,0xCA76,0x46EE,{0x96,0xE9,0x47,0x47,0x17,0xBF,0xA7,0xBA}} */
+
+#pragma code_seg(".orpc")
+static const unsigned short IUpdaterInternalUser_FormatStringOffsetTable[] =
+    {
+    126,
+    168
+    };
+
+static const MIDL_STUBLESS_PROXY_INFO IUpdaterInternalUser_ProxyInfo =
+    {
+    &Object_StubDesc,
+    updater_internal_idl__MIDL_ProcFormatString.Format,
+    &IUpdaterInternalUser_FormatStringOffsetTable[-3],
+    0,
+    0,
+    0
+    };
+
+
+static const MIDL_SERVER_INFO IUpdaterInternalUser_ServerInfo = 
+    {
+    &Object_StubDesc,
+    0,
+    updater_internal_idl__MIDL_ProcFormatString.Format,
+    &IUpdaterInternalUser_FormatStringOffsetTable[-3],
+    0,
+    0,
+    0,
+    0};
+CINTERFACE_PROXY_VTABLE(5) _IUpdaterInternalUserProxyVtbl = 
+{
+    &IUpdaterInternalUser_ProxyInfo,
+    &IID_IUpdaterInternalUser,
+    IUnknown_QueryInterface_Proxy,
+    IUnknown_AddRef_Proxy,
+    IUnknown_Release_Proxy ,
+    (void *) (INT_PTR) -1 /* IUpdaterInternalUser::Run */ ,
+    (void *) (INT_PTR) -1 /* IUpdaterInternalUser::Hello */
+};
+
+const CInterfaceStubVtbl _IUpdaterInternalUserStubVtbl =
+{
+    &IID_IUpdaterInternalUser,
+    &IUpdaterInternalUser_ServerInfo,
+    5,
+    0, /* pure interpreted */
+    CStdStubBuffer_METHODS
+};
+
+
+/* Object interface: IUpdaterInternalSystem, ver. 0.0,
+   GUID={0xE690EB97,0x6E46,0x4361,{0xAF,0x8F,0x90,0xA4,0xF5,0x49,0x64,0x75}} */
+
+#pragma code_seg(".orpc")
+static const unsigned short IUpdaterInternalSystem_FormatStringOffsetTable[] =
+    {
+    210,
+    252
+    };
+
+static const MIDL_STUBLESS_PROXY_INFO IUpdaterInternalSystem_ProxyInfo =
+    {
+    &Object_StubDesc,
+    updater_internal_idl__MIDL_ProcFormatString.Format,
+    &IUpdaterInternalSystem_FormatStringOffsetTable[-3],
+    0,
+    0,
+    0
+    };
+
+
+static const MIDL_SERVER_INFO IUpdaterInternalSystem_ServerInfo = 
+    {
+    &Object_StubDesc,
+    0,
+    updater_internal_idl__MIDL_ProcFormatString.Format,
+    &IUpdaterInternalSystem_FormatStringOffsetTable[-3],
+    0,
+    0,
+    0,
+    0};
+CINTERFACE_PROXY_VTABLE(5) _IUpdaterInternalSystemProxyVtbl = 
+{
+    &IUpdaterInternalSystem_ProxyInfo,
+    &IID_IUpdaterInternalSystem,
+    IUnknown_QueryInterface_Proxy,
+    IUnknown_AddRef_Proxy,
+    IUnknown_Release_Proxy ,
+    (void *) (INT_PTR) -1 /* IUpdaterInternalSystem::Run */ ,
+    (void *) (INT_PTR) -1 /* IUpdaterInternalSystem::Hello */
+};
+
+const CInterfaceStubVtbl _IUpdaterInternalSystemStubVtbl =
+{
+    &IID_IUpdaterInternalSystem,
+    &IUpdaterInternalSystem_ServerInfo,
+    5,
+    0, /* pure interpreted */
+    CStdStubBuffer_METHODS
+};
+
 static const MIDL_STUB_DESC Object_StubDesc = 
     {
     0,
@@ -423,21 +837,44 @@ static const MIDL_STUB_DESC Object_StubDesc =
 const CInterfaceProxyVtbl * const _updater_internal_idl_ProxyVtblList[] = 
 {
     ( CInterfaceProxyVtbl *) &_IUpdaterInternalProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IUpdaterInternalCallbackSystemProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IUpdaterInternalCallbackUserProxyVtbl,
     ( CInterfaceProxyVtbl *) &_IUpdaterInternalCallbackProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IUpdaterInternalSystemProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IUpdaterInternalUserProxyVtbl,
     0
 };
 
 const CInterfaceStubVtbl * const _updater_internal_idl_StubVtblList[] = 
 {
     ( CInterfaceStubVtbl *) &_IUpdaterInternalStubVtbl,
+    ( CInterfaceStubVtbl *) &_IUpdaterInternalCallbackSystemStubVtbl,
+    ( CInterfaceStubVtbl *) &_IUpdaterInternalCallbackUserStubVtbl,
     ( CInterfaceStubVtbl *) &_IUpdaterInternalCallbackStubVtbl,
+    ( CInterfaceStubVtbl *) &_IUpdaterInternalSystemStubVtbl,
+    ( CInterfaceStubVtbl *) &_IUpdaterInternalUserStubVtbl,
     0
 };
 
 PCInterfaceName const _updater_internal_idl_InterfaceNamesList[] = 
 {
     "IUpdaterInternal",
+    "IUpdaterInternalCallbackSystem",
+    "IUpdaterInternalCallbackUser",
     "IUpdaterInternalCallback",
+    "IUpdaterInternalSystem",
+    "IUpdaterInternalUser",
+    0
+};
+
+const IID *  const _updater_internal_idl_BaseIIDList[] = 
+{
+    0,
+    &IID_IUpdaterInternalCallback,   /* forced */
+    &IID_IUpdaterInternalCallback,   /* forced */
+    0,
+    0,
+    0,
     0
 };
 
@@ -448,8 +885,10 @@ int __stdcall _updater_internal_idl_IID_Lookup( const IID * pIID, int * pIndex )
 {
     IID_BS_LOOKUP_SETUP
 
-    IID_BS_LOOKUP_INITIAL_TEST( _updater_internal_idl, 2, 1 )
-    IID_BS_LOOKUP_RETURN_RESULT( _updater_internal_idl, 2, *pIndex )
+    IID_BS_LOOKUP_INITIAL_TEST( _updater_internal_idl, 6, 4 )
+    IID_BS_LOOKUP_NEXT_TEST( _updater_internal_idl, 2 )
+    IID_BS_LOOKUP_NEXT_TEST( _updater_internal_idl, 1 )
+    IID_BS_LOOKUP_RETURN_RESULT( _updater_internal_idl, 6, *pIndex )
     
 }
 
@@ -458,9 +897,9 @@ const ExtendedProxyFileInfo updater_internal_idl_ProxyFileInfo =
     (PCInterfaceProxyVtblList *) & _updater_internal_idl_ProxyVtblList,
     (PCInterfaceStubVtblList *) & _updater_internal_idl_StubVtblList,
     (const PCInterfaceName * ) & _updater_internal_idl_InterfaceNamesList,
-    0, /* no delegation */
+    (const IID ** ) & _updater_internal_idl_BaseIIDList,
     & _updater_internal_idl_IID_Lookup, 
-    2,
+    6,
     2,
     0, /* table of [async_uuid] interfaces */
     0, /* Filler1 */

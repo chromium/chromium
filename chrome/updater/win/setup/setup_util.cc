@@ -115,14 +115,22 @@ void UnregisterWakeTask(UpdaterScope scope) {
   VLOG(1) << "UnregisterWakeTask succeeded: " << task_name;
 }
 
-std::vector<IID> GetSideBySideInterfaces() {
-  return {
-      __uuidof(IUpdaterInternal),
-      __uuidof(IUpdaterInternalCallback),
-  };
+std::vector<IID> GetSideBySideInterfaces(UpdaterScope scope) {
+  switch (scope) {
+    case UpdaterScope::kUser:
+      return {
+          __uuidof(IUpdaterInternalUser),
+          __uuidof(IUpdaterInternalCallbackUser),
+      };
+    case UpdaterScope::kSystem:
+      return {
+          __uuidof(IUpdaterInternalSystem),
+          __uuidof(IUpdaterInternalCallbackSystem),
+      };
+  }
 }
 
-std::vector<IID> GetActiveInterfaces() {
+std::vector<IID> GetActiveInterfaces(UpdaterScope /*scope*/) {
   return {
       __uuidof(IUpdateState),
       __uuidof(IUpdater),
@@ -145,8 +153,9 @@ std::vector<IID> GetActiveInterfaces() {
   };
 }
 
-std::vector<IID> GetInterfaces(bool is_internal) {
-  return is_internal ? GetSideBySideInterfaces() : GetActiveInterfaces();
+std::vector<IID> GetInterfaces(bool is_internal, UpdaterScope scope) {
+  return is_internal ? GetSideBySideInterfaces(scope)
+                     : GetActiveInterfaces(scope);
 }
 
 std::vector<CLSID> GetSideBySideServers(UpdaterScope scope) {
@@ -269,7 +278,7 @@ void AddComServerWorkItems(const base::FilePath& com_server_path,
                               is_internal, list);
   }
 
-  for (const auto& iid : GetInterfaces(is_internal)) {
+  for (const auto& iid : GetInterfaces(is_internal, UpdaterScope::kUser)) {
     AddInstallComInterfaceWorkItems(HKEY_CURRENT_USER, com_server_path, iid,
                                     list);
   }
@@ -306,7 +315,8 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
       com_service_command, com_switch, UPDATER_KEY,
       GetServers(internal_service, UpdaterScope::kSystem), {}));
 
-  for (const auto& iid : GetInterfaces(internal_service)) {
+  for (const auto& iid :
+       GetInterfaces(internal_service, UpdaterScope::kSystem)) {
     AddInstallComInterfaceWorkItems(HKEY_LOCAL_MACHINE, com_service_path, iid,
                                     list);
   }
@@ -349,8 +359,10 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
           {__uuidof(IUpdaterCallback), kUpdaterIndex},
 
           // Updater internal typelib.
-          {__uuidof(IUpdaterInternal), kUpdaterInternalIndex},
-          {__uuidof(IUpdaterInternalCallback), kUpdaterInternalIndex},
+          {__uuidof(IUpdaterInternalUser), kUpdaterInternalIndex},
+          {__uuidof(IUpdaterInternalSystem), kUpdaterInternalIndex},
+          {__uuidof(IUpdaterInternalCallbackUser), kUpdaterInternalIndex},
+          {__uuidof(IUpdaterInternalCallbackSystem), kUpdaterInternalIndex},
 
           // Updater legacy typelib.
           {__uuidof(IAppBundleWeb), kUpdaterLegacyIndex},

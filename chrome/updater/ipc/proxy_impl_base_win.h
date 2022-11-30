@@ -20,13 +20,17 @@
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/win/win_util.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 
 namespace updater {
 
-template <typename Derived, typename Interface>
+template <typename Derived,
+          typename Interface,
+          typename InterfaceUser,
+          typename InterfaceSystem>
 class ProxyImplBase {
  public:
   // Releases `impl` on `task_runner_`.
@@ -68,10 +72,13 @@ class ProxyImplBase {
     }
 
     Microsoft::WRL::ComPtr<Interface> server_interface;
-    hr = server.As(&server_interface);
+    REFIID iid = scope_ == UpdaterScope::kSystem ? __uuidof(InterfaceSystem)
+                                                 : __uuidof(InterfaceUser);
+    hr = server.CopyTo(iid, IID_PPV_ARGS_Helper(&server_interface));
 
     if (FAILED(hr)) {
-      VLOG(2) << "Failed to query the interface: " << std::hex << hr;
+      VLOG(2) << "Failed to query the interface: "
+              << base::win::WStringFromGUID(iid) << ": " << std::hex << hr;
       return base::unexpected(hr);
     }
 

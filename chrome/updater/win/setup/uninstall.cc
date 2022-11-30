@@ -72,13 +72,14 @@ void DeleteComService(bool uninstall_all) {
   }
 }
 
-void DeleteComInterfaces(HKEY root, bool uninstall_all) {
+void DeleteComInterfaces(UpdaterScope scope, bool uninstall_all) {
   for (const IID& iid : JoinVectors(
-           GetSideBySideInterfaces(),
-           uninstall_all ? GetActiveInterfaces() : std::vector<IID>())) {
+           GetSideBySideInterfaces(scope),
+           uninstall_all ? GetActiveInterfaces(scope) : std::vector<IID>())) {
     for (const auto& reg_path :
          {GetComIidRegistryPath(iid), GetComTypeLibRegistryPath(iid)}) {
-      installer::DeleteRegistryKey(root, reg_path, WorkItem::kWow64Default);
+      installer::DeleteRegistryKey(UpdaterScopeToHKeyRoot(scope), reg_path,
+                                   WorkItem::kWow64Default);
     }
   }
 }
@@ -153,7 +154,7 @@ int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
   if (uninstall_all)
     DeleteGoogleUpdateFilesAndKeys(scope);
 
-  DeleteComInterfaces(UpdaterScopeToHKeyRoot(scope), uninstall_all);
+  DeleteComInterfaces(scope, uninstall_all);
   if (scope == UpdaterScope::kSystem)
     DeleteComService(uninstall_all);
   DeleteComServer(scope, uninstall_all);

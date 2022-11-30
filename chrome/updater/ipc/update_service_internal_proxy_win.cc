@@ -21,6 +21,7 @@
 #include "chrome/updater/ipc/proxy_impl_base_win.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -30,9 +31,9 @@ namespace {
 // This class implements the IUpdaterInternalCallback interface and exposes it
 // as a COM object. The class has thread-affinity for the STA thread.
 class UpdaterInternalCallback
-    : public Microsoft::WRL::RuntimeClass<
-          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          IUpdaterInternalCallback> {
+    : public DynamicIIDsImpl<IUpdaterInternalCallback,
+                             IUpdaterInternalCallbackUser,
+                             IUpdaterInternalCallbackSystem> {
  public:
   explicit UpdaterInternalCallback(base::OnceClosure callback)
       : callback_(std::move(callback)) {}
@@ -81,7 +82,10 @@ base::OnceClosure UpdaterInternalCallback::Disconnect() {
 
 class UpdateServiceInternalProxyImpl
     : public base::RefCountedThreadSafe<UpdateServiceInternalProxyImpl>,
-      public ProxyImplBase<UpdateServiceInternalProxyImpl, IUpdaterInternal> {
+      public ProxyImplBase<UpdateServiceInternalProxyImpl,
+                           IUpdaterInternal,
+                           IUpdaterInternalUser,
+                           IUpdaterInternalSystem> {
  public:
   explicit UpdateServiceInternalProxyImpl(UpdaterScope scope)
       : ProxyImplBase(scope) {}

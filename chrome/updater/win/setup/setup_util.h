@@ -55,16 +55,16 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid);
 
 // Returns the interfaces ids of all interfaces declared in IDL of the updater
 // that can be installed side-by-side with other instances of the updater.
-std::vector<IID> GetSideBySideInterfaces();
+std::vector<IID> GetSideBySideInterfaces(UpdaterScope scope);
 
 // Returns the interfaces ids of all interfaces declared in IDL of the updater
 // that can only be installed for the active instance of the updater.
-std::vector<IID> GetActiveInterfaces();
+std::vector<IID> GetActiveInterfaces(UpdaterScope scope);
 
 // Returns the interfaces ids of all interfaces declared in IDL of the updater
 // that can be installed side-by-side (if `is_internal` is `true`) or for the
 // active instance (if `is_internal` is `false`) .
-std::vector<IID> GetInterfaces(bool is_internal);
+std::vector<IID> GetInterfaces(bool is_internal, UpdaterScope scope);
 
 // Returns the CLSIDs of servers that can be installed side-by-side with other
 // instances of the updater.

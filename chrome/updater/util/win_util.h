@@ -5,7 +5,8 @@
 #ifndef CHROME_UPDATER_UTIL_WIN_UTIL_H_
 #define CHROME_UPDATER_UTIL_WIN_UTIL_H_
 
-#include <winerror.h>
+#include <windows.h>
+#include <wrl/implements.h>
 
 #include <cstdint>
 #include <string>
@@ -86,6 +87,33 @@ class ProcessFilterName : public base::ProcessFilter {
   // path. The name is not localized, therefore the function must be used
   // to look up only processes whose names are known to be ASCII.
   std::wstring process_name_;
+};
+
+namespace {
+
+template <typename T>
+using WrlRuntimeClass = Microsoft::WRL::RuntimeClass<
+    Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+    T>;
+
+}  // namespace
+
+// Implements `DynamicIIDs` for interface `T`, where `T` is the implemented
+// interface. `user_iid` and `system_iid` are aliases for interface `T` for user
+// and system installs respectively.
+//
+// Usage: derive your COM class that implements interface `T` from
+// `DynamicIIDsImpl<T, user_iid, system_iid>`.
+template <typename T, typename TUser, typename TSystem>
+class DynamicIIDsImpl : public WrlRuntimeClass<T> {
+ public:
+  IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
+    return WrlRuntimeClass<T>::QueryInterface(
+        riid == (IsSystemInstall() ? __uuidof(TSystem) : __uuidof(TUser))
+            ? __uuidof(T)
+            : riid,
+        object);
+  }
 };
 
 // Returns the last error as an HRESULT or E_FAIL if last error is NO_ERROR.

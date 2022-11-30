@@ -48,6 +48,8 @@ UpdaterScope GetUpdaterScopeForCommandLine(
 // of the process, where applicable.
 UpdaterScope GetUpdaterScope();
 
+bool IsSystemInstall();
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UPDATER_SCOPE_H_

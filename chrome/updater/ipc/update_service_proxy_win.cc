@@ -260,7 +260,10 @@ class UpdaterCallback
 
 class UpdateServiceProxyImpl
     : public base::RefCountedThreadSafe<UpdateServiceProxyImpl>,
-      public ProxyImplBase<UpdateServiceProxyImpl, IUpdater> {
+      public ProxyImplBase<UpdateServiceProxyImpl,
+                           IUpdater,
+                           IUpdater,
+                           IUpdater> {
  public:
   explicit UpdateServiceProxyImpl(UpdaterScope scope) : ProxyImplBase(scope) {}
 
