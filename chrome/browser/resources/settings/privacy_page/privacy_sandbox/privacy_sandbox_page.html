@@ -2,24 +2,26 @@
 
 <!-- TODO(b/254413936): Add image header. -->
 
-<!-- TODO(crbug.com/1378703): Use string identifiers. -->
 <cr-link-row
     id="privacySandboxTopicsLinkRow"
     start-icon="settings20:interests"
-    label="Mauris interdum lectus vitae lacinia"
-    sub-label="[[computePrivacySandboxTopicsSublabel_()]]"
+    label="$i18n{adPrivacyPageTopicsLinkRowLabel}"
+    sub-label="[[computePrivacySandboxTopicsSublabel_(
+        prefs.privacy_sandbox.m1.topics_enabled.value)]]"
     on-click="onPrivacySandboxTopicsClick_"></cr-link-row>
 <cr-link-row
     id="privacySandboxFledgeLinkRow"
     start-icon="settings20:checklist"
     class="hr"
-    label="Aenean erat leo"
-    sub-label="[[computePrivacySandboxFledgeSublabel_()]]"
+    label="$i18n{adPrivacyPageFledgeLinkRowLabel}"
+    sub-label="[[computePrivacySandboxFledgeSublabel_(
+        prefs.privacy_sandbox.m1.fledge_enabled.value)]]"
     on-click="onPrivacySandboxFledgeClick_"></cr-link-row>
 <cr-link-row
     id="privacySandboxAdMeasurementLinkRow"
     start-icon="settings20:bar-chart"
     class="hr"
-    label="Vestibulum augue erat"
-    sub-label="[[computePrivacySandboxAdMeasurementSublabel_()]]"
+    label="$i18n{adPrivacyPageAdMeasurementLinkRowLabel}"
+    sub-label="[[computePrivacySandboxAdMeasurementSublabel_(
+        prefs.privacy_sandbox.m1.ad_measurement_enabled.value)]]"
     on-click="onPrivacySandboxAdMeasurementClick_"></cr-link-row>

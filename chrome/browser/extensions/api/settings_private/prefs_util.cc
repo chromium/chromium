@@ -303,6 +303,12 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kPrivacySandboxPageViewed] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[::prefs::kPrivacySandboxM1TopicsEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[::prefs::kPrivacySandboxM1FledgeEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[::prefs::kPrivacySandboxM1AdMeasurementEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Security page
   (*s_allowlist)[::kGeneratedPasswordLeakDetectionPref] =

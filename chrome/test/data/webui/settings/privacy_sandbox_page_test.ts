@@ -6,23 +6,28 @@ import 'chrome://settings/lazy_load.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {SettingsPrivacySandboxPageElement} from 'chrome://settings/lazy_load.js';
-import {Router, routes} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, Router, routes, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('PrivacySandboxPageTests', function() {
   let page: SettingsPrivacySandboxPageElement;
+  let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
     });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
   });
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
     page = document.createElement('settings-privacy-sandbox-page');
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
   });
@@ -32,9 +37,59 @@ suite('PrivacySandboxPageTests', function() {
   });
 
   test('privacySandboxLinkRowsVisible', function() {
-    assertTrue(isChildVisible(page, '#privacySandboxTopicsLinkRow'));
-    assertTrue(isChildVisible(page, '#privacySandboxFledgeLinkRow'));
-    assertTrue(isChildVisible(page, '#privacySandboxAdMeasurementLinkRow'));
+    assertTrue(isVisible(page.$.privacySandboxTopicsLinkRow));
+    assertTrue(isVisible(page.$.privacySandboxFledgeLinkRow));
+    assertTrue(isVisible(page.$.privacySandboxAdMeasurementLinkRow));
+  });
+
+  test('privacySandboxTopicsRowSublabel', async function() {
+    page.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
+    await flushTasks();
+    assertTrue(isVisible(page.$.privacySandboxTopicsLinkRow));
+    assertEquals(
+        loadTimeData.getString('adPrivacyPageTopicsLinkRowSubLabelEnabled'),
+        page.$.privacySandboxTopicsLinkRow.subLabel);
+
+    page.setPrefValue('privacy_sandbox.m1.topics_enabled', false);
+    await flushTasks();
+    assertTrue(isVisible(page.$.privacySandboxTopicsLinkRow));
+    assertEquals(
+        loadTimeData.getString('adPrivacyPageTopicsLinkRowSubLabelDisabled'),
+        page.$.privacySandboxTopicsLinkRow.subLabel);
+  });
+
+  test('privacySandboxFledgeRowSublabel', async function() {
+    page.setPrefValue('privacy_sandbox.m1.fledge_enabled', true);
+    await flushTasks();
+    assertTrue(isVisible(page.$.privacySandboxFledgeLinkRow));
+    assertEquals(
+        loadTimeData.getString('adPrivacyPageFledgeLinkRowSubLabelEnabled'),
+        page.$.privacySandboxFledgeLinkRow.subLabel);
+
+    page.setPrefValue('privacy_sandbox.m1.fledge_enabled', false);
+    await flushTasks();
+    assertTrue(isVisible(page.$.privacySandboxFledgeLinkRow));
+    assertEquals(
+        loadTimeData.getString('adPrivacyPageFledgeLinkRowSubLabelDisabled'),
+        page.$.privacySandboxFledgeLinkRow.subLabel);
+  });
+
+  test('privacySandboxAdMeasurementRowSublabel', async function() {
+    page.setPrefValue('privacy_sandbox.m1.ad_measurement_enabled', true);
+    await flushTasks();
+    assertTrue(isVisible(page.$.privacySandboxAdMeasurementLinkRow));
+    assertEquals(
+        loadTimeData.getString(
+            'adPrivacyPageAdMeasurementLinkRowSubLabelEnabled'),
+        page.$.privacySandboxAdMeasurementLinkRow.subLabel);
+
+    page.setPrefValue('privacy_sandbox.m1.ad_measurement_enabled', false);
+    await flushTasks();
+    assertTrue(isVisible(page.$.privacySandboxAdMeasurementLinkRow));
+    assertEquals(
+        loadTimeData.getString(
+            'adPrivacyPageAdMeasurementLinkRowSubLabelDisabled'),
+        page.$.privacySandboxAdMeasurementLinkRow.subLabel);
   });
 
   test('clickPrivacySandboxTopicsLinkRow', function() {

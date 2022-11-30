@@ -203,13 +203,17 @@ suite('PrivacyPage', function() {
               '#privacySandboxLinkRow')!;
       await flushTasks();
       assertEquals(
-          loadTimeData.getString('privacySandboxTrialsEnabled'),
+          loadTimeData.getString(
+              enablePrivacySandbox4 ? 'adPrivacyLinkRowSubLabel' :
+                                      'privacySandboxTrialsEnabled'),
           privacySandboxLinkRow.subLabel);
 
       page.set('prefs.privacy_sandbox.apis_enabled_v2.value', false);
       await flushTasks();
       assertEquals(
-          loadTimeData.getString('privacySandboxTrialsDisabled'),
+          loadTimeData.getString(
+              enablePrivacySandbox4 ? 'adPrivacyLinkRowSubLabel' :
+                                      'privacySandboxTrialsDisabled'),
           privacySandboxLinkRow.subLabel);
     });
 

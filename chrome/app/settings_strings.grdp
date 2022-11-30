@@ -1773,9 +1773,44 @@
     Private state tokens improve privacy on the web and can't be used to find out who you are.
   </message>
 
+  <!-- Privacy Sandbox Settings 4 - Privacy & Security Page -->
+  <message name="IDS_SETTINGS_AD_PRIVACY_LINK_ROW_LABEL" translateable="false" desc="Label for row linking to the Ad Privacy preferences page in the Privacy &amp; Security Page.">
+    Donec semper
+  </message>
+  <message name="IDS_SETTINGS_AD_PRIVACY_LINK_ROW_SUB_LABEL" translateable="false" desc="Sub label for row linking to the Ad Privacy preferences page in the Privacy &amp; Security Page.">
+    Fusce purus nibh, dictum sit amet mi in, fringilla ullamcorper tortor
+  </message>
+
   <!-- Privacy Sandbox Settings 4 - Ad Privacy Page -->
   <message name="IDS_SETTINGS_AD_PRIVACY_PAGE_TITLE" translateable="false" desc="Title for the Ad Privacy preferences page.">
     Donec semper
+  </message>
+  <message name="IDS_SETTINGS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_LABEL" translateable="false" desc="Label for row linking to Topics page.">
+    Mauris interdum lectus vitae lacinia
+  </message>
+  <message name="IDS_SETTINGS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_SUB_LABEL_ENABLED" translateable="false" desc="Sub label for row linking to Topics page when Topics is enabled.">
+    Enabled Nulla eros tortor, placerat blandit dictum a, interdum id metus
+  </message>
+  <message name="IDS_SETTINGS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_SUB_LABEL_DISABLED" translateable="false" desc="Sub label for row linking to Topics page when Topics is disabled.">
+    Disabled Nulla eros tortor, placerat blandit dictum a, interdum id metus
+  </message>
+  <message name="IDS_SETTINGS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_LABEL" translateable="false" desc="Label for row linking to FLEDGE page.">
+    Aenean erat leo
+  </message>
+  <message name="IDS_SETTINGS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_SUB_LABEL_ENABLED" translateable="false" desc="Sub label for row linking to FLEDGE page when FLEDGE is enabled.">
+    Enabled Duis scelerisque a mi eget ultricies
+  </message>
+  <message name="IDS_SETTINGS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_SUB_LABEL_DISABLED" translateable="false" desc="Sub label for row linking to FLEDGE page when FLEDGE is disabled.">
+    Disabled Duis scelerisque a mi eget ultricies
+  </message>
+  <message name="IDS_SETTINGS_AD_PRIVACY_PAGE_AD_MEASUREMENT_LINK_ROW_LABEL" translateable="false" desc="Label for row linking to Ad Measurement page.">
+    Vestibulum augue erat
+  </message>
+  <message name="IDS_SETTINGS_AD_PRIVACY_PAGE_AD_MEASUREMENT_LINK_ROW_SUB_LABEL_ENABLED" translateable="false" desc="Sub label for row linking to Ad Measurement page when Ad Measurement is enabled.">
+    Enabled Vivamus id lacus et lacus porttitor vulputate. Sed semper egestas orci vel maximus.
+  </message>
+  <message name="IDS_SETTINGS_AD_PRIVACY_PAGE_AD_MEASUREMENT_LINK_ROW_SUB_LABEL_DISABLED" translateable="false" desc="Sub label for row linking to Ad Measurement page when Ad Measurement is disabled.">
+    Disabled Vivamus id lacus et lacus porttitor vulputate. Sed semper egestas orci vel maximus.
   </message>
 
   <!-- Privacy Sandbox Settings 4 - Topics Page -->

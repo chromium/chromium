@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import '../../prefs/prefs.js';
 import '../../settings_shared.css.js';
 
+import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {routes} from '../../route.js';
 import {Router} from '../../router.js';
 
@@ -14,13 +18,17 @@ import {getTemplate} from './privacy_sandbox_page.html.js';
 
 export interface SettingsPrivacySandboxPageElement {
   $: {
-    privacySandboxAdMeasurementLinkRow: HTMLElement,
-    privacySandboxFledgeLinkRow: HTMLElement,
-    privacySandboxTopicsLinkRow: HTMLElement,
+    privacySandboxAdMeasurementLinkRow: CrLinkRowElement,
+    privacySandboxFledgeLinkRow: CrLinkRowElement,
+    privacySandboxTopicsLinkRow: CrLinkRowElement,
   };
 }
 
-export class SettingsPrivacySandboxPageElement extends PolymerElement {
+const SettingsPrivacySandboxPageElementBase =
+    I18nMixin(PrefsMixin(PolymerElement));
+
+export class SettingsPrivacySandboxPageElement extends
+    SettingsPrivacySandboxPageElementBase {
   static get is() {
     return 'settings-privacy-sandbox-page';
   }
@@ -29,22 +37,38 @@ export class SettingsPrivacySandboxPageElement extends PolymerElement {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+    };
+  }
+
   private computePrivacySandboxTopicsSublabel_(): string {
-    // TODO(b/254412639): Change sublabel based on the respective toggle being
-    // enabled.
-    return 'Enabled Nulla eros tortor, placerat blandit dictum a, interdum id metus';
+    const enabled = this.getPref('privacy_sandbox.m1.topics_enabled').value;
+    return this.i18n(
+        enabled ? 'adPrivacyPageTopicsLinkRowSubLabelEnabled' :
+                  'adPrivacyPageTopicsLinkRowSubLabelDisabled');
   }
 
   private computePrivacySandboxFledgeSublabel_(): string {
-    // TODO(b/254410792): Change sublabel based on the respective toggle being
-    // enabled.
-    return 'Enabled Duis scelerisque a mi eget ultricies';
+    const enabled = this.getPref('privacy_sandbox.m1.fledge_enabled').value;
+    return this.i18n(
+        enabled ? 'adPrivacyPageFledgeLinkRowSubLabelEnabled' :
+                  'adPrivacyPageFledgeLinkRowSubLabelDisabled');
   }
 
   private computePrivacySandboxAdMeasurementSublabel_(): string {
-    // TODO(b/254412652): Change sublabel based on the respective toggle being
-    // enabled.
-    return 'Enabled Vivamus id lacus et lacus porttitor vulputate. Sed semper egestas orci vel maximus.';
+    const enabled =
+        this.getPref('privacy_sandbox.m1.ad_measurement_enabled').value;
+    return this.i18n(
+        enabled ? 'adPrivacyPageAdMeasurementLinkRowSubLabelEnabled' :
+                  'adPrivacyPageAdMeasurementLinkRowSubLabelDisabled');
   }
 
   private onPrivacySandboxTopicsClick_() {

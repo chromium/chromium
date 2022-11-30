@@ -61,13 +61,11 @@
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
         <template is="dom-if" if=
             "[[isPrivacySandboxSettings4Enabled_(isPrivacySandboxRestricted_, isPrivacySandboxSettings4_)]]">
-          <!-- TODO(crbug.com/1378703): Replace strings. -->
           <cr-link-row id="privacySandboxLinkRow"
               start-icon="settings20:privacy-sandbox"
               class="hr"
-              label="$i18n{privacySandboxTitle}"
-              sub-label="[[computePrivacySandboxSublabel_(
-                  prefs.privacy_sandbox.*)]]"
+              label="$i18n{adPrivacyLinkRowLabel}"
+              sub-label="$i18n{adPrivacyLinkRowSubLabel}"
               on-click="onPrivacySandboxClick_"
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
@@ -156,7 +154,8 @@
               page-title="$i18n{adPrivacyPageTitle}"
               associated-control="[[$$('#privacySandboxLinkRow')]]"
               learn-more-url="">
-            <settings-privacy-sandbox-page></settings-privacy-sandbox-page>
+            <settings-privacy-sandbox-page prefs="{{prefs}}">
+            </settings-privacy-sandbox-page>
           </settings-subpage>
         </template>
 
