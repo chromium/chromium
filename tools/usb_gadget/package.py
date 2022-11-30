@@ -19,12 +19,14 @@ except ImportError:  # For Py2 compatibility
   from urllib2 import Request, urlopen
 
 
-def MakeZip(directory=None, files=None):
+def MakeZip(directory=None, files=None, mtime=(2022, 11, 11, 11, 11, 11)):
   """Construct a zip file.
 
   Args:
     directory: Include Python source files from this directory
     files: Include these files
+    mtime: A fixed modification time to assign all files in the zip file, for
+           deterministic output.
 
   Returns:
     A tuple of the buffer containing the zip file and its MD5 hash.
@@ -34,8 +36,11 @@ def MakeZip(directory=None, files=None):
   if directory is not None:
     archive.writepy(directory)
   if files is not None:
-    for f in files:
-      archive.write(f, os.path.basename(f))
+    for path in files:
+      with open(path, 'rb') as f:
+        file_info = zipfile.ZipInfo(os.path.basename(path), mtime)
+        file_contents = f.read()
+        archive.writestr(file_info, file_contents)
   archive.close()
   content = buf.getvalue()
   buf.close()
