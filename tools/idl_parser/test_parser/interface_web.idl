@@ -702,6 +702,7 @@ interface MyIFaceArgumentWithAnnotatedType2 {
  *Interface(InterfaceExposed)
  *  ExtAttributes()
  *    ExtAttribute(Exposed) = "Window"
+ *    ExtAttribute(Exposed) = "*"
  *    ExtAttribute(Exposed) = "['Window', 'Worker']"
  *    ExtAttribute(Exposed)
  *      Arguments()
@@ -719,6 +720,7 @@ interface MyIFaceArgumentWithAnnotatedType2 {
  */
 [
     Exposed=Window,
+    Exposed=*,
     Exposed=(Window, Worker),
     Exposed(Window Feature1),
     Exposed(Window Feature1, Worker Feature2)

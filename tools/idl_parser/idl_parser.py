@@ -1053,6 +1053,7 @@ class IDLParser(object):
     """ExtendedAttribute : ExtendedAttributeNoArgs
                          | ExtendedAttributeArgList
                          | ExtendedAttributeIdent
+                         | ExtendedAttributeWildcard
                          | ExtendedAttributeIdentList
                          | ExtendedAttributeNamedArgList
                          | ExtendedAttributeStringLiteral
@@ -1086,6 +1087,11 @@ class IDLParser(object):
 
   def p_ExtendedAttributeIdent(self, p):
     """ExtendedAttributeIdent : identifier '=' identifier"""
+    value = self.BuildAttribute('VALUE', p[3])
+    p[0] = self.BuildNamed('ExtAttribute', p, 1, value)
+
+  def p_ExtendedAttributeWildcard(self, p):
+    """ExtendedAttributeWildcard : identifier '=' '*'"""
     value = self.BuildAttribute('VALUE', p[3])
     p[0] = self.BuildNamed('ExtAttribute', p, 1, value)
 
