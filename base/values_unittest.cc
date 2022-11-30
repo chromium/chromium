@@ -774,18 +774,21 @@ TEST(ValuesTest, ListEraseIf) {
 }
 
 TEST(ValuesTest, ClearList) {
-  ListValue value;
-  value.Append(1);
-  value.Append(2);
-  value.Append(3);
-  EXPECT_EQ(3u, value.GetListDeprecated().size());
+  Value::List list;
+  list.Append(1);
+  list.Append(2);
+  list.Append(3);
+  EXPECT_EQ(3u, list.size());
+  EXPECT_FALSE(list.empty());
 
-  value.ClearList();
-  EXPECT_TRUE(value.GetListDeprecated().empty());
+  list.clear();
+  EXPECT_EQ(0u, list.size());
+  EXPECT_TRUE(list.empty());
 
   // ClearList() should be idempotent.
-  value.ClearList();
-  EXPECT_TRUE(value.GetListDeprecated().empty());
+  list.clear();
+  EXPECT_EQ(0u, list.size());
+  EXPECT_TRUE(list.empty());
 }
 
 TEST(ValuesTest, FindKey) {
@@ -1588,14 +1591,6 @@ TEST(ValuesTest, StringValue) {
 
   ASSERT_TRUE(utf16_value->is_string());
   ASSERT_EQ(std::string("utf16"), utf16_value->GetString());
-}
-
-TEST(ValuesTest, ListDeletion) {
-  ListValue list;
-  list.Append(Value());
-  EXPECT_FALSE(list.GetList().empty());
-  list.ClearList();
-  EXPECT_TRUE(list.GetListDeprecated().empty());
 }
 
 TEST(ValuesTest, DictionaryDeletion) {

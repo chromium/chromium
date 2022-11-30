@@ -1081,10 +1081,6 @@ void Value::Append(Value&& value) {
   GetList().Append(std::move(value));
 }
 
-void Value::ClearList() {
-  GetList().clear();
-}
-
 Value* Value::FindKey(StringPiece key) {
   return GetDict().Find(key);
 }

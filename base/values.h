@@ -734,11 +734,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: prefer `Value::List::Append()`.
   void Append(std::string&& value);
 
-  // Erases all Values from the list.
-  //
-  // DEPRECATED: prefer `Value::List::clear()`.
-  void ClearList();
-
   // ===== DEPRECATED methods that require `type() == Type::DICT` =====
 
   // `FindKey` looks up `key` in the underlying dictionary. If found, it returns
