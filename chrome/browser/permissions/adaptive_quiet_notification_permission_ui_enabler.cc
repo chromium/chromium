@@ -36,6 +36,10 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace {
 
 using EnablingMethod = QuietNotificationPermissionUiState::EnablingMethod;
@@ -46,7 +50,7 @@ constexpr int kConsecutiveDeniesThresholdForActivation = 3u;
 constexpr char kDidAdaptivelyEnableQuietUiInPrefs[] =
     "Permissions.QuietNotificationPrompts.DidEnableAdapativelyInPrefs";
 constexpr char kIsQuietUiEnabledInPrefs[] =
-    "Permissions.QuietNotificationPrompts.IsEnabledInPrefs";
+    "Permissions.QuietNotificationPrompts.RegularProfile.IsEnabledInPrefs";
 constexpr char kQuietUiEnabledStateInPrefsChangedTo[] =
     "Permissions.QuietNotificationPrompts.EnabledStateInPrefsChangedTo";
 
@@ -189,18 +193,32 @@ AdaptiveQuietNotificationPermissionUiEnabler::
           &AdaptiveQuietNotificationPermissionUiEnabler::OnQuietUiStateChanged,
           base::Unretained(this)));
 
-  // Record whether the quiet UI is enabled, but only when notifications are not
-  // completely blocked.
-  auto* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
-  const ContentSetting notifications_setting =
-      host_content_settings_map->GetDefaultContentSetting(
-          ContentSettingsType::NOTIFICATIONS, nullptr /* provider_id */);
-  if (notifications_setting != CONTENT_SETTING_BLOCK) {
-    const bool is_quiet_ui_enabled_in_prefs = profile_->GetPrefs()->GetBoolean(
-        prefs::kEnableQuietNotificationPermissionUi);
-    base::UmaHistogramBoolean(kIsQuietUiEnabledInPrefs,
-                              is_quiet_ui_enabled_in_prefs);
+  bool should_record_metrics = profile_->IsRegularProfile();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeOS creates various irregular profiles (login, lock screen...); they
+  // are of type kRegular (returns true for `Profile::IsRegular()`), that aren't
+  // used to browse the web and users can't configure. Don't collect metrics
+  // about them.
+  should_record_metrics =
+      should_record_metrics && ash::ProfileHelper::IsUserProfile(profile_);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (should_record_metrics) {
+    // Record whether the quiet UI is enabled, but only when notifications are
+    // not completely blocked.
+    auto* host_content_settings_map =
+        HostContentSettingsMapFactory::GetForProfile(profile_);
+    const ContentSetting notifications_setting =
+        host_content_settings_map->GetDefaultContentSetting(
+            ContentSettingsType::NOTIFICATIONS, nullptr /* provider_id */);
+
+    if (notifications_setting != CONTENT_SETTING_BLOCK) {
+      const bool is_quiet_ui_enabled_in_prefs =
+          profile_->GetPrefs()->GetBoolean(
+              prefs::kEnableQuietNotificationPermissionUi);
+      base::UmaHistogramBoolean(kIsQuietUiEnabledInPrefs,
+                                is_quiet_ui_enabled_in_prefs);
+    }
   }
 
   BackfillEnablingMethodIfMissing();
@@ -248,9 +266,9 @@ void AdaptiveQuietNotificationPermissionUiEnabler::
   }
 
   // `kQuietNotificationPermissionUiEnablingMethod` was not populated prior to
-  // M88, but `kQuietNotificationPermissionShouldShowPromo` is a solid indicator
-  // as to how the setting was enabled in the first place because it's only set
-  // to true when the quiet UI has been enabled adaptively.
+  // M88, but `kQuietNotificationPermissionShouldShowPromo` is a solid
+  // indicator as to how the setting was enabled in the first place because
+  // it's only set to true when the quiet UI has been enabled adaptively.
   const bool has_enabled_adaptively = profile_->GetPrefs()->GetBoolean(
       prefs::kQuietNotificationPermissionShouldShowPromo);
 

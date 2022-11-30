@@ -1031,7 +1031,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Permissions.QuietNotificationPrompts.IsEnabledInPrefs"
+<histogram
+    name="Permissions.QuietNotificationPrompts.{RegularProfileFiltered}IsEnabledInPrefs"
     enum="BooleanEnabled" expires_after="2023-05-07">
   <owner>andypaicu@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
@@ -1042,6 +1043,19 @@ chromium-metrics-reviews@google.com.
     preferences at profile creation. No sample recorded when notifications are
     set to be blocked completely.
   </summary>
+  <token key="RegularProfileFiltered">
+    <variant name=""
+        summary="prior to version M-110. It is recorded for both regular and
+                 irregular profiles">
+      <obsolete>
+        Deprecated in M110. Used to include data from both regular and irregular
+        profiles, such as incognito profiles. Consult the new histograms with
+        the RegularProfile tag instead.
+      </obsolete>
+    </variant>
+    <variant name="RegularProfile."
+        summary="from version M-110. It is recorded only for regular profiles"/>
+  </token>
 </histogram>
 
 <histogram name="Permissions.QuietPrompt.Preignore" enum="PermissionType"
