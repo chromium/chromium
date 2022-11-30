@@ -22,9 +22,8 @@
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/federated_identity_active_session_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
-#include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
+#include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -305,14 +304,13 @@ std::string FormatOriginForDisplay(const url::Origin& origin) {
 
 bool ShouldFailBecauseNotSignedInWithIdp(
     const GURL& idp_url,
-    FederatedIdentitySharingPermissionContextDelegate*
-        sharing_permission_delegate) {
+    FederatedIdentityPermissionContextDelegate* permission_delegate) {
   if (GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::DISABLED)
     return false;
 
   const url::Origin idp_origin = url::Origin::Create(idp_url);
   const absl::optional<bool> idp_signin_status =
-      sharing_permission_delegate->GetIdpSigninStatus(idp_origin);
+      permission_delegate->GetIdpSigninStatus(idp_origin);
   return !idp_signin_status.value_or(true);
 }
 
@@ -339,15 +337,11 @@ FederatedAuthRequestImpl::IdentityProviderInfo::IdentityProviderInfo(
 FederatedAuthRequestImpl::FederatedAuthRequestImpl(
     RenderFrameHost& host,
     FederatedIdentityApiPermissionContextDelegate* api_permission_context,
-    FederatedIdentityActiveSessionPermissionContextDelegate*
-        active_session_permission_context,
-    FederatedIdentitySharingPermissionContextDelegate*
-        sharing_permission_context,
+    FederatedIdentityPermissionContextDelegate* permission_context,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver)
     : DocumentService(host, std::move(receiver)),
       api_permission_delegate_(api_permission_context),
-      active_session_permission_delegate_(active_session_permission_context),
-      sharing_permission_delegate_(sharing_permission_context),
+      permission_delegate_(permission_context),
       token_request_delay_(kDefaultTokenRequestDelay) {}
 
 FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
@@ -378,36 +372,25 @@ void FederatedAuthRequestImpl::Create(
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
       api_permission_context =
           browser_context->GetFederatedIdentityApiPermissionContext();
-  raw_ptr<FederatedIdentityActiveSessionPermissionContextDelegate>
-      active_session_permission_context =
-          browser_context->GetFederatedIdentityActiveSessionPermissionContext();
-  raw_ptr<FederatedIdentitySharingPermissionContextDelegate>
-      sharing_permission_context =
-          browser_context->GetFederatedIdentitySharingPermissionContext();
-  if (!api_permission_context || !active_session_permission_context ||
-      !sharing_permission_context) {
+  raw_ptr<FederatedIdentityPermissionContextDelegate> permission_context =
+      browser_context->GetFederatedIdentityPermissionContext();
+  if (!api_permission_context || !permission_context)
     return;
-  }
 
   // FederatedAuthRequestImpl owns itself. It will self-destruct when a mojo
   // interface error occurs, the RenderFrameHost is deleted, or the
   // RenderFrameHost navigates to a new document.
   new FederatedAuthRequestImpl(*host, api_permission_context,
-                               active_session_permission_context,
-                               sharing_permission_context, std::move(receiver));
+                               permission_context, std::move(receiver));
 }
 
 FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
     RenderFrameHost& host,
     FederatedIdentityApiPermissionContextDelegate* api_permission_context,
-    FederatedIdentityActiveSessionPermissionContextDelegate*
-        active_session_permission_context,
-    FederatedIdentitySharingPermissionContextDelegate*
-        sharing_permission_context,
+    FederatedIdentityPermissionContextDelegate* permission_context,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
-  return *new FederatedAuthRequestImpl(
-      host, api_permission_context, active_session_permission_context,
-      sharing_permission_context, std::move(receiver));
+  return *new FederatedAuthRequestImpl(host, api_permission_context,
+                                       permission_context, std::move(receiver));
 }
 
 void FederatedAuthRequestImpl::RequestToken(
@@ -518,7 +501,7 @@ void FederatedAuthRequestImpl::RequestToken(
       // TODO(crbug.com/1382545): Handle ShouldFailIfNotSignedInWithIdp in the
       // multi IDP use case.
       bool has_failing_idp_signin_status = ShouldFailBecauseNotSignedInWithIdp(
-          idp_ptr->config_url, sharing_permission_delegate_);
+          idp_ptr->config_url, permission_delegate_);
 
       if (has_failing_idp_signin_status &&
           GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::ENABLED) {
@@ -646,7 +629,7 @@ void FederatedAuthRequestImpl::SetIdpSigninStatus(
   // This behavior may change in https://crbug.com/1382193
   if (!origin().IsSameOriginWith(idp_origin))
     return;
-  sharing_permission_delegate_->SetIdpSigninStatus(
+  permission_delegate_->SetIdpSigninStatus(
       idp_origin, status == blink::mojom::IdpSigninStatus::kSignedIn);
 }
 
@@ -693,7 +676,7 @@ void FederatedAuthRequestImpl::OnAllManifestsFetched(
     // false during the API call. e.g. by the login/logout HEADER.
     idp_info->has_failing_idp_signin_status =
         ShouldFailBecauseNotSignedInWithIdp(identity_provider_config_url,
-                                            sharing_permission_delegate_);
+                                            permission_delegate_);
     if (idp_info->has_failing_idp_signin_status &&
         GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::ENABLED) {
       CompleteRequestWithError(FederatedAuthRequestResult::kError,
@@ -801,10 +784,10 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
   }
 
   const absl::optional<bool> idp_signin_status =
-      sharing_permission_delegate_->GetIdpSigninStatus(idp_origin);
+      permission_delegate_->GetIdpSigninStatus(idp_origin);
 
   // Ensures that we only fetch accounts unconditionally once.
-  sharing_permission_delegate_->SetIdpSigninStatus(idp_origin, false);
+  permission_delegate_->SetIdpSigninStatus(idp_origin, false);
 
   if (!idp_signin_status.has_value() ||
       GetFedCmIdpSigninStatusMode() == FedCmIdpSigninStatusMode::METRICS_ONLY) {
@@ -839,7 +822,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
   if (GetFedCmIdpSigninStatusMode() != FedCmIdpSigninStatusMode::DISABLED) {
     // Record metrics on effect of IDP sign-in status API.
     const absl::optional<bool> idp_signin_status =
-        sharing_permission_delegate_->GetIdpSigninStatus(idp_origin);
+        permission_delegate_->GetIdpSigninStatus(idp_origin);
     fedcm_metrics_->RecordIdpSigninMatchStatus(idp_signin_status,
                                                status.parse_status);
   }
@@ -877,7 +860,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
         // This scenario occurs in FedCmIdpSigninStatusMode::METRICS_ONLY mode.
         // Don't set the IDP sign-in status because we would not get here in
         // FedCmIdpSigninStatusMode::ENABLED mode.
-        sharing_permission_delegate_->SetIdpSigninStatus(idp_origin, true);
+        permission_delegate_->SetIdpSigninStatus(idp_origin, true);
       }
 
       bool need_client_metadata = false;
@@ -919,10 +902,9 @@ void FederatedAuthRequestImpl::ComputeLoginStateAndReorderAccounts(
   for (auto& account : accounts) {
     // Record when IDP and browser have different user sign-in states.
     bool idp_claimed_sign_in = account.login_state == LoginState::kSignIn;
-    bool browser_observed_sign_in =
-        sharing_permission_delegate_->HasSharingPermission(
-            origin(), GetEmbeddingOrigin(), url::Origin::Create(idp.config_url),
-            account.id);
+    bool browser_observed_sign_in = permission_delegate_->HasSharingPermission(
+        origin(), GetEmbeddingOrigin(), url::Origin::Create(idp.config_url),
+        account.id);
 
     if (idp_claimed_sign_in == browser_observed_sign_in) {
       fedcm_metrics_->RecordSignInStateMatchStatus(
@@ -1112,11 +1094,11 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       // moot since we don't actually inspect the returned idtoken.
       // https://crbug.com/1199088
       CHECK(!account_id_.empty());
-      sharing_permission_delegate_->GrantSharingPermission(
+      permission_delegate_->GrantSharingPermission(
           origin(), GetEmbeddingOrigin(), url::Origin::Create(idp.config_url),
           account_id_);
 
-      active_session_permission_delegate_->GrantActiveSession(
+      permission_delegate_->GrantActiveSession(
           origin(), url::Origin::Create(idp.config_url), account_id_);
 
       fedcm_metrics_->RecordTokenResponseAndTurnaroundTime(
@@ -1161,14 +1143,14 @@ void FederatedAuthRequestImpl::DispatchOneLogout() {
   auto logout_origin = url::Origin::Create(logout_request->url);
   logout_requests_.pop();
 
-  if (active_session_permission_delegate_->HasActiveSession(
-          logout_origin, origin(), account_id)) {
+  if (permission_delegate_->HasActiveSession(logout_origin, origin(),
+                                             account_id)) {
     network_manager_->SendLogout(
         logout_request->url,
         base::BindOnce(&FederatedAuthRequestImpl::OnLogoutCompleted,
                        weak_ptr_factory_.GetWeakPtr()));
-    active_session_permission_delegate_->RevokeActiveSession(
-        logout_origin, origin(), account_id);
+    permission_delegate_->RevokeActiveSession(logout_origin, origin(),
+                                              account_id);
   } else {
     if (logout_requests_.empty()) {
       CompleteLogoutRequest(LogoutRpsStatus::kSuccess);

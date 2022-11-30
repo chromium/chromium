@@ -18,7 +18,6 @@
 #include "content/browser/webid/test/webid_test_content_browser_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -292,7 +291,7 @@ class WebIdIdpSigninStatusBrowserTest : public WebIdBrowserTest {
   ShellFederatedPermissionContext* sharing_context() {
     BrowserContext* context = shell()->web_contents()->GetBrowserContext();
     return static_cast<ShellFederatedPermissionContext*>(
-        context->GetFederatedIdentitySharingPermissionContext());
+        context->GetFederatedIdentityPermissionContext());
   }
 };
 

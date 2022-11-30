@@ -1,22 +1,40 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_SHARING_PERMISSION_CONTEXT_DELEGATE_H_
-#define CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_SHARING_PERMISSION_CONTEXT_DELEGATE_H_
+#ifndef CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_PERMISSION_CONTEXT_DELEGATE_H_
+#define CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_PERMISSION_CONTEXT_DELEGATE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
 
-// Delegate interface for the WebID implementation in content to query and
+// Delegate interface for the FedCM implementation in content to query and
 // manage permission grants associated with the ability to share identity
 // information from a given provider to a given relying party.
-class FederatedIdentitySharingPermissionContextDelegate {
+class FederatedIdentityPermissionContextDelegate {
  public:
-  FederatedIdentitySharingPermissionContextDelegate() = default;
-  virtual ~FederatedIdentitySharingPermissionContextDelegate() = default;
+  FederatedIdentityPermissionContextDelegate() = default;
+  virtual ~FederatedIdentityPermissionContextDelegate() = default;
+
+  // Determine whether the `relying_party_requester` has an existing active
+  // session for the specified `account_identifier` with the
+  // `identity_provider`.
+  virtual bool HasActiveSession(const url::Origin& relying_party_requester,
+                                const url::Origin& identity_provider,
+                                const std::string& account_identifier) = 0;
+
+  // Grant active session capabilities between the `relying_party_requester` and
+  // `identity_provider` origins for the specified account.
+  virtual void GrantActiveSession(const url::Origin& relying_party_requester,
+                                  const url::Origin& identity_provider,
+                                  const std::string& account_identifier) = 0;
+
+  // Revoke a previously-provided grant from the `relying_party_requester` to
+  // the `identity_provider` for the specified account.
+  virtual void RevokeActiveSession(const url::Origin& relying_party_requester,
+                                   const url::Origin& identity_provider,
+                                   const std::string& account_identifier) = 0;
 
   // Determine whether there is an existing permission grant to share identity
   // information for the given account to the `relying_party_requester` when
@@ -48,4 +66,4 @@ class FederatedIdentitySharingPermissionContextDelegate {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_SHARING_PERMISSION_CONTEXT_DELEGATE_H_
+#endif  // CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_PERMISSION_CONTEXT_DELEGATE_H_

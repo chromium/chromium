@@ -19,11 +19,10 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
-#include "content/browser/webid/test/mock_active_session_permission_delegate.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
-#include "content/browser/webid/test/mock_sharing_permission_delegate.h"
+#include "content/browser/webid/test/mock_permission_delegate.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -687,18 +686,15 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     RenderViewHostImplTestHarness::SetUp();
     test_api_permission_delegate_ =
         std::make_unique<TestApiPermissionDelegate>();
-    mock_sharing_permission_delegate_ =
-        std::make_unique<NiceMock<MockSharingPermissionDelegate>>();
-    mock_active_session_permission_delegate_ =
-        std::make_unique<NiceMock<MockActiveSessionPermissionDelegate>>();
+    mock_permission_delegate_ =
+        std::make_unique<NiceMock<MockPermissionDelegate>>();
 
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);
 
     federated_auth_request_impl_ = &FederatedAuthRequestImpl::CreateForTesting(
         *main_test_rfh(), test_api_permission_delegate_.get(),
-        mock_active_session_permission_delegate_.get(),
-        mock_sharing_permission_delegate_.get(),
+        mock_permission_delegate_.get(),
         request_remote_.BindNewPipeAndPassReceiver());
     auto mock_dialog_controller =
         std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
@@ -1058,10 +1054,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       mock_dialog_controller_;
 
   std::unique_ptr<TestApiPermissionDelegate> test_api_permission_delegate_;
-  std::unique_ptr<NiceMock<MockActiveSessionPermissionDelegate>>
-      mock_active_session_permission_delegate_;
-  std::unique_ptr<NiceMock<MockSharingPermissionDelegate>>
-      mock_sharing_permission_delegate_;
+  std::unique_ptr<NiceMock<MockPermissionDelegate>> mock_permission_delegate_;
 
   AuthRequestCallbackHelper auth_helper_;
 
@@ -1330,8 +1323,7 @@ TEST_F(FederatedAuthRequestImplTest, LogoutSuccessMultiple) {
       MakeLogoutRequest("https://rp3.example", "user789"));
 
   for (int i = 0; i < 3; ++i) {
-    EXPECT_CALL(*mock_active_session_permission_delegate_,
-                HasActiveSession(_, _, _))
+    EXPECT_CALL(*mock_permission_delegate_, HasActiveSession(_, _, _))
         .WillOnce(Return(true))
         .RetiresOnSaturation();
   }
@@ -1384,7 +1376,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginStateShouldBeSignUpForFirstTimeUser) {
 TEST_F(FederatedAuthRequestImplTest, LoginStateShouldBeSignInForReturningUser) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
-      *mock_sharing_permission_delegate_,
+      *mock_permission_delegate_,
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
       .WillOnce(Return(true));
@@ -1401,11 +1393,10 @@ TEST_F(FederatedAuthRequestImplTest, LoginStateShouldBeSignInForReturningUser) {
 
 TEST_F(FederatedAuthRequestImplTest,
        LoginStateSuccessfulSignUpGrantsSharingPermission) {
-  EXPECT_CALL(*mock_sharing_permission_delegate_,
-              HasSharingPermission(_, _, _, _))
+  EXPECT_CALL(*mock_permission_delegate_, HasSharingPermission(_, _, _, _))
       .WillOnce(Return(false));
   EXPECT_CALL(
-      *mock_sharing_permission_delegate_,
+      *mock_permission_delegate_,
       GrantSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                              OriginFromString(kProviderUrlFull), kAccountId))
       .Times(1);
@@ -1415,11 +1406,9 @@ TEST_F(FederatedAuthRequestImplTest,
 
 TEST_F(FederatedAuthRequestImplTest,
        LoginStateFailedSignUpNotGrantSharingPermission) {
-  EXPECT_CALL(*mock_sharing_permission_delegate_,
-              HasSharingPermission(_, _, _, _))
+  EXPECT_CALL(*mock_permission_delegate_, HasSharingPermission(_, _, _, _))
       .WillOnce(Return(false));
-  EXPECT_CALL(*mock_sharing_permission_delegate_,
-              GrantSharingPermission(_, _, _, _))
+  EXPECT_CALL(*mock_permission_delegate_, GrantSharingPermission(_, _, _, _))
       .Times(0);
 
   MockConfiguration configuration = kConfigurationValid;
@@ -1443,7 +1432,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoSignInForReturningUser) {
 
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
-      *mock_sharing_permission_delegate_,
+      *mock_permission_delegate_,
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
       .WillOnce(Return(true));
@@ -1527,7 +1516,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
 
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
-      *mock_sharing_permission_delegate_,
+      *mock_permission_delegate_,
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
       .WillOnce(Return(true));
@@ -1567,7 +1556,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
 
 TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   // Pretends that the sharing permission has been granted for this account.
-  EXPECT_CALL(*mock_sharing_permission_delegate_,
+  EXPECT_CALL(*mock_permission_delegate_,
               HasSharingPermission(_, _, OriginFromString(kProviderUrlFull),
                                    kAccountId))
       .WillOnce(Return(true));
@@ -1728,7 +1717,7 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForWebContentsVisible) {
             content::PageVisibilityState::kVisible);
 
   // Pretends that the sharing permission has been granted for this account.
-  EXPECT_CALL(*mock_sharing_permission_delegate_,
+  EXPECT_CALL(*mock_permission_delegate_,
               HasSharingPermission(_, _, OriginFromString(kProviderUrlFull),
                                    kAccountId))
       .WillOnce(Return(true));
@@ -1855,7 +1844,7 @@ TEST_F(FederatedAuthRequestImplTest,
 TEST_F(FederatedAuthRequestImplTest, MetricsForSignedInOnBothIdpAndBrowser) {
   // Set browser observes user is signed in.
   EXPECT_CALL(
-      *mock_sharing_permission_delegate_,
+      *mock_permission_delegate_,
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
       .WillOnce(Return(true));
@@ -1887,7 +1876,7 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSignedInOnBothIdpAndBrowser) {
 TEST_F(FederatedAuthRequestImplTest, MetricsForNotSignedInOnBothIdpAndBrowser) {
   // Set browser observes user is not signed in.
   EXPECT_CALL(
-      *mock_sharing_permission_delegate_,
+      *mock_permission_delegate_,
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
       .WillOnce(Return(false));
@@ -1913,7 +1902,7 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForNotSignedInOnBothIdpAndBrowser) {
 TEST_F(FederatedAuthRequestImplTest, MetricsForOnlyIdpClaimedSignIn) {
   // Set browser observes user is not signed in.
   EXPECT_CALL(
-      *mock_sharing_permission_delegate_,
+      *mock_permission_delegate_,
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
       .WillOnce(Return(false));
@@ -1946,7 +1935,7 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForOnlyIdpClaimedSignIn) {
 TEST_F(FederatedAuthRequestImplTest, MetricsForOnlyBrowserObservedSignIn) {
   // Set browser observes user is signed in.
   EXPECT_CALL(
-      *mock_sharing_permission_delegate_,
+      *mock_permission_delegate_,
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
       .WillOnce(Return(true));
@@ -2155,7 +2144,7 @@ TEST_F(FederatedAuthRequestImplTest, DisclosureTextShownForFirstTimeUser) {
 TEST_F(FederatedAuthRequestImplTest, DisclosureTextNotShownForReturningUser) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
-      *mock_sharing_permission_delegate_,
+      *mock_permission_delegate_,
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
       .WillOnce(Return(true));
@@ -2313,7 +2302,7 @@ TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusTestFirstTimeFetchSuccess) {
       features::kFedCm,
       {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
 
-  EXPECT_CALL(*mock_sharing_permission_delegate_,
+  EXPECT_CALL(*mock_permission_delegate_,
               SetIdpSigninStatus(OriginFromString(kProviderUrlFull), true))
       .Times(1);
 
@@ -2335,7 +2324,7 @@ TEST_F(FederatedAuthRequestImplTest,
       features::kFedCm,
       {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
 
-  EXPECT_CALL(*mock_sharing_permission_delegate_,
+  EXPECT_CALL(*mock_permission_delegate_,
               SetIdpSigninStatus(OriginFromString(kProviderUrlFull), false))
       .Times(1);
   EXPECT_CALL(*mock_dialog_controller_, ShowFailureDialog(_, _, _, _)).Times(0);
@@ -2368,7 +2357,7 @@ TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusTestShowFailureUi) {
             std::move(dismiss_callback).Run(DismissReason::CLOSE_BUTTON);
           }));
 
-  EXPECT_CALL(*mock_sharing_permission_delegate_,
+  EXPECT_CALL(*mock_permission_delegate_,
               GetIdpSigninStatus(OriginFromString(kProviderUrlFull)))
       .WillRepeatedly(Return(true));
 
@@ -2393,7 +2382,7 @@ TEST_F(FederatedAuthRequestImplTest,
       features::kFedCm,
       {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
 
-  EXPECT_CALL(*mock_sharing_permission_delegate_,
+  EXPECT_CALL(*mock_permission_delegate_,
               GetIdpSigninStatus(OriginFromString(kProviderUrlFull)))
       .WillOnce(Return(false));
 
@@ -2416,10 +2405,9 @@ TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusMetricsModeStaysSignedout) {
       {{features::kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName,
         "true"}});
 
-  EXPECT_CALL(*mock_sharing_permission_delegate_, GetIdpSigninStatus(_))
+  EXPECT_CALL(*mock_permission_delegate_, GetIdpSigninStatus(_))
       .WillRepeatedly(Return(false));
-  EXPECT_CALL(*mock_sharing_permission_delegate_, SetIdpSigninStatus(_, _))
-      .Times(0);
+  EXPECT_CALL(*mock_permission_delegate_, SetIdpSigninStatus(_, _)).Times(0);
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
@@ -2437,9 +2425,9 @@ TEST_F(
       {{features::kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName,
         "true"}});
 
-  EXPECT_CALL(*mock_sharing_permission_delegate_, GetIdpSigninStatus(_))
+  EXPECT_CALL(*mock_permission_delegate_, GetIdpSigninStatus(_))
       .WillRepeatedly(Return(absl::nullopt));
-  EXPECT_CALL(*mock_sharing_permission_delegate_,
+  EXPECT_CALL(*mock_permission_delegate_,
               SetIdpSigninStatus(OriginFromString(kProviderUrlFull), true));
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
@@ -2457,9 +2445,9 @@ TEST_F(FederatedAuthRequestImplTest,
       {{features::kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName,
         "true"}});
 
-  EXPECT_CALL(*mock_sharing_permission_delegate_, GetIdpSigninStatus(_))
+  EXPECT_CALL(*mock_permission_delegate_, GetIdpSigninStatus(_))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*mock_sharing_permission_delegate_,
+  EXPECT_CALL(*mock_permission_delegate_,
               SetIdpSigninStatus(OriginFromString(kProviderUrlFull), false));
 
   MockConfiguration configuration = kConfigurationValid;
@@ -2622,8 +2610,7 @@ TEST_F(FederatedAuthRequestImplTest, IframeTooManyRequests) {
   FederatedAuthRequestImpl* iframe_federated_auth_request_impl =
       &FederatedAuthRequestImpl::CreateForTesting(
           *iframe_rfh, test_api_permission_delegate_.get(),
-          mock_active_session_permission_delegate_.get(),
-          mock_sharing_permission_delegate_.get(),
+          mock_permission_delegate_.get(),
           request_remote_.BindNewPipeAndPassReceiver());
 
   auto mock_dialog_controller =

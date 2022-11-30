@@ -125,10 +125,8 @@ class OffTheRecordProfileImpl : public Profile {
   content::FileSystemAccessPermissionContext*
   GetFileSystemAccessPermissionContext() override;
   void RecordPrimaryMainFrameNavigation() override;
-  content::FederatedIdentityActiveSessionPermissionContextDelegate*
-  GetFederatedIdentityActiveSessionPermissionContext() override;
-  content::FederatedIdentitySharingPermissionContextDelegate*
-  GetFederatedIdentitySharingPermissionContext() override;
+  content::FederatedIdentityPermissionContextDelegate*
+  GetFederatedIdentityPermissionContext() override;
   content::FederatedIdentityApiPermissionContextDelegate*
   GetFederatedIdentityApiPermissionContext() override;
   content::KAnonymityServiceDelegate* GetKAnonymityServiceDelegate() override;

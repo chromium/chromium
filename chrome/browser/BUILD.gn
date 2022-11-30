@@ -1875,18 +1875,14 @@ static_library("browser") {
     "webauthn/webauthn_pref_names.h",
     "webid/federated_identity_account_keyed_permission_context.cc",
     "webid/federated_identity_account_keyed_permission_context.h",
-    "webid/federated_identity_active_session_permission_context.cc",
-    "webid/federated_identity_active_session_permission_context.h",
-    "webid/federated_identity_active_session_permission_context_factory.cc",
-    "webid/federated_identity_active_session_permission_context_factory.h",
     "webid/federated_identity_api_permission_context.cc",
     "webid/federated_identity_api_permission_context.h",
     "webid/federated_identity_api_permission_context_factory.cc",
     "webid/federated_identity_api_permission_context_factory.h",
-    "webid/federated_identity_sharing_permission_context.cc",
-    "webid/federated_identity_sharing_permission_context.h",
-    "webid/federated_identity_sharing_permission_context_factory.cc",
-    "webid/federated_identity_sharing_permission_context_factory.h",
+    "webid/federated_identity_permission_context.cc",
+    "webid/federated_identity_permission_context.h",
+    "webid/federated_identity_permission_context_factory.cc",
+    "webid/federated_identity_permission_context_factory.h",
   ]
 
   if (is_chromeos_ash) {

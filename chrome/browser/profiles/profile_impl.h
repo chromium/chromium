@@ -102,10 +102,8 @@ class ProfileImpl : public Profile {
   content::ContentIndexProvider* GetContentIndexProvider() override;
   content::FederatedIdentityApiPermissionContextDelegate*
   GetFederatedIdentityApiPermissionContext() override;
-  content::FederatedIdentityActiveSessionPermissionContextDelegate*
-  GetFederatedIdentityActiveSessionPermissionContext() override;
-  content::FederatedIdentitySharingPermissionContextDelegate*
-  GetFederatedIdentitySharingPermissionContext() override;
+  content::FederatedIdentityPermissionContextDelegate*
+  GetFederatedIdentityPermissionContext() override;
   content::KAnonymityServiceDelegate* GetKAnonymityServiceDelegate() override;
   content::OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate()
       override;

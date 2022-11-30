@@ -84,9 +84,8 @@ class ClientHintsControllerDelegate;
 class ContentIndexProvider;
 class DownloadManager;
 class DownloadManagerDelegate;
-class FederatedIdentityActiveSessionPermissionContextDelegate;
+class FederatedIdentityPermissionContextDelegate;
 class FederatedIdentityApiPermissionContextDelegate;
-class FederatedIdentitySharingPermissionContextDelegate;
 class FileSystemAccessPermissionContext;
 class OriginTrialsControllerDelegate;
 class PermissionController;
@@ -438,12 +437,8 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Gets the permission context for allowing session management capabilities
   // between an identity provider and a relying party if one exists, or
   // nullptr otherwise.
-  virtual FederatedIdentityActiveSessionPermissionContextDelegate*
-  GetFederatedIdentityActiveSessionPermissionContext();
-  // Gets the permission context for WebID identity token sharing if one
-  // exists, or nullptr otherwise.
-  virtual FederatedIdentitySharingPermissionContextDelegate*
-  GetFederatedIdentitySharingPermissionContext();
+  virtual FederatedIdentityPermissionContextDelegate*
+  GetFederatedIdentityPermissionContext();
 
   // Gets the KAnonymityServiceDelegate if supported. Returns nullptr if
   // unavailable.

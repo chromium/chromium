@@ -209,16 +209,8 @@ ShellBrowserContext::GetFederatedIdentityApiPermissionContext() {
   return federated_permission_context_.get();
 }
 
-FederatedIdentitySharingPermissionContextDelegate*
-ShellBrowserContext::GetFederatedIdentitySharingPermissionContext() {
-  if (!federated_permission_context_)
-    federated_permission_context_ =
-        std::make_unique<ShellFederatedPermissionContext>();
-  return federated_permission_context_.get();
-}
-
-FederatedIdentityActiveSessionPermissionContextDelegate*
-ShellBrowserContext::GetFederatedIdentityActiveSessionPermissionContext() {
+FederatedIdentityPermissionContextDelegate*
+ShellBrowserContext::GetFederatedIdentityPermissionContext() {
   if (!federated_permission_context_)
     federated_permission_context_ =
         std::make_unique<ShellFederatedPermissionContext>();

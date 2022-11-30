@@ -11,9 +11,8 @@
 #include <tuple>
 
 #include "base/functional/callback.h"
-#include "content/public/browser/federated_identity_active_session_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
-#include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
+#include "content/public/browser/federated_identity_permission_context_delegate.h"
 
 namespace content {
 
@@ -22,8 +21,7 @@ namespace content {
 // can run wpt tests against it.
 class ShellFederatedPermissionContext
     : public FederatedIdentityApiPermissionContextDelegate,
-      public FederatedIdentityActiveSessionPermissionContextDelegate,
-      public FederatedIdentitySharingPermissionContextDelegate {
+      public FederatedIdentityPermissionContextDelegate {
  public:
   ShellFederatedPermissionContext();
   ~ShellFederatedPermissionContext() override;
@@ -35,22 +33,9 @@ class ShellFederatedPermissionContext
       const url::Origin& relying_party_embedder) override;
   void RemoveEmbargoAndResetCounts(
       const url::Origin& relying_party_embedder) override;
-  absl::optional<bool> GetIdpSigninStatus(
-      const url::Origin& idp_origin) override;
-  void SetIdpSigninStatus(const url::Origin& idp_origin,
-                          bool idp_signin_status) override;
+  bool ShouldCompleteRequestImmediately() const override;
 
-  // FederatedIdentitySharingPermissionContextDelegate
-  bool HasSharingPermission(const url::Origin& relying_party_requester,
-                            const url::Origin& relying_party_embedder,
-                            const url::Origin& identity_provider,
-                            const std::string& account_id) override;
-  void GrantSharingPermission(const url::Origin& relying_party_requester,
-                              const url::Origin& relying_party_embedder,
-                              const url::Origin& identity_provider,
-                              const std::string& account_id) override;
-
-  // FederatedIdentityActiveSessionPermissionContextDelegate
+  // FederatedIdentityPermissionContextDelegate
   bool HasActiveSession(const url::Origin& relying_party_requester,
                         const url::Origin& identity_provider,
                         const std::string& account_identifier) override;
@@ -60,8 +45,18 @@ class ShellFederatedPermissionContext
   void RevokeActiveSession(const url::Origin& relying_party_requester,
                            const url::Origin& identity_provider,
                            const std::string& account_identifier) override;
-
-  bool ShouldCompleteRequestImmediately() const override;
+  bool HasSharingPermission(const url::Origin& relying_party_requester,
+                            const url::Origin& relying_party_embedder,
+                            const url::Origin& identity_provider,
+                            const std::string& account_id) override;
+  void GrantSharingPermission(const url::Origin& relying_party_requester,
+                              const url::Origin& relying_party_embedder,
+                              const url::Origin& identity_provider,
+                              const std::string& account_id) override;
+  absl::optional<bool> GetIdpSigninStatus(
+      const url::Origin& idp_origin) override;
+  void SetIdpSigninStatus(const url::Origin& idp_origin,
+                          bool idp_signin_status) override;
 
   void SetIdpStatusClosureForTesting(base::RepeatingClosure closure) {
     idp_signin_status_closure_ = std::move(closure);

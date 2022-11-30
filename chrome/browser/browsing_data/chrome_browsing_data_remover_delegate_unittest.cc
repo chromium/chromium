@@ -73,8 +73,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/web_data_service_factory.h"
-#include "chrome/browser/webid/federated_identity_active_session_permission_context.h"
-#include "chrome/browser/webid/federated_identity_sharing_permission_context.h"
+#include "chrome/browser/webid/federated_identity_permission_context.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -2856,17 +2855,14 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFederatedContentSettings) {
       constants::DATA_TYPE_HISTORY, constants::DATA_TYPE_PASSWORDS};
   for (content::BrowsingDataRemover::DataType test_data_type : test_cases) {
     {
-      FederatedIdentityActiveSessionPermissionContext active_session_context(
-          GetProfile());
-      active_session_context.GrantActiveSession(rp_origin, idp_origin,
-                                                account_id);
-      ASSERT_TRUE(active_session_context.HasActiveSession(rp_origin, idp_origin,
-                                                          account_id));
+      FederatedIdentityPermissionContext federated_context(GetProfile());
+      federated_context.GrantActiveSession(rp_origin, idp_origin, account_id);
+      ASSERT_TRUE(federated_context.HasActiveSession(rp_origin, idp_origin,
+                                                     account_id));
 
-      FederatedIdentitySharingPermissionContext sharing_context(GetProfile());
-      sharing_context.GrantSharingPermission(rp_origin, rp_embedder_origin,
-                                             idp_origin, account_id);
-      ASSERT_TRUE(sharing_context.HasSharingPermission(
+      federated_context.GrantSharingPermission(rp_origin, rp_embedder_origin,
+                                               idp_origin, account_id);
+      ASSERT_TRUE(federated_context.HasSharingPermission(
           rp_origin, rp_embedder_origin, idp_origin, account_id));
 
       host_content_settings_map->SetContentSettingDefaultScope(
@@ -2885,13 +2881,11 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFederatedContentSettings) {
     {
       // Re-initialize contexts in order to update in-memory
       // ObjectPermissionContextBase cache.
-      FederatedIdentityActiveSessionPermissionContext active_session_context(
-          GetProfile());
-      FederatedIdentitySharingPermissionContext sharing_context(GetProfile());
+      FederatedIdentityPermissionContext federated_context(GetProfile());
 
-      EXPECT_FALSE(active_session_context.HasActiveSession(
-          rp_origin, idp_origin, account_id));
-      EXPECT_FALSE(sharing_context.HasSharingPermission(
+      EXPECT_FALSE(federated_context.HasActiveSession(rp_origin, idp_origin,
+                                                      account_id));
+      EXPECT_FALSE(federated_context.HasSharingPermission(
           rp_origin, rp_embedder_origin, idp_origin, account_id));
 
       // Content setting is on by default.

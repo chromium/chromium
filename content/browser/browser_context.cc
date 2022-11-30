@@ -396,13 +396,8 @@ BrowserContext::GetFederatedIdentityApiPermissionContext() {
   return nullptr;
 }
 
-FederatedIdentityActiveSessionPermissionContextDelegate*
-BrowserContext::GetFederatedIdentityActiveSessionPermissionContext() {
-  return nullptr;
-}
-
-FederatedIdentitySharingPermissionContextDelegate*
-BrowserContext::GetFederatedIdentitySharingPermissionContext() {
+FederatedIdentityPermissionContextDelegate*
+BrowserContext::GetFederatedIdentityPermissionContext() {
   return nullptr;
 }
 

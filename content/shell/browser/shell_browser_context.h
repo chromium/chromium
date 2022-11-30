@@ -66,10 +66,8 @@ class ShellBrowserContext : public BrowserContext {
   ClientHintsControllerDelegate* GetClientHintsControllerDelegate() override;
   FederatedIdentityApiPermissionContextDelegate*
   GetFederatedIdentityApiPermissionContext() override;
-  FederatedIdentitySharingPermissionContextDelegate*
-  GetFederatedIdentitySharingPermissionContext() override;
-  FederatedIdentityActiveSessionPermissionContextDelegate*
-  GetFederatedIdentityActiveSessionPermissionContext() override;
+  FederatedIdentityPermissionContextDelegate*
+  GetFederatedIdentityPermissionContext() override;
   ReduceAcceptLanguageControllerDelegate*
   GetReduceAcceptLanguageControllerDelegate() override;
   OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate() override;

@@ -6,7 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
+#include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/web_identity.h"
 #include "net/base/net_errors.h"
@@ -18,7 +18,7 @@ namespace content::webid {
 void SetIdpSigninStatus(content::BrowserContext* context,
                         const url::Origin& origin,
                         blink::mojom::IdpSigninStatus status) {
-  auto* delegate = context->GetFederatedIdentitySharingPermissionContext();
+  auto* delegate = context->GetFederatedIdentityPermissionContext();
   if (!delegate) {
     // The embedder may not have a delegate (e.g. webview)
     return;

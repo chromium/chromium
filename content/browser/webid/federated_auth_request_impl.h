@@ -26,9 +26,8 @@
 
 namespace content {
 
-class FederatedIdentityActiveSessionPermissionContextDelegate;
 class FederatedIdentityApiPermissionContextDelegate;
-class FederatedIdentitySharingPermissionContextDelegate;
+class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHost;
 
 // FederatedAuthRequestImpl handles mojo connections from the renderer to
@@ -47,8 +46,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   static FederatedAuthRequestImpl& CreateForTesting(
       RenderFrameHost&,
       FederatedIdentityApiPermissionContextDelegate*,
-      FederatedIdentityActiveSessionPermissionContextDelegate*,
-      FederatedIdentitySharingPermissionContextDelegate*,
+      FederatedIdentityPermissionContextDelegate*,
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
   FederatedAuthRequestImpl(const FederatedAuthRequestImpl&) = delete;
@@ -95,8 +93,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   FederatedAuthRequestImpl(
       RenderFrameHost&,
       FederatedIdentityApiPermissionContextDelegate*,
-      FederatedIdentityActiveSessionPermissionContextDelegate*,
-      FederatedIdentitySharingPermissionContextDelegate*,
+      FederatedIdentityPermissionContextDelegate*,
       mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
   bool HasPendingRequest() const;
@@ -210,10 +207,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
       api_permission_delegate_ = nullptr;
-  raw_ptr<FederatedIdentityActiveSessionPermissionContextDelegate>
-      active_session_permission_delegate_ = nullptr;
-  raw_ptr<FederatedIdentitySharingPermissionContextDelegate>
-      sharing_permission_delegate_ = nullptr;
+  raw_ptr<FederatedIdentityPermissionContextDelegate> permission_delegate_ =
+      nullptr;
 
   // The account that was selected by the user. This is only applicable to the
   // mediation flow.
