@@ -5,7 +5,7 @@
 import os
 
 from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
-from typing import Tuple, Iterable
+from typing import List, Tuple, Iterable
 
 from flake_suppressor_common import common_typing as ct
 from flake_suppressor_common import expectations as expectations_module
@@ -69,6 +69,9 @@ class UnitTest_BigQueryQuerier(queries.BigQueryQuerier):
   def GetFlakyOrFailingTryQuery(self) -> str:
     return """submitted_builds SELECT * FROM bar"""
 
+  def GetFailingBuildCulpritFromCiQuery(self) -> str:
+    raise NotImplementedError()
+
 
 class UnitTestResultProcessor(results_module.ResultProcessor):
   def GetTestSuiteAndNameFromResultDbName(self, result_db_name: str
@@ -98,5 +101,11 @@ class UnitTestExpectationProcessor(expectations_module.ExpectationProcessor):
     if fraction < flaky_threshold:
       return 'RetryOnFailure'
     return 'Failure'
+
+  def ListLocalCheckoutExpectationFiles(self) -> List[str]:
+    raise NotImplementedError()
+
+  def ListOriginExpectationFiles(self) -> List[str]:
+    raise NotImplementedError()
 
 # pylint: enable=unused-argument
