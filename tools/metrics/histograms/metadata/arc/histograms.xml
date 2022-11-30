@@ -1076,16 +1076,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.ExternalStorage.SetVisible" enum="BooleanEnabled"
-    expires_after="2021-09-01">
-  <owner>fukino@chromium.org</owner>
-  <owner>youkichihosoi@chromium.org</owner>
-  <summary>
-    When a user clicks a toggle switch in &quot;External storage
-    preferences&quot; screen, where the new value is ENABLED or not.
-  </summary>
-</histogram>
-
 <histogram name="Arc.FileSystemWatcher.Created" enum="BooleanEnabled"
     expires_after="2023-03-19">
   <owner>risan@google.com</owner>
