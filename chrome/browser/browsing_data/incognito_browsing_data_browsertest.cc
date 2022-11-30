@@ -373,14 +373,13 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   Profile* profile = GetBrowser()->profile();
   url::Origin test_origin = url::Origin::Create(GURL("https://example.test/"));
   const std::string serialized_test_origin = test_origin.Serialize();
-  base::Value origin_pref(base::Value::Type::DICTIONARY);
-  origin_pref.SetKey(serialized_test_origin,
-                     base::Value(base::Value::Type::DICTIONARY));
-  base::Value* allowed_protocols_for_origin =
-      origin_pref.FindDictKey(serialized_test_origin);
-  allowed_protocols_for_origin->SetBoolKey("tel", true);
-  profile->GetPrefs()->Set(prefs::kProtocolHandlerPerOriginAllowedProtocols,
-                           origin_pref);
+  base::Value::Dict allowed_protocols_for_origin;
+  allowed_protocols_for_origin.Set("tel", true);
+  base::Value::Dict origin_pref;
+  origin_pref.Set(serialized_test_origin,
+                  std::move(allowed_protocols_for_origin));
+  profile->GetPrefs()->SetDict(prefs::kProtocolHandlerPerOriginAllowedProtocols,
+                               std::move(origin_pref));
   ExternalProtocolHandler::BlockState block_state =
       ExternalProtocolHandler::GetBlockState("tel", &test_origin, profile);
   ASSERT_EQ(ExternalProtocolHandler::DONT_BLOCK, block_state);

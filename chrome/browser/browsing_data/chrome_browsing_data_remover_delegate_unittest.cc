@@ -1708,14 +1708,12 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveExternalProtocolData) {
   url::Origin test_origin = url::Origin::Create(GURL("https://example.test"));
   const std::string serialized_test_origin = test_origin.Serialize();
   // Add external protocol data on profile.
-  base::Value prefs(base::Value::Type::DICTIONARY);
-  prefs.SetKey(serialized_test_origin,
-               base::Value(base::Value::Type::DICTIONARY));
-  base::Value* allowed_protocols_for_origin =
-      prefs.FindDictKey(serialized_test_origin);
-  allowed_protocols_for_origin->SetBoolKey("tel", true);
-  profile->GetPrefs()->Set(prefs::kProtocolHandlerPerOriginAllowedProtocols,
-                           prefs);
+  base::Value::Dict allowed_protocols_for_origin;
+  allowed_protocols_for_origin.Set("tel", true);
+  base::Value::Dict prefs;
+  prefs.Set(serialized_test_origin, std::move(allowed_protocols_for_origin));
+  profile->GetPrefs()->SetDict(prefs::kProtocolHandlerPerOriginAllowedProtocols,
+                               std::move(prefs));
 
   EXPECT_FALSE(profile->GetPrefs()
                    ->GetDict(prefs::kProtocolHandlerPerOriginAllowedProtocols)
@@ -1736,15 +1734,17 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
 
   // Add foo.com to the list of stored user-triggered isolated origins and
   // bar.com to the list of stored web-triggered isolated origins.
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append("http://foo.com");
-  prefs->Set(site_isolation::prefs::kUserTriggeredIsolatedOrigins, list);
+  prefs->SetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins,
+                 list.Clone());
   EXPECT_FALSE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
           .empty());
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("https://bar.com", base::TimeToValue(base::Time::Now()));
-  prefs->Set(site_isolation::prefs::kWebTriggeredIsolatedOrigins, dict);
+  base::Value::Dict dict;
+  dict.Set("https://bar.com", base::TimeToValue(base::Time::Now()));
+  prefs->SetDict(site_isolation::prefs::kWebTriggeredIsolatedOrigins,
+                 dict.Clone());
   EXPECT_FALSE(
       prefs->GetDict(site_isolation::prefs::kWebTriggeredIsolatedOrigins)
           .empty());
@@ -1760,11 +1760,13 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
           .empty());
 
   // Re-add foo.com and bar.com to stored isolated origins.
-  prefs->Set(site_isolation::prefs::kUserTriggeredIsolatedOrigins, list);
+  prefs->SetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins,
+                 list.Clone());
   EXPECT_FALSE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
           .empty());
-  prefs->Set(site_isolation::prefs::kWebTriggeredIsolatedOrigins, dict);
+  prefs->SetDict(site_isolation::prefs::kWebTriggeredIsolatedOrigins,
+                 dict.Clone());
   EXPECT_FALSE(
       prefs->GetDict(site_isolation::prefs::kWebTriggeredIsolatedOrigins)
           .empty());
@@ -1782,11 +1784,13 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
           .empty());
 
   // Re-add foo.com and bar.com.
-  prefs->Set(site_isolation::prefs::kUserTriggeredIsolatedOrigins, list);
+  prefs->SetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins,
+                 list.Clone());
   EXPECT_FALSE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
           .empty());
-  prefs->Set(site_isolation::prefs::kWebTriggeredIsolatedOrigins, dict);
+  prefs->SetDict(site_isolation::prefs::kWebTriggeredIsolatedOrigins,
+                 dict.Clone());
   EXPECT_FALSE(
       prefs->GetDict(site_isolation::prefs::kWebTriggeredIsolatedOrigins)
           .empty());
@@ -1802,11 +1806,13 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
           .empty());
 
   // Re-add foo.com and bar.com.
-  prefs->Set(site_isolation::prefs::kUserTriggeredIsolatedOrigins, list);
+  prefs->SetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins,
+                 list.Clone());
   EXPECT_FALSE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
           .empty());
-  prefs->Set(site_isolation::prefs::kWebTriggeredIsolatedOrigins, dict);
+  prefs->SetDict(site_isolation::prefs::kWebTriggeredIsolatedOrigins,
+                 dict.Clone());
   EXPECT_FALSE(
       prefs->GetDict(site_isolation::prefs::kWebTriggeredIsolatedOrigins)
           .empty());
@@ -2604,27 +2610,27 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveSelectedClientHints) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
 
-  base::Value client_hints_list(base::Value::Type::LIST);
+  base::Value::List client_hints_list;
   client_hints_list.Append(0);
   client_hints_list.Append(2);
 
-  base::Value client_hints_dictionary(base::Value::Type::DICTIONARY);
-  client_hints_dictionary.SetKey(client_hints::kClientHintsSettingKey,
-                                 std::move(client_hints_list));
+  base::Value::Dict client_hints_dictionary;
+  client_hints_dictionary.Set(client_hints::kClientHintsSettingKey,
+                              std::move(client_hints_list));
 
   const GURL kOrigin1("http://host1.com:1");
   const GURL kOrigin2("http://host2.com:1");
   const GURL kOrigin3("http://host3.com:1");
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin1, GURL(), ContentSettingsType::CLIENT_HINTS,
-      client_hints_dictionary.Clone());
+      base::Value(client_hints_dictionary.Clone()));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin2, GURL(), ContentSettingsType::CLIENT_HINTS,
-      client_hints_dictionary.Clone());
+      base::Value(client_hints_dictionary.Clone()));
 
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin3, GURL(), ContentSettingsType::CLIENT_HINTS,
-      client_hints_dictionary.Clone());
+      base::Value(client_hints_dictionary.Clone()));
 
   // Clear all except for origin1 and origin3.
   std::unique_ptr<BrowsingDataFilterBuilder> filter(
@@ -2661,24 +2667,24 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveAllClientHints) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
 
-  base::Value client_hints_list(base::Value::Type::LIST);
+  base::Value::List client_hints_list;
   client_hints_list.Append(0);
   client_hints_list.Append(2);
 
-  base::Value client_hints_dictionary(base::Value::Type::DICTIONARY);
-  client_hints_dictionary.SetKey(client_hints::kClientHintsSettingKey,
-                                 std::move(client_hints_list));
+  base::Value::Dict client_hints_dictionary;
+  client_hints_dictionary.Set(client_hints::kClientHintsSettingKey,
+                              std::move(client_hints_list));
 
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       GURL("http://host1.com:1"), GURL(), ContentSettingsType::CLIENT_HINTS,
-      client_hints_dictionary.Clone());
+      base::Value(client_hints_dictionary.Clone()));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       GURL("http://host2.com:1"), GURL(), ContentSettingsType::CLIENT_HINTS,
-      client_hints_dictionary.Clone());
+      base::Value(client_hints_dictionary.Clone()));
 
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       GURL("http://host3.com:1"), GURL(), ContentSettingsType::CLIENT_HINTS,
-      client_hints_dictionary.Clone());
+      base::Value(client_hints_dictionary.Clone()));
 
   // Clear all.
   BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
@@ -3477,9 +3483,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
       map->SetDefaultContentSetting(info->type(), CONTENT_SETTING_BLOCK);
     } else {
       // Other website settings only allow dictionaries.
-      base::Value dict(base::Value::Type::DICTIONARY);
-      dict.SetKey("foo", base::Value(42));
-      some_value = std::move(dict);
+      base::Value::Dict dict;
+      dict.Set("foo", 42);
+      some_value = base::Value(std::move(dict));
     }
     // Create an exception.
     map->SetWebsiteSettingDefaultScope(url, url, info->type(),
