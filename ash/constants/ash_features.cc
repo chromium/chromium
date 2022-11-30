@@ -713,7 +713,7 @@ BASE_FEATURE(kEnableHostnameSetting,
 // If enabled, the input device cards will be shown in the diagnostics app.
 BASE_FEATURE(kEnableInputInDiagnosticsApp,
              "EnableInputInDiagnosticsApp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables keyboard backlight toggle.
 BASE_FEATURE(kEnableKeyboardBacklightToggle,
