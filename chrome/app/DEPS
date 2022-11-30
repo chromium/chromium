@@ -40,6 +40,7 @@ include_rules = [
   "+components/upload_list",
   "+components/version_info",
   "+content/public/app",
+  "+content/public/browser/zygote_host/zygote_host_linux.h",
   "+content/public/browser/browser_main_runner.h",
   "+content/public/common",
   "+extensions/buildflags/buildflags.h",

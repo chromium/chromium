@@ -229,6 +229,7 @@
 #include "chromeos/startup/browser_postlogin_params.h"  // nogncheck
 #include "chromeos/startup/startup.h"                   // nogncheck
 #include "chromeos/startup/startup_switches.h"          // nogncheck
+#include "content/public/browser/zygote_host/zygote_host_linux.h"
 #include "media/base/media_switches.h"
 #include "ui/base/resource/data_pack_with_resource_sharing_lacros.h"
 #endif
@@ -453,13 +454,20 @@ void HandleHelpSwitches(const base::CommandLine& command_line) {
 // Only useful when pre-launching Lacros at login screen.
 void RedirectLacrosLogging() {
   const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
+  uint32_t logging_dest = logging::DetermineLoggingDestination(cmdline);
   base::FilePath log_file =
       cmdline.GetSwitchValuePath(chromeos::switches::kCrosPostLoginLogFile);
-  if (!log_file.empty() && (logging::DetermineLoggingDestination(cmdline) &
-                            logging::LOG_TO_STDERR)) {
+
+  if (!log_file.empty() && (logging_dest & logging::LOG_TO_STDERR)) {
     log_file = logging::SetUpLogFile(log_file, /*new_log=*/true);
     FILE* result = freopen(log_file.value().c_str(), "a", stderr);
     DPCHECK(result != nullptr);
+
+    // Redirect Zygote and future children's logs.
+    if (result) {
+      content::ZygoteHost::GetInstance()->ReinitializeLogging(logging_dest,
+                                                              STDERR_FILENO);
+    }
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
