@@ -13,6 +13,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -191,6 +192,13 @@ SkColor Checkbox::GetIconImageColor(int icon_state) const {
   SkColor active_color = GetColorProvider()->GetColor(
       (icon_state & IconState::CHECKED) ? ui::kColorButtonForegroundChecked
                                         : ui::kColorButtonForegroundUnchecked);
+
+  // TODO(crbug.com/1394575): Remove block and update the above ColorIds
+  if (features::IsChromeRefresh2023()) {
+    active_color = GetColorProvider()->GetColor(
+        (icon_state & IconState::CHECKED) ? ui::kColorAlertHighSeverity
+                                          : ui::kColorAlertMediumSeverity);
+  }
 
   // Use the overridden checked icon image color instead if set.
   if (icon_state & IconState::CHECKED && checked_icon_image_color_.has_value())
