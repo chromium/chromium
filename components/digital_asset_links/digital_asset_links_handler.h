@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -86,6 +85,7 @@ class DigitalAssetLinksHandler {
       const std::string& manifest_url,
       RelationshipCheckResultCallback callback);
 
+ private:
   // Generic DAL verifier. Checks whether the given |relationship| has been
   // declared by the target |web_domain| using the values in |target_values|.
   // We require a match for every entry in the |target_values| map, but within
@@ -101,12 +101,6 @@ class DigitalAssetLinksHandler {
       const std::map<std::string, std::set<std::string>>& target_values,
       RelationshipCheckResultCallback callback);
 
-  // The amount of time to wait before giving up on a given network request and
-  // considering it an error. If not set, then the request is allowed to take
-  // as much time as it wants. Passed directly to the URL loader.
-  void SetTimeoutDuration(base::TimeDelta timeout_duration);
-
- private:
   void OnURLLoadComplete(
       std::string relationship,
       absl::optional<std::vector<std::string>> fingerprints,
@@ -127,8 +121,6 @@ class DigitalAssetLinksHandler {
   // The per request callback for receiving a URLFetcher result. This gets
   // reset every time we get a new CheckDigitalAssetLinkRelationship call.
   RelationshipCheckResultCallback callback_;
-
-  base::TimeDelta timeout_duration_ = base::TimeDelta();
 
   base::WeakPtr<content::WebContents> web_contents_;
 

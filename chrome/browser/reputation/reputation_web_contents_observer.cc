@@ -307,72 +307,23 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
                                       /*is_new_heuristic=*/false));
   }
 
-  if (!base::FeatureList::IsEnabled(
-          lookalikes::features::kLookalikeDigitalAssetLinks) ||
-      !result.suggested_url.is_valid()) {
-    RecordPostFlagCheckHistogram(result.safety_tip_status);
-
-    base::OnceCallback<void(SafetyTipInteraction)> close_callback =
-        base::BindOnce(OnSafetyTipClosed, result, navigation_source_id,
-                       profile_, result.url, result.safety_tip_status,
-                       std::move(safety_tip_close_callback_for_testing_));
-#if BUILDFLAG(IS_ANDROID)
-    delegate_.DisplaySafetyTipPrompt(result.safety_tip_status,
-                                     result.suggested_url, web_contents(),
-                                     std::move(close_callback));
-#else
-
-    ShowSafetyTipDialog(web_contents(), result.safety_tip_status,
-                        result.suggested_url, std::move(close_callback));
-#endif
-    MaybeCallReputationCheckCallback(true);
-    return;
-  }
-
-  const url::Origin lookalike_origin = url::Origin::Create(result.url);
-  const url::Origin target_origin = url::Origin::Create(result.suggested_url);
-
-  DigitalAssetLinkCrossValidator::ResultCallback callback = base::BindOnce(
-      &ReputationWebContentsObserver::OnDigitalAssetLinkValidationResult,
-      weak_factory_.GetWeakPtr(), result, navigation_source_id);
-  digital_asset_link_validator_ =
-      std::make_unique<DigitalAssetLinkCrossValidator>(
-          profile_, lookalike_origin, target_origin,
-          LookalikeUrlService::kManifestFetchDelay.Get(),
-          LookalikeUrlService::Get(profile_)->clock(), std::move(callback));
-  digital_asset_link_validator_->Start();
-}
-
-void ReputationWebContentsObserver::OnDigitalAssetLinkValidationResult(
-    ReputationCheckResult result,
-    ukm::SourceId navigation_source_id,
-    bool validation_succeeded) {
-  if (validation_succeeded) {
-    // Don't show a safety tip dialog.
-    base::UmaHistogramEnumeration(
-        "Security.SafetyTips.ReputationCheckComplete.DidFinishNavigation",
-        security_state::SafetyTipStatus::kDigitalAssetLinkMatch);
-    RecordPostFlagCheckHistogram(
-        security_state::SafetyTipStatus::kDigitalAssetLinkMatch);
-    MaybeCallReputationCheckCallback(/*heuristics_checked=*/true);
-    return;
-  }
-
   RecordPostFlagCheckHistogram(result.safety_tip_status);
 
   base::OnceCallback<void(SafetyTipInteraction)> close_callback =
       base::BindOnce(OnSafetyTipClosed, result, navigation_source_id, profile_,
                      result.url, result.safety_tip_status,
                      std::move(safety_tip_close_callback_for_testing_));
+
 #if BUILDFLAG(IS_ANDROID)
   delegate_.DisplaySafetyTipPrompt(result.safety_tip_status,
                                    result.suggested_url, web_contents(),
                                    std::move(close_callback));
 #else
+
   ShowSafetyTipDialog(web_contents(), result.safety_tip_status,
                       result.suggested_url, std::move(close_callback));
 #endif
-  MaybeCallReputationCheckCallback(/*heuristics_checked=*/true);
+  MaybeCallReputationCheckCallback(true);
 }
 
 void ReputationWebContentsObserver::MaybeCallReputationCheckCallback(

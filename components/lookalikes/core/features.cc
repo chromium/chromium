@@ -7,12 +7,6 @@
 namespace lookalikes {
 namespace features {
 
-BASE_FEATURE(kLookalikeDigitalAssetLinks,
-             "LookalikeDigitalAssetLinks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const char kLookalikeDigitalAssetLinksTimeoutParameter[] = "timeout";
-
 BASE_FEATURE(kDetectComboSquattingLookalikes,
              "ComboSquattingLookalikes",
              base::FEATURE_DISABLED_BY_DEFAULT);

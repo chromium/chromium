@@ -243,54 +243,8 @@ LookalikeUrlNavigationThrottle::CheckAndMaybeShowInterstitial(
 
   // Punycode interstitial doesn't have a target site, so safe_domain isn't
   // valid.
-  if (!base::FeatureList::IsEnabled(
-          lookalikes::features::kLookalikeDigitalAssetLinks) ||
-      !safe_domain.is_valid()) {
-    return ShowInterstitial(safe_domain, lookalike_domain, source_id,
-                            match_type, triggered_by_initial_url);
-  }
-
-  const url::Origin lookalike_origin =
-      url::Origin::Create(navigation_handle()->GetURL());
-  const url::Origin target_origin = url::Origin::Create(safe_domain);
-  DigitalAssetLinkCrossValidator::ResultCallback callback = base::BindOnce(
-      &LookalikeUrlNavigationThrottle::OnManifestValidationResult,
-      weak_factory_.GetWeakPtr(), safe_domain, lookalike_domain, source_id,
-      match_type, triggered_by_initial_url);
-  DCHECK(!digital_asset_link_validator_);
-  // This assumes each navigation has its own throttle.
-  // TODO(crbug.com/1175385): Consider moving this to LookalikeURLService.
-  digital_asset_link_validator_ =
-      std::make_unique<DigitalAssetLinkCrossValidator>(
-          profile_, lookalike_origin, target_origin,
-          LookalikeUrlService::kManifestFetchDelay.Get(),
-          LookalikeUrlService::Get(profile_)->clock(), std::move(callback));
-  digital_asset_link_validator_->Start();
-  return NavigationThrottle::DEFER;
-}
-
-void LookalikeUrlNavigationThrottle::OnManifestValidationResult(
-    const GURL& safe_domain,
-    const GURL& lookalike_domain,
-    ukm::SourceId source_id,
-    LookalikeUrlMatchType match_type,
-    bool triggered_by_initial_url,
-    bool validation_succeeded) {
-  if (validation_succeeded) {
-    // Add the lookalike URL to the allowlist.
-    // TODO(meacer): Use a proper key for caching here. At the very least, we
-    // should allowlist (lookalike, target) pairs. We should also cache some of
-    // the failure cases, e.g. when the lookalike site serves a manifest but it
-    // doesn't have an entry for the target site.
-    ReputationService::Get(profile_)->SetUserIgnore(lookalike_domain);
-
-    Resume();
-    return;
-  }
-  ThrottleCheckResult result =
-      ShowInterstitial(safe_domain, lookalike_domain, source_id, match_type,
-                       triggered_by_initial_url);
-  CancelDeferredNavigation(result);
+  return ShowInterstitial(safe_domain, lookalike_domain, source_id, match_type,
+                          triggered_by_initial_url);
 }
 
 void LookalikeUrlNavigationThrottle::PerformChecksDeferred(

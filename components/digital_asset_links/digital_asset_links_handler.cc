@@ -324,7 +324,6 @@ bool DigitalAssetLinksHandler::CheckDigitalAssetLinkRelationship(
   url_loader_->SetRetryOptions(
       kNumNetworkRetries,
       network::SimpleURLLoader::RetryMode::RETRY_ON_NETWORK_CHANGE);
-  url_loader_->SetTimeoutDuration(timeout_duration_);
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       shared_url_loader_factory_.get(),
       base::BindOnce(&DigitalAssetLinksHandler::OnURLLoadComplete,
@@ -332,11 +331,6 @@ bool DigitalAssetLinksHandler::CheckDigitalAssetLinkRelationship(
                      std::move(fingerprints), target_values));
 
   return true;
-}
-
-void DigitalAssetLinksHandler::SetTimeoutDuration(
-    base::TimeDelta timeout_duration) {
-  timeout_duration_ = timeout_duration;
 }
 
 }  // namespace digital_asset_links

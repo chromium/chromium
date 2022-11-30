@@ -12,9 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/lookalikes/digital_asset_links_cross_validator.h"
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
-#include "components/digital_asset_links/digital_asset_links_handler.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -62,9 +60,6 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
  private:
   // Performs synchronous top domain and engaged site checks on the navigated
   // and redirected urls. Uses |engaged_sites| for the engaged site checks.
-  // This function can also defer the check and schedule a
-  // cancellation/resumption if additional checks need to be done such as
-  // validating Digital Asset Links manifests.
   ThrottleCheckResult PerformChecks(
       const std::vector<DomainInfo>& engaged_sites);
 
@@ -101,8 +96,7 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
                                        bool triggered_by_initial_url);
 
   // Checks if a full page intersitial can be shown. This function checks if
-  // manifest validation fails for digital asset links of |lookalike_domain|,
-  // |safe_domain| or if the navigation isn't in prerendering navigation.
+  // the navigation isn't a prerender navigation.
   ThrottleCheckResult CheckAndMaybeShowInterstitial(
       const GURL& safe_domain,
       const GURL& lookalike_domain,
@@ -110,18 +104,8 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
       LookalikeUrlMatchType match_type,
       bool triggered_by_initial_url);
 
-  // Callback for digital asset link manifest validations.
-  void OnManifestValidationResult(const GURL& safe_domain,
-                                  const GURL& lookalike_domain,
-                                  ukm::SourceId source_id,
-                                  LookalikeUrlMatchType match_type,
-                                  bool triggered_by_initial_url,
-                                  bool validation_success);
-
   raw_ptr<Profile> profile_;
   bool use_test_profile_ = false;
-
-  std::unique_ptr<DigitalAssetLinkCrossValidator> digital_asset_link_validator_;
 
   base::WeakPtrFactory<LookalikeUrlNavigationThrottle> weak_factory_{this};
 };

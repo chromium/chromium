@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -100,13 +99,6 @@ std::vector<DomainInfo> UpdateEngagedSitesOnWorkerThread(
 }
 
 }  // namespace
-
-// static
-const base::FeatureParam<base::TimeDelta>
-    LookalikeUrlService::kManifestFetchDelay{
-        &lookalikes::features::kLookalikeDigitalAssetLinks,
-        lookalikes::features::kLookalikeDigitalAssetLinksTimeoutParameter,
-        base::Seconds(5)};
 
 LookalikeUrlService::LookalikeUrlService(Profile* profile)
     : profile_(profile), clock_(base::DefaultClock::GetInstance()) {}

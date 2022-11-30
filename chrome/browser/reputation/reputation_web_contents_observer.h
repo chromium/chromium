@@ -8,7 +8,6 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/lookalikes/digital_asset_links_cross_validator.h"
 #include "chrome/browser/reputation/reputation_service.h"
 #include "chrome/browser/reputation/safety_tip_ui.h"
 #include "components/security_state/core/security_state.h"
@@ -94,10 +93,6 @@ class ReputationWebContentsObserver
       ReputationCheckResult result,
       ukm::SourceId navigation_source_id);
 
-  void OnDigitalAssetLinkValidationResult(ReputationCheckResult result,
-                                          ukm::SourceId navigation_source_id,
-                                          bool validation_succeeded);
-
   raw_ptr<Profile> profile_;
 
   // Used to cache the last safety tip info (and associated navigation entry ID)
@@ -122,8 +117,6 @@ class ReputationWebContentsObserver
 #if BUILDFLAG(IS_ANDROID)
   SafetyTipMessageDelegateAndroid delegate_;
 #endif
-
-  std::unique_ptr<DigitalAssetLinkCrossValidator> digital_asset_link_validator_;
 
   base::WeakPtrFactory<ReputationWebContentsObserver> weak_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();

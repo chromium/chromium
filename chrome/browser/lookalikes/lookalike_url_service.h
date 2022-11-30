@@ -57,8 +57,6 @@ class LookalikeUrlService : public KeyedService {
   void SetClockForTesting(base::Clock* clock);
   base::Clock* clock() const { return clock_; }
 
-  static const base::FeatureParam<base::TimeDelta> kManifestFetchDelay;
-
  private:
   void OnUpdateEngagedSitesCompleted(std::vector<DomainInfo> new_engaged_sites);
 
