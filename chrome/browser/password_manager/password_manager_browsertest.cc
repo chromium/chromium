@@ -80,6 +80,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
@@ -142,8 +143,12 @@ class PasswordManagerBackForwardCacheBrowserTest
     : public PasswordManagerBrowserTest {
  public:
   void SetUpOnMainThread() override {
+    // TODO(https://crbug.com/1158630): Remove this and below after confirming
+    // whether setup is completing.
+    LOG(INFO) << "SetUpOnMainThread started.";
     host_resolver()->AddRule("*", "127.0.0.1");
     PasswordManagerBrowserTest ::SetUpOnMainThread();
+    LOG(INFO) << "SetUpOnMainThread complete.";
   }
 
   bool IsGetCredentialsSuccessful() {
@@ -158,6 +163,9 @@ class PasswordManagerBackForwardCacheBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    // TODO(https://crbug.com/1158630): Remove this and below after confirming
+    // whether setup is completing.
+    LOG(INFO) << "SetUpCommandLine started.";
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{::features::kBackForwardCache,
           {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
@@ -165,6 +173,7 @@ class PasswordManagerBackForwardCacheBrowserTest
         // Allow BackForwardCache for all devices regardless of their memory.
         {::features::kBackForwardCacheMemoryControls});
     PasswordManagerBrowserTest::SetUpCommandLine(command_line);
+    LOG(INFO) << "SetUpCommandLine complete.";
   }
 
  private:
@@ -3866,15 +3875,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
   content::RenderFrameHostWrapper rfh(WebContents()->GetPrimaryMainFrame());
 
   // Navigate away so that the password form page is stored in the cache.
-  EXPECT_TRUE(NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       WebContents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
-  EXPECT_EQ(rfh->GetLifecycleState(),
+  ASSERT_EQ(rfh->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // Restore the cached page.
-  WebContents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(WebContents()));
-  EXPECT_EQ(rfh.get(), WebContents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(content::HistoryGoBack(WebContents()));
+  ASSERT_EQ(rfh.get(), WebContents()->GetPrimaryMainFrame());
 
   // Fill out and submit the password form.
   PasswordsNavigationObserver observer(WebContents());
@@ -3887,7 +3895,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
 
   // Save the password and check the store.
   BubbleObserver bubble_observer(WebContents());
-  EXPECT_TRUE(bubble_observer.IsSavePromptShownAutomatically());
+  ASSERT_TRUE(bubble_observer.IsSavePromptShownAutomatically());
   bubble_observer.AcceptSavePrompt();
   WaitForPasswordStore();
 
@@ -3903,17 +3911,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
                        NotCachedIfCredentialsAPIUsed) {
   // Navigate to a page with a password form.
   NavigateToFile("/password/password_form.html");
-  content::RenderFrameHost* rfh = WebContents()->GetPrimaryMainFrame();
-  content::RenderFrameDeletedObserver rfh_deleted_observer(rfh);
+  content::RenderFrameHostWrapper rfh(WebContents()->GetPrimaryMainFrame());
 
   // Use the password manager API, this should make the page uncacheable.
-  EXPECT_TRUE(IsGetCredentialsSuccessful());
+  ASSERT_TRUE(IsGetCredentialsSuccessful());
 
   // Navigate away.
-  EXPECT_TRUE(NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       WebContents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   // The page should not have been cached.
-  rfh_deleted_observer.WaitUntilDeleted();
+  ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
@@ -3923,22 +3930,21 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
   content::RenderFrameHostWrapper rfh(WebContents()->GetPrimaryMainFrame());
 
   // Navigate away.
-  EXPECT_TRUE(NavigateToURL(
+  ASSERT_TRUE(NavigateToURL(
       WebContents(), embedded_test_server()->GetURL("b.com", "/title1.html")));
-  EXPECT_EQ(rfh->GetLifecycleState(),
+  ASSERT_EQ(rfh->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // Restore the cached page.
-  WebContents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(WebContents()));
-  EXPECT_EQ(rfh.get(), WebContents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(content::HistoryGoBack(WebContents()));
+  ASSERT_EQ(rfh.get(), WebContents()->GetPrimaryMainFrame());
 
   // Make sure the password manager API works. Since it was never connected, it
   // shouldn't have been affected by the
   // ContentCredentialManager::DisconnectBinding call in
   // ChromePasswordManagerClient::DidFinishNavigation, (this GetCredentials call
   // will establish the mojo connection for the first time).
-  EXPECT_TRUE(IsGetCredentialsSuccessful());
+  ASSERT_TRUE(IsGetCredentialsSuccessful());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
