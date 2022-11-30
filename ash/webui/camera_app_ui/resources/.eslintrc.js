@@ -538,7 +538,10 @@ module.exports = {
         message: 'Don\'t use "Interface" as identifier suffix. ' +
             '(go/tsstyle#naming-style)',
       },
-      // Disallow forEach. (go/tsstyle#iterating-containers)
+      // Disallow forEach. (go/tsjs-practices/iteration)
+      // TODO(pihsun): This was relaxed in style guide in cl/430720959,
+      // consider relaxing this if there's place where forEach makes the code
+      // much simpler.
       {
         selector: 'CallExpression[callee.property.name="forEach"]',
         message: 'forEach are not allowed. (go/tsstyle#iterating-containers)',
