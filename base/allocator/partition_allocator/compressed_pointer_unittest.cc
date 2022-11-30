@@ -93,18 +93,6 @@ class CompressedPointerTest : public ::testing::Test {
                      PartitionOptions::UseConfigurablePool::kNo});
   }
 
-  static void SetUpTestSuite() {
-#if defined(PA_POINTER_COMPRESSION)
-    internal::PartitionAddressSpace::Init();
-#endif  // defined(PA_POINTER_COMPRESSION)
-  }
-
-  static void TearDownTestSuite() {
-#if defined(PA_POINTER_COMPRESSION)
-    internal::PartitionAddressSpace::UninitForTesting();
-#endif  // defined(PA_POINTER_COMPRESSION)
-  }
-
  protected:
   internal::PartitionAllocator<internal::ThreadSafe> allocator_;
 };
