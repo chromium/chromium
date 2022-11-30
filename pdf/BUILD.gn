@@ -373,6 +373,7 @@ if (enable_pdf) {
       "//third_party/blink/public:test_support",
       "//third_party/blink/public/common:headers",
       "//third_party/pdfium",
+      "//tools/v8_context_snapshot:buildflags",
       "//ui/base",
       "//ui/base/cursor",
       "//ui/events/blink:blink",
