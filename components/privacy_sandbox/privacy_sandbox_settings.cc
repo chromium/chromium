@@ -306,26 +306,15 @@ bool PrivacySandboxSettings::IsFledgeJoiningAllowed(
 
 bool PrivacySandboxSettings::IsFledgeAllowed(
     const url::Origin& top_frame_origin,
-    const url::Origin& auction_party) {
+    const url::Origin& auction_party) const {
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
+    return IsM1PrivacySandboxApiEnabled(
+               prefs::kPrivacySandboxM1FledgeEnabled) &&
+           IsSiteDataAllowed(auction_party.GetURL());
+  }
+
   return IsPrivacySandboxEnabledForContext(auction_party.GetURL(),
                                            top_frame_origin);
-}
-
-std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(
-    const url::Origin& top_frame_origin,
-    const std::vector<GURL>& auction_parties) {
-  // If the sandbox is disabled, then no parties are allowed and we can avoid
-  // even iterating over them.
-  if (!IsPrivacySandboxEnabled())
-    return {};
-
-  std::vector<GURL> allowed_parties;
-  for (const auto& party : auction_parties) {
-    if (IsPrivacySandboxEnabledForContext(party, top_frame_origin)) {
-      allowed_parties.push_back(party);
-    }
-  }
-  return allowed_parties;
 }
 
 bool PrivacySandboxSettings::IsSharedStorageAllowed(
