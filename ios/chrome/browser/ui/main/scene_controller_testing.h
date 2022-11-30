@@ -8,6 +8,7 @@
 class Browser;
 struct UrlLoadParams;
 @class TabGridCoordinator;
+@protocol BrowserInterface;
 
 // Methods exposed for testing. This is terrible and should be rewritten.
 @interface SceneController ()
@@ -23,6 +24,8 @@ struct UrlLoadParams;
 // NO, then call `completion`.
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox;
+
+- (id<BrowserInterface>)currentInterface;
 
 @end
 

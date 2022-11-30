@@ -106,6 +106,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/main:scene",
     "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/ui/main:scene_testing",
     "//ios/chrome/browser/ui/main/test",
     "//ios/chrome/browser/ui/post_restore_signin:features",
     "//ios/chrome/browser/ui/safe_mode",

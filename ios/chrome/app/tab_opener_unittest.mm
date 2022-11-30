@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
+#import "ios/chrome/browser/ui/main/scene_controller_testing.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/test/stub_browser_interface.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -25,10 +26,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-@interface SceneController (Testing)
-- (id<BrowserInterface>)currentInterface;
-@end
 
 namespace {
 
