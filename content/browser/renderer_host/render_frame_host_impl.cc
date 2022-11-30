@@ -3461,17 +3461,11 @@ RenderFrameProxyHost* RenderFrameHostImpl::GetProxyToOuterDelegate() {
 
 void RenderFrameHostImpl::DidChangeReferrerPolicy(
     network::mojom::ReferrerPolicy referrer_policy) {
-  if (!IsActive() || !frame_tree_->controller().GetLastCommittedEntry())
+  if (!IsActive())
     return;
-  // The FrameNavigationEntry may want to change whether to protect its url
-  // in the navigation API when the referrer policy changes.
-  if (FrameNavigationEntry* entry =
-          frame_tree_->controller().GetLastCommittedEntry()->GetFrameEntry(
-              frame_tree_node_)) {
-    entry->set_protect_url_in_navigation_api(
-        NavigationControllerImpl::ShouldProtectUrlInNavigationApi(
-            referrer_policy));
-  }
+  // `owner_` will never be null if `IsActive()` returns true.
+  DCHECK(owner_);
+  owner_->DidChangeReferrerPolicy(referrer_policy);
 }
 
 void RenderFrameHostImpl::PropagateEmbeddingTokenToParentFrame() {

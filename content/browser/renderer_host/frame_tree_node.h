@@ -23,6 +23,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_type.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
+#include "services/network/public/mojom/referrer_policy.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
@@ -593,6 +594,8 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   Navigator& GetCurrentNavigator() override;
   RenderFrameHostManager& GetRenderFrameHostManager() override;
   void SetFocusedFrame(SiteInstanceGroup* source) override;
+  void DidChangeReferrerPolicy(
+      network::mojom::ReferrerPolicy referrer_policy) override;
 
   // Updates the user activation state in the browser frame tree and in the
   // frame trees in all renderer processes except the renderer for this node

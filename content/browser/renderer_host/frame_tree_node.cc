@@ -996,6 +996,11 @@ void FrameTreeNode::SetFocusedFrame(SiteInstanceGroup* source) {
   frame_tree_->delegate()->SetFocusedFrame(this, source);
 }
 
+void FrameTreeNode::DidChangeReferrerPolicy(
+    network::mojom::ReferrerPolicy referrer_policy) {
+  navigator().controller().DidChangeReferrerPolicy(this, referrer_policy);
+}
+
 std::unique_ptr<NavigationRequest>
 FrameTreeNode::CreateNavigationRequestForSynchronousRendererCommit(
     RenderFrameHostImpl* render_frame_host,

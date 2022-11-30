@@ -452,6 +452,11 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   bool ShouldMaintainTrivialSessionHistory(
       const FrameTreeNode* frame_tree_node) const;
 
+  // Called when the referrer policy changes. It updates whether to protect the
+  // url in the navigation API.
+  void DidChangeReferrerPolicy(FrameTreeNode* node,
+                               network::mojom::ReferrerPolicy referrer_policy);
+
  private:
   friend class RestoreHelper;
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "services/network/public/mojom/referrer_policy.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
@@ -57,6 +58,10 @@ class RenderFrameHostOwner {
   virtual RenderFrameHostManager& GetRenderFrameHostManager() = 0;
 
   virtual void SetFocusedFrame(SiteInstanceGroup* source) = 0;
+
+  // Called when the referrer policy changes.
+  virtual void DidChangeReferrerPolicy(
+      network::mojom::ReferrerPolicy referrer_policy) = 0;
 
   virtual bool UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType update_type,

@@ -4608,4 +4608,17 @@ bool NavigationControllerImpl::ShouldMaintainTrivialSessionHistory(
          frame_tree_node->IsInFencedFrameTree();
 }
 
+void NavigationControllerImpl::DidChangeReferrerPolicy(
+    FrameTreeNode* node,
+    network::mojom::ReferrerPolicy referrer_policy) {
+  FrameNavigationEntry* entry = GetLastCommittedEntry()->GetFrameEntry(node);
+  if (!entry)
+    return;
+
+  // The FrameNavigationEntry may want to change whether to protect its url
+  // in the navigation API when the referrer policy changes.
+  entry->set_protect_url_in_navigation_api(
+      ShouldProtectUrlInNavigationApi(referrer_policy));
+}
+
 }  // namespace content
