@@ -13,7 +13,7 @@
 
 namespace views {
 class FlexLayoutView;
-}
+}  // namespace views
 
 namespace ash {
 

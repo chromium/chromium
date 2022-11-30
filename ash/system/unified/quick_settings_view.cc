@@ -26,6 +26,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -122,8 +123,15 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
+  auto* scroll_view = AddChildView(std::make_unique<views::ScrollView>());
+  scroll_view->SetAllowKeyboardScrolling(false);
+  scroll_view->SetBackgroundColor(absl::nullopt);
+  scroll_view->ClipHeightTo(0, INT_MAX);
+  scroll_view->SetDrawOverflowIndicator(false);
+  scroll_view->SetVerticalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kHiddenButEnabled);
   system_tray_container_ =
-      AddChildView(std::make_unique<views::FlexLayoutView>());
+      scroll_view->SetContents(std::make_unique<views::FlexLayoutView>());
   system_tray_container_->SetOrientation(views::LayoutOrientation::kVertical);
 
   AddTemporaryDetailedViewButtons();
