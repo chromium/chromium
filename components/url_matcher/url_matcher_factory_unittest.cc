@@ -33,8 +33,7 @@ TEST(URLMatcherFactoryTest, CreateFromURLFilterDictionary) {
 
   // Invalid value type: {"hostSuffix": []}
   base::Value::Dict invalid_condition2;
-  invalid_condition2.Set(keys::kHostSuffixKey,
-                         base::Value(base::Value::Type::LIST));
+  invalid_condition2.Set(keys::kHostSuffixKey, base::Value::List());
 
   // Invalid regex value: {"urlMatches": "*"}
   base::Value::Dict invalid_condition3;
@@ -53,14 +52,14 @@ TEST(URLMatcherFactoryTest, CreateFromURLFilterDictionary) {
   // }
 
   // Port range: Allow 80;1000-1010.
-  base::Value port_range(base::Value::Type::LIST);
+  base::Value::List port_range;
   port_range.Append(1000);
   port_range.Append(1010);
-  base::Value port_ranges(base::Value::Type::LIST);
+  base::Value::List port_ranges;
   port_ranges.Append(80);
   port_ranges.Append(std::move(port_range));
 
-  base::Value scheme_list(base::Value::Type::LIST);
+  base::Value::List scheme_list;
   scheme_list.Append("http");
 
   base::Value::Dict valid_condition;
@@ -231,12 +230,11 @@ void UrlConditionCaseTest::CheckCondition(
     UrlConditionCaseTest::ResultType expected_result) const {
   base::Value::Dict condition;
   if (use_list_of_strings_) {
-    auto list = std::make_unique<base::ListValue>();
-    list->Append(value);
-    condition.Set(condition_key_,
-                  base::Value::FromUniquePtrValue(std::move(list)));
+    base::Value::List list;
+    list.Append(value);
+    condition.Set(condition_key_, std::move(list));
   } else {
-    condition.Set(condition_key_, base::Value(value));
+    condition.Set(condition_key_, value);
   }
 
   URLMatcher matcher;
