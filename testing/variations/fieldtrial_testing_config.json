@@ -677,6 +677,21 @@
             ]
         }
     ],
+    "ArcVmLowMemJemallocArenas": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootArcVmLowMemJemallocArenas"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcVmMemorySize": [
         {
             "platforms": [
