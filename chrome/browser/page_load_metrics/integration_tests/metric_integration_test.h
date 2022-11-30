@@ -93,6 +93,10 @@ class MetricIntegrationTest : public InProcessBrowserTest {
   // metric name and value.
   void ExpectUKMPageLoadMetric(base::StringPiece metric_name,
                                int64_t expected_value);
+  void ExpectUKMPageLoadMetricGreaterThan(base::StringPiece metric_name,
+                                          int64_t expected_value);
+  void ExpectUKMPageLoadMetricLowerThan(base::StringPiece metric_name,
+                                        int64_t expected_value);
 
   int64_t GetUKMPageLoadMetricFlagSet(base::StringPiece metric_name);
 
@@ -148,6 +152,8 @@ class MetricIntegrationTest : public InProcessBrowserTest {
       const std::string& content,
       base::TimeDelta delay,
       const net::test_server::HttpRequest& request);
+
+  const ukm::mojom::UkmEntryPtr GetEntry();
 
   absl::optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   absl::optional<base::HistogramTester> histogram_tester_;

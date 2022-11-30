@@ -5505,6 +5505,10 @@ crbug.com/1015130 external/wpt/largest-contentful-paint/first-paint-equals-lcp-t
 
 crbug.com/1000051 media/controls/volume-slider.html [ Failure Pass Timeout ]
 
+# Test for LCP's mouseover heuristics. Tested only under virtual/lcp-mouseover-heuristics.
+crbug.com/1288027 external/wpt/largest-contentful-paint/mouseover-heuristics-element.tentative.html [ Skip Timeout ]
+crbug.com/1288027 external/wpt/largest-contentful-paint/mouseover-heuristics-background.tentative.html [ Skip Timeout ]
+
 # Sheriff 2019-09-04
 crbug.com/1000396 [ Win ] media/video-remove-insert-repaints.html [ Failure Pass ]
 

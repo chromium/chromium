@@ -364,8 +364,10 @@ class MouseoverLCPTest : public MetricIntegrationTest,
                      "registerMouseover(" + background + ")")
                   .error,
               "");
-    EXPECT_EQ(
-        EvalJs(web_contents()->GetPrimaryMainFrame(), "run_test(1)").error, "");
+    EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                     "run_test(/*expected_entries=*/1)")
+                  .error,
+              "");
 
     // We should wait for the main frame's hit-test data to be ready before
     // sending the mouse events below to avoid flakiness.
@@ -373,6 +375,17 @@ class MouseoverLCPTest : public MetricIntegrationTest,
     // Ensure the compositor thread is aware of the mouse events.
     content::MainThreadFrameObserver frame_observer(GetRenderWidgetHost());
     frame_observer.Wait();
+
+    std::string get_timestamp = R"(
+      (async () => {
+        await new Promise(r => setTimeout(r, 200));
+        const timestamp = performance.now();
+        await new Promise(r => setTimeout(r, 200));
+        return timestamp;
+      })())";
+    double timestamp =
+        EvalJs(web_contents()->GetPrimaryMainFrame(), get_timestamp)
+            .ExtractDouble();
 
     // Simulate a mouse move event which will generate a mouse over event.
     EXPECT_TRUE(
@@ -387,7 +400,6 @@ class MouseoverLCPTest : public MetricIntegrationTest,
                      "run_test(/*entries_expected= */" + entries + ")")
                   .error,
               "");
-
     if (x1 != x2 || y1 != y2) {
       // Wait for 600ms before the second mouse move, as our heuristics wait for
       // 500ms after a mousemove event on an LCP image.
@@ -416,6 +428,17 @@ class MouseoverLCPTest : public MetricIntegrationTest,
     ExpectUKMPageLoadMetricFlagSet(
         PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
         LargestContentfulPaintTypeToUKMFlags(flag_set), expected);
+    // If we never fired an entry for mouseover LCP, we should expect the UKM
+    // timestamps to match that.
+    if (entries == entries2 && entries == "1") {
+      ExpectUKMPageLoadMetricLowerThan(
+          PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name,
+          timestamp);
+    } else {
+      ExpectUKMPageLoadMetricGreaterThan(
+          PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name,
+          timestamp);
+    }
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -470,6 +493,42 @@ IN_PROC_BROWSER_TEST_P(MouseoverLCPTest,
                  /*entries2=*/"3",
                  /*x1=*/10, /*y1=*/10,
                  /*x2=*/30, /*y2=*/10,
+                 /*expected=*/false);
+}
+
+class MouseoverLCPTestWithHeuristicFlag : public MouseoverLCPTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MouseoverLCPTest::SetUpCommandLine(command_line);
+    feature_list_.InitWithFeatures(
+        {blink::features::kLCPMouseoverHeuristics} /*enabled*/,
+        {} /*disabled*/);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MouseoverLCPTestWithHeuristicFlag,
+                         ::testing::Values(false, true));
+IN_PROC_BROWSER_TEST_P(MouseoverLCPTestWithHeuristicFlag,
+                       LargestContentfulPaint_MouseoverOverLCPImageThenBody) {
+  test_mouseover("/mouseover.html?dispatch",
+                 blink::LargestContentfulPaintType::kAfterMouseover,
+                 /*entries=*/"1",
+                 /*entries2=*/"2",
+                 /*x1=*/10, /*y1=*/10,
+                 /*x2=*/30, /*y2=*/10,
+                 /*expected=*/false);
+}
+
+IN_PROC_BROWSER_TEST_P(MouseoverLCPTestWithHeuristicFlag,
+                       LargestContentfulPaint_MouseoverOverLCPImageReplace) {
+  test_mouseover("/mouseover.html?replace",
+                 blink::LargestContentfulPaintType::kAfterMouseover,
+                 /*entries=*/"1",
+                 /*entries2=*/"1",
+                 /*x1=*/10, /*y1=*/10,
+                 /*x2=*/10, /*y2=*/10,
                  /*expected=*/false);
 }
 

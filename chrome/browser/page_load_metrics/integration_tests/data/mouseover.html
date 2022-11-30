@@ -20,7 +20,8 @@ const loadBackgroundImage = size => {
   return event => {
     const div = document.createElement("div");
     const [width, height] = size.split("x");
-    div.style = `background-image: url(/images/green-${size}.png); width: ${width}; height: ${height}`;
+    div.style = `background-image:
+      url(/images/green-${size}.png); width: ${width}px; height: ${height}px`;
     document.body.appendChild(div);
   }
 };

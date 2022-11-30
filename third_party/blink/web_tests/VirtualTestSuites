@@ -1292,6 +1292,18 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "lcp-mouseover-heuristics",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/largest-contentful-paint/mouseover-heuristics-element.tentative.html",
+      "external/wpt/largest-contentful-paint/mouseover-heuristics-background.tentative.html"
+    ],
+    "args": [
+      "--enable-features=LCPMouseoverHeuristics"
+    ],
+    "expires": "Jul 1, 2023"
+  },
+  {
     "prefix": "css-highlight-inheritance",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

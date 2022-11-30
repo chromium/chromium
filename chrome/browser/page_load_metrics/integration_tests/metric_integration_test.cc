@@ -140,14 +140,42 @@ std::unique_ptr<HttpResponse> MetricIntegrationTest::HandleRequest(
   return std::move(response);
 }
 
-void MetricIntegrationTest::ExpectUKMPageLoadMetric(StringPiece metric_name,
-                                                    int64_t expected_value) {
+const ukm::mojom::UkmEntryPtr MetricIntegrationTest::GetEntry() {
   auto merged_entries =
       ukm_recorder().GetMergedEntriesByName(PageLoad::kEntryName);
   EXPECT_EQ(1ul, merged_entries.size());
   const auto& kv = merged_entries.begin();
-  TestUkmRecorder::ExpectEntryMetric(kv->second.get(), metric_name,
+  return std::move(kv->second);
+}
+
+void MetricIntegrationTest::ExpectUKMPageLoadMetric(StringPiece metric_name,
+                                                    int64_t expected_value) {
+  TestUkmRecorder::ExpectEntryMetric(GetEntry().get(), metric_name,
                                      expected_value);
+}
+
+void MetricIntegrationTest::ExpectUKMPageLoadMetricGreaterThan(
+    base::StringPiece metric_name,
+    int64_t expected_value) {
+  // TODO(yoav): figure out why GetEntry fails on the bots.
+  auto merged_entries =
+      ukm_recorder().GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+  const auto& kv = merged_entries.begin();
+  const int64_t* value =
+      TestUkmRecorder::GetEntryMetric(kv->second.get(), metric_name);
+  EXPECT_GT(*value, expected_value);
+}
+void MetricIntegrationTest::ExpectUKMPageLoadMetricLowerThan(
+    base::StringPiece metric_name,
+    int64_t expected_value) {
+  auto merged_entries =
+      ukm_recorder().GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+  const auto& kv = merged_entries.begin();
+  const int64_t* value =
+      TestUkmRecorder::GetEntryMetric(kv->second.get(), metric_name);
+  EXPECT_LT(*value, expected_value);
 }
 
 int64_t MetricIntegrationTest::GetUKMPageLoadMetricFlagSet(

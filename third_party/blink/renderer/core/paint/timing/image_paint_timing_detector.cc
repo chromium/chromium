@@ -561,6 +561,10 @@ bool ImageRecordsManager::RecordFirstPaintAndReturnIsPending(
       bpp < features::kMinimumEntropyForLCP.Get()) {
     return false;
   }
+  if (RuntimeEnabledFeatures::LCPMouseoverHeuristicsEnabled() &&
+      is_loaded_after_mouseover) {
+    return false;
+  }
 
   std::unique_ptr<ImageRecord> record = CreateImageRecord(
       *record_id.first, record_id.second, visual_size, frame_visual_rect,

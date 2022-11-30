@@ -1655,6 +1655,10 @@
       status: "test",
     },
     {
+      name: "LCPMouseoverHeuristics",
+      base_feature: "LCPMouseoverHeuristics"
+    },
+    {
       name: "LCPMultipleUpdatesPerElement",
       base_feature: "LCPMultipleUpdatesPerElement"
     },
