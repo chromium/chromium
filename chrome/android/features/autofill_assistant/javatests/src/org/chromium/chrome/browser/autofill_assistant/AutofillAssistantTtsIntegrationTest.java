@@ -54,8 +54,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.components.autofill_assistant.R;
-import org.chromium.content.browser.accessibility.BrowserAccessibilityState;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -87,7 +87,7 @@ public class AutofillAssistantTtsIntegrationTest {
     @After
     public void tearDown() {
         // Reset accessibility state.
-        BrowserAccessibilityState.setHasSpokenFeedbackServicePresent(false);
+        AccessibilityState.setHasSpokenFeedbackServicePresent(false);
     }
 
     private void startAutofillAssistantWithTts(AutofillAssistantTestScript script,
@@ -203,7 +203,7 @@ public class AutofillAssistantTtsIntegrationTest {
                 list);
 
         // Mock enabling an accessibility service with spoken feedback.
-        BrowserAccessibilityState.setHasSpokenFeedbackServicePresent(true);
+        AccessibilityState.setHasSpokenFeedbackServicePresent(true);
 
         AutofillAssistantTestTtsController testTtsController =
                 new AutofillAssistantTestTtsController(

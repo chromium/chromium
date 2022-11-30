@@ -3042,6 +3042,7 @@ source_set("browser") {
       "//third_party/blink/public/mojom:mojom_platform_blink",
       "//third_party/icu",
       "//ui/accessibility:ax_assistant",
+      "//ui/accessibility:ax_base_android",
       "//ui/accessibility/mojom",
       "//ui/accessibility/mojom:ax_assistant_mojom",
       "//ui/android",
