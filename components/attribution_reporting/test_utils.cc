@@ -170,7 +170,8 @@ bool operator==(const TriggerRegistration& a, const TriggerRegistration& b) {
     return std::make_tuple(reg.reporting_origin, reg.filters, reg.not_filters,
                            reg.debug_key, reg.aggregatable_dedup_key,
                            reg.event_triggers, reg.aggregatable_trigger_data,
-                           reg.aggregatable_values, reg.debug_reporting);
+                           reg.aggregatable_values, reg.debug_reporting,
+                           reg.aggregation_coordinator);
   };
   return tie(a) == tie(b);
 }
@@ -184,7 +185,8 @@ std::ostream& operator<<(std::ostream& out, const TriggerRegistration& reg) {
       << ",event_triggers=" << reg.event_triggers
       << ",aggregatable_trigger_data=" << reg.aggregatable_trigger_data
       << ",aggregatable_values=" << reg.aggregatable_values
-      << ",debug_reporting=" << reg.debug_reporting << "}";
+      << ",debug_reporting=" << reg.debug_reporting
+      << ",aggregation_coordinator=" << reg.aggregation_coordinator << "}";
 
   return out;
 }

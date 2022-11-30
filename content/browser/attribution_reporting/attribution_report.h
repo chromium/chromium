@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "base/values.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
@@ -75,7 +76,9 @@ class CONTENT_EXPORT AttributionReport {
     AggregatableAttributionData(
         std::vector<AggregatableHistogramContribution> contributions,
         Id id,
-        base::Time initial_report_time);
+        base::Time initial_report_time,
+        ::aggregation_service::mojom::AggregationCoordinator
+            aggregation_coordinator);
     AggregatableAttributionData(const AggregatableAttributionData&);
     AggregatableAttributionData& operator=(const AggregatableAttributionData&);
     AggregatableAttributionData(AggregatableAttributionData&&);
@@ -104,6 +107,9 @@ class CONTENT_EXPORT AttributionReport {
 
     // The initial report time scheduled by the browser.
     base::Time initial_report_time;
+
+    ::aggregation_service::mojom::AggregationCoordinator
+        aggregation_coordinator;
 
     // When adding new members, the corresponding `operator==()` definition in
     // `attribution_test_utils.h` should also be updated.

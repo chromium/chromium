@@ -82,10 +82,13 @@ AttributionReport::EventLevelData::~EventLevelData() = default;
 AttributionReport::AggregatableAttributionData::AggregatableAttributionData(
     std::vector<AggregatableHistogramContribution> contributions,
     Id id,
-    base::Time initial_report_time)
+    base::Time initial_report_time,
+    ::aggregation_service::mojom::AggregationCoordinator
+        aggregation_coordinator)
     : contributions(std::move(contributions)),
       id(id),
-      initial_report_time(initial_report_time) {}
+      initial_report_time(initial_report_time),
+      aggregation_coordinator(aggregation_coordinator) {}
 
 AttributionReport::AggregatableAttributionData::AggregatableAttributionData(
     const AggregatableAttributionData&) = default;

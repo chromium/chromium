@@ -27,6 +27,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
@@ -64,11 +65,11 @@
 namespace content {
 
 // Version number of the database.
-const int AttributionStorageSql::kCurrentVersionNumber = 38;
+const int AttributionStorageSql::kCurrentVersionNumber = 39;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 38;
+const int AttributionStorageSql::kCompatibleVersionNumber = 39;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -151,7 +152,8 @@ constexpr int64_t kUnsetReportId = -1;
   "SELECT "                                                            \
   ATTRIBUTION_SOURCE_COLUMNS_SQL("I.") \
   ",A.aggregation_id,A.trigger_time,A.report_time,A.debug_key,"        \
-  "A.external_report_id,A.failed_send_attempts,A.initial_report_time " \
+  "A.external_report_id,A.failed_send_attempts,A.initial_report_time," \
+  "A.aggregation_coordinator "                              \
   "FROM aggregatable_report_metadata A "                               \
   DCHECK_SQL_INDEXED_BY("aggregate_report_time_idx")                   \
   "JOIN sources I ON A.source_id=I.source_id "
@@ -248,6 +250,22 @@ absl::optional<AttributionSourceType> DeserializeSourceType(int val) {
 
 int SerializeReportType(AttributionReport::Type val) {
   return static_cast<int>(val);
+}
+
+int SerializeAggregationCoordinator(
+    ::aggregation_service::mojom::AggregationCoordinator val) {
+  return static_cast<int>(val);
+}
+
+absl::optional<::aggregation_service::mojom::AggregationCoordinator>
+DeserializeAggregationCoordinator(int val) {
+  switch (val) {
+    case static_cast<int>(
+        ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud):
+      return ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud;
+    default:
+      return absl::nullopt;
+  }
 }
 
 std::string SerializeFilterData(
@@ -2363,7 +2381,8 @@ bool AttributionStorageSql::CreateSchema() {
       "external_report_id TEXT NOT NULL,"
       "report_time INTEGER NOT NULL,"
       "failed_send_attempts INTEGER NOT NULL,"
-      "initial_report_time INTEGER NOT NULL)";
+      "initial_report_time INTEGER NOT NULL,"
+      "aggregation_coordinator INTEGER NOT NULL)";
   if (!db_->Execute(kAggregatableReportMetadataTableSql))
     return false;
 
@@ -2846,7 +2865,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
       AttributionReport::AggregatableAttributionData(
           std::move(contributions),
           AttributionReport::AggregatableAttributionData::Id(kUnsetReportId),
-          report_time));
+          report_time, trigger_registration.aggregation_coordinator));
 
   return AggregatableResult::kSuccess;
 }
@@ -2867,8 +2886,8 @@ bool AttributionStorageSql::StoreAggregatableAttributionReport(
   static constexpr char kInsertMetadataSql[] =
       "INSERT INTO aggregatable_report_metadata"
       "(source_id,trigger_time,debug_key,external_report_id,report_time,"
-      "failed_send_attempts,initial_report_time)"
-      "VALUES(?,?,?,?,?,0,?)";
+      "failed_send_attempts,initial_report_time,aggregation_coordinator)"
+      "VALUES(?,?,?,?,?,0,?,?)";
   sql::Statement insert_metadata_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertMetadataSql));
   insert_metadata_statement.BindInt64(0, *attribution_info.source.source_id());
@@ -2879,6 +2898,9 @@ bool AttributionStorageSql::StoreAggregatableAttributionReport(
   insert_metadata_statement.BindTime(4, report.report_time());
   insert_metadata_statement.BindTime(
       5, aggregatable_attribution->initial_report_time);
+  insert_metadata_statement.BindInt(
+      6, SerializeAggregationCoordinator(
+             aggregatable_attribution->aggregation_coordinator));
   if (!insert_metadata_statement.Run())
     return false;
 
@@ -2967,7 +2989,7 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReport(
 absl::optional<AttributionReport>
 AttributionStorageSql::ReadAggregatableAttributionReportFromStatement(
     sql::Statement& statement) {
-  DCHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 7);
+  DCHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 8);
 
   absl::optional<StoredSourceData> source_data =
       ReadSourceFromStatement(statement);
@@ -2985,23 +3007,29 @@ AttributionStorageSql::ReadAggregatableAttributionReportFromStatement(
       base::GUID::ParseLowercase(statement.ColumnString(col++));
   int failed_send_attempts = statement.ColumnInt(col++);
   base::Time initial_report_time = statement.ColumnTime(col++);
+  absl::optional<::aggregation_service::mojom::AggregationCoordinator>
+      aggregation_coordinator =
+          DeserializeAggregationCoordinator(statement.ColumnInt(col++));
 
   // Ensure data is valid before continuing. This could happen if there is
   // database corruption.
-  if (!external_report_id.is_valid() || failed_send_attempts < 0)
+  if (!external_report_id.is_valid() || failed_send_attempts < 0 ||
+      !aggregation_coordinator.has_value()) {
     return absl::nullopt;
+  }
 
   std::vector<AggregatableHistogramContribution> contributions =
       GetAggregatableContributions(report_id);
   if (contributions.empty())
     return absl::nullopt;
 
-  return AttributionReport(
-      AttributionInfo(std::move(source_data->source), trigger_time,
-                      trigger_debug_key),
-      report_time, std::move(external_report_id), failed_send_attempts,
-      AttributionReport::AggregatableAttributionData(
-          std::move(contributions), report_id, initial_report_time));
+  return AttributionReport(AttributionInfo(std::move(source_data->source),
+                                           trigger_time, trigger_debug_key),
+                           report_time, std::move(external_report_id),
+                           failed_send_attempts,
+                           AttributionReport::AggregatableAttributionData(
+                               std::move(contributions), report_id,
+                               initial_report_time, *aggregation_coordinator));
 }
 
 absl::optional<AttributionReport> AttributionStorageSql::GetReport(

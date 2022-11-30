@@ -747,6 +747,13 @@ TriggerBuilder& TriggerBuilder::SetDebugReporting(bool debug_reporting) {
   return *this;
 }
 
+TriggerBuilder& TriggerBuilder::SetAggregationCoordinator(
+    ::aggregation_service::mojom::AggregationCoordinator
+        aggregation_coordinator) {
+  aggregation_coordinator_ = aggregation_coordinator;
+  return *this;
+}
+
 AttributionTrigger TriggerBuilder::Build(
     bool generate_event_trigger_data) const {
   std::vector<attribution_reporting::EventTriggerData> event_triggers;
@@ -775,7 +782,7 @@ AttributionTrigger TriggerBuilder::Build(
               std::move(event_triggers)),
           *attribution_reporting::AggregatableTriggerDataList::Create(
               aggregatable_trigger_data_),
-          aggregatable_values_, debug_reporting_),
+          aggregatable_values_, debug_reporting_, aggregation_coordinator_),
       destination_origin_, is_within_fenced_frame_);
 }
 
@@ -850,6 +857,13 @@ ReportBuilder& ReportBuilder::SetAggregatableHistogramContributions(
   return *this;
 }
 
+ReportBuilder& ReportBuilder::SetAggregationCoordinator(
+    ::aggregation_service::mojom::AggregationCoordinator
+        aggregation_coordinator) {
+  aggregation_coordinator_ = aggregation_coordinator;
+  return *this;
+}
+
 AttributionReport ReportBuilder::Build() const {
   return AttributionReport(
       attribution_info_, report_time_, external_report_id_,
@@ -863,7 +877,8 @@ AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
       attribution_info_, report_time_, external_report_id_,
       /*failed_send_attempts=*/0,
       AttributionReport::AggregatableAttributionData(
-          contributions_, aggregatable_attribution_report_id_, report_time_));
+          contributions_, aggregatable_attribution_report_id_, report_time_,
+          aggregation_coordinator_));
 }
 
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {

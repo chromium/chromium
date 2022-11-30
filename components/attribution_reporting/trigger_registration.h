@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/event_trigger_data.h"
@@ -36,7 +37,9 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
                       EventTriggerDataList event_triggers,
                       AggregatableTriggerDataList aggregatable_trigger_data,
                       AggregatableValues aggregatable_values,
-                      bool debug_reporting);
+                      bool debug_reporting,
+                      aggregation_service::mojom::AggregationCoordinator
+                          aggregation_coordinator);
 
   ~TriggerRegistration();
 
@@ -55,6 +58,8 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   AggregatableTriggerDataList aggregatable_trigger_data;
   AggregatableValues aggregatable_values;
   bool debug_reporting = false;
+  aggregation_service::mojom::AggregationCoordinator aggregation_coordinator =
+      aggregation_service::mojom::AggregationCoordinator::kDefault;
 };
 
 }  // namespace attribution_reporting

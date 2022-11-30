@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -188,6 +189,26 @@ TEST(AggregatableAttributionUtilsTest, RoundsSourceRegistrationTime) {
     ASSERT_TRUE(actual_serialized_time);
     EXPECT_EQ(*actual_serialized_time, test_case.expected_serialized_time)
         << test_case.description;
+  }
+}
+
+TEST(AggregatableAttributionUtilsTest, AggregationCoordinatorSet) {
+  for (auto aggregation_coordinator :
+       {::aggregation_service::mojom::AggregationCoordinator::kAwsCloud}) {
+    AttributionReport report =
+        ReportBuilder(
+            AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
+            .SetAggregatableHistogramContributions(
+                {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
+            .SetAggregationCoordinator(aggregation_coordinator)
+            .BuildAggregatableAttribution();
+
+    absl::optional<AggregatableReportRequest> request =
+        CreateAggregatableReportRequest(report);
+    ASSERT_TRUE(request.has_value()) << aggregation_coordinator;
+    EXPECT_EQ(request->payload_contents().aggregation_coordinator,
+              aggregation_coordinator)
+        << aggregation_coordinator;
   }
 }
 

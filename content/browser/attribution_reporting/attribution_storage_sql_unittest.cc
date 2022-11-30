@@ -21,6 +21,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -56,6 +57,8 @@ struct AggregatableReportMetadataRecord {
   base::Time report_time;
   int failed_send_attempts = 0;
   base::Time initial_report_time;
+  int aggregation_coordinator = static_cast<int>(
+      ::aggregation_service::mojom::AggregationCoordinator::kDefault);
 };
 
 struct AggregatableContributionRecord {
@@ -161,7 +164,7 @@ class AttributionStorageSqlTest : public testing::Test {
 
     static constexpr char kStoreMetadataSql[] =
         "INSERT INTO aggregatable_report_metadata "
-        "VALUES(?,?,?,?,?,?,?,?)";
+        "VALUES(?,?,?,?,?,?,?,?,?)";
     sql::Statement statement(raw_db.GetUniqueStatement(kStoreMetadataSql));
     statement.BindInt64(0, record.aggregation_id);
     statement.BindInt64(1, record.source_id);
@@ -175,6 +178,7 @@ class AttributionStorageSqlTest : public testing::Test {
     statement.BindTime(5, record.report_time);
     statement.BindInt(6, record.failed_send_attempts);
     statement.BindTime(7, record.initial_report_time);
+    statement.BindInt(8, record.aggregation_coordinator);
     ASSERT_TRUE(statement.Run());
   }
 
@@ -1165,6 +1169,48 @@ TEST_F(AttributionStorageSqlTest, GetNextReportTime_RecordsSucceededMetric) {
 
     EXPECT_TRUE(expecter.SawExpectedErrors());
 
+    CloseDatabase();
+  }
+}
+
+TEST_F(AttributionStorageSqlTest,
+       InvalidAggregationCoordinator_FailsDeserialization) {
+  const struct {
+    int aggregation_coordinator;
+    bool valid;
+  } kTestCases[] = {
+      {0, true},
+      {1, false},
+  };
+
+  for (auto test_case : kTestCases) {
+    OpenDatabase();
+    storage()->StoreSource(SourceBuilder().Build());
+    auto sources = storage()->GetActiveSources();
+    ASSERT_THAT(sources, SizeIs(1));
+    CloseDatabase();
+
+    StoreAggregatableReportMetadata(AggregatableReportMetadataRecord{
+        .aggregation_id = 1,
+        .source_id = *sources.front().source_id(),
+        .external_report_id = DefaultExternalReportID().AsLowercaseString(),
+        .aggregation_coordinator = test_case.aggregation_coordinator,
+    });
+
+    StoreAggregatableContribution(
+        AggregatableContributionRecord{.contribution_id = 1,
+                                       .aggregation_id = 1,
+                                       .key_high_bits = 0,
+                                       .key_low_bits = 0,
+                                       .value = 1});
+
+    OpenDatabase();
+    EXPECT_THAT(
+        storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()),
+        SizeIs(test_case.valid))
+        << test_case.aggregation_coordinator;
+    storage()->ClearData(base::Time::Min(), base::Time::Max(),
+                         base::NullCallback());
     CloseDatabase();
   }
 }

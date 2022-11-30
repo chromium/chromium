@@ -162,7 +162,7 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
       AggregationServicePayloadContents(
           AggregationServicePayloadContents::Operation::kHistogram,
           std::move(contributions), mojom::AggregationServiceMode::kDefault,
-          ::aggregation_service::mojom::AggregationCoordinator::kDefault),
+          data->aggregation_coordinator),
       AggregatableReportSharedInfo(
           data->initial_report_time, report.external_report_id(),
           attribution_info.source.common_info().reporting_origin(), debug_mode,

@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -1024,6 +1025,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   const base::Time now = base::Time::Now();
 
+  // TODO(crbug.com/1394029): Display aggregation coordinator in internals UI.
+
   const AttributionTrigger trigger(
       attribution_reporting::TriggerRegistration(
           *SuitableOrigin::Deserialize("https://r.test"),
@@ -1063,7 +1066,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           /*aggregatable_values=*/
           *attribution_reporting::AggregatableValues::Create(
               {{"a", 123}, {"b", 456}}),
-          /*debug_reporting=*/false),
+          /*debug_reporting=*/false,
+          ::aggregation_service::mojom::AggregationCoordinator::kDefault),
       *SuitableOrigin::Deserialize("https://d.test"),
       /*is_within_fenced_frame=*/false);
 

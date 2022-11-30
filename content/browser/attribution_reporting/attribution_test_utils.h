@@ -22,6 +22,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/bounded_list.h"
@@ -591,6 +592,9 @@ class TriggerBuilder {
 
   TriggerBuilder& SetDebugReporting(bool debug_reporting);
 
+  TriggerBuilder& SetAggregationCoordinator(
+      ::aggregation_service::mojom::AggregationCoordinator);
+
   AttributionTrigger Build(bool generate_event_trigger_data = true) const;
 
  private:
@@ -607,6 +611,9 @@ class TriggerBuilder {
   absl::optional<uint64_t> aggregatable_dedup_key_;
   bool is_within_fenced_frame_ = false;
   bool debug_reporting_ = false;
+  ::aggregation_service::mojom::AggregationCoordinator
+      aggregation_coordinator_ =
+          ::aggregation_service::mojom::AggregationCoordinator::kDefault;
 };
 
 // Helper class to construct an `AttributionInfo` for tests using default data.
@@ -652,6 +659,9 @@ class ReportBuilder {
   ReportBuilder& SetAggregatableHistogramContributions(
       std::vector<AggregatableHistogramContribution> contributions);
 
+  ReportBuilder& SetAggregationCoordinator(
+      ::aggregation_service::mojom::AggregationCoordinator);
+
   AttributionReport Build() const;
 
   AttributionReport BuildAggregatableAttribution() const;
@@ -667,6 +677,9 @@ class ReportBuilder {
   AttributionReport::AggregatableAttributionData::Id
       aggregatable_attribution_report_id_{0};
   std::vector<AggregatableHistogramContribution> contributions_;
+  ::aggregation_service::mojom::AggregationCoordinator
+      aggregation_coordinator_ =
+          ::aggregation_service::mojom::AggregationCoordinator::kDefault;
 };
 
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b);
@@ -885,6 +898,11 @@ MATCHER_P(AggregatableHistogramContributionsAre, matcher, "") {
 
 MATCHER_P(InitialReportTimeIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.initial_report_time, result_listener);
+}
+
+MATCHER_P(AggregationCoordinatorIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.aggregation_coordinator,
+                            result_listener);
 }
 
 // `CreateReportResult` matchers

@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
@@ -358,6 +359,85 @@ bool MigrateToVersion38(sql::Database* db, sql::MetaTable* meta_table) {
   return transaction.Commit();
 }
 
+bool MigrateToVersion39(sql::Database* db, sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // `MigrateToVersion34`.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  // Create the new aggregatable_report_metadata table with
+  // aggregation_coordinator. This follows the steps documented at
+  // https://sqlite.org/lang_altertable.html#otheralter. Other approaches, like
+  // using "ALTER ... ADD COLUMN" require setting a DEFAULT value for the column
+  // which is undesirable.
+  static constexpr char kNewAggregatableReportMetadataTableSql[] =
+      "CREATE TABLE new_aggregatable_report_metadata("
+      "aggregation_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+      "source_id INTEGER NOT NULL,"
+      "trigger_time INTEGER NOT NULL,"
+      "debug_key INTEGER,"
+      "external_report_id TEXT NOT NULL,"
+      "report_time INTEGER NOT NULL,"
+      "failed_send_attempts INTEGER NOT NULL,"
+      "initial_report_time INTEGER NOT NULL,"
+      "aggregation_coordinator INTEGER NOT NULL)";
+  if (!db->Execute(kNewAggregatableReportMetadataTableSql))
+    return false;
+
+  // Transfer the existing aggregatable_report_metadata rows to the new table,
+  // using
+  // `aggregation_service::mojom::AggregationCoordinator::kDefault`
+  // for aggregation_coordinator.
+  static_assert(
+      static_cast<int>(
+          ::aggregation_service::mojom::AggregationCoordinator::kDefault) == 0,
+      "update the statement below");
+
+  static constexpr char kPopulateNewAggregatableReportMetadataSql[] =
+      "INSERT INTO new_aggregatable_report_metadata SELECT "
+      "aggregation_id,source_id,trigger_time,debug_key,external_report_id,"
+      "report_time,failed_send_attempts,initial_report_time,0 "
+      "FROM aggregatable_report_metadata";
+  if (!db->Execute(kPopulateNewAggregatableReportMetadataSql))
+    return false;
+
+  static constexpr char kDropOldAggregatableReportMetadataTableSql[] =
+      "DROP TABLE aggregatable_report_metadata";
+  if (!db->Execute(kDropOldAggregatableReportMetadataTableSql))
+    return false;
+
+  static constexpr char kRenameAggregatableReportMetadataTableSql[] =
+      "ALTER TABLE new_aggregatable_report_metadata "
+      "RENAME TO aggregatable_report_metadata";
+  if (!db->Execute(kRenameAggregatableReportMetadataTableSql))
+    return false;
+
+  // Create the pre-existing aggregatable_report_metadata table indices on the
+  // new table.
+
+  static constexpr char kAggregateSourceIdIndexSql[] =
+      "CREATE INDEX aggregate_source_id_idx "
+      "ON aggregatable_report_metadata(source_id)";
+  if (!db->Execute(kAggregateSourceIdIndexSql))
+    return false;
+
+  static constexpr char kAggregateTriggerTimeIndexSql[] =
+      "CREATE INDEX aggregate_trigger_time_idx "
+      "ON aggregatable_report_metadata(trigger_time)";
+  if (!db->Execute(kAggregateTriggerTimeIndexSql))
+    return false;
+
+  static constexpr char kAggregateReportTimeIndexSql[] =
+      "CREATE INDEX aggregate_report_time_idx "
+      "ON aggregatable_report_metadata(report_time)";
+  if (!db->Execute(kAggregateReportTimeIndexSql))
+    return false;
+
+  meta_table->SetVersionNumber(39);
+  return transaction.Commit();
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
@@ -387,6 +467,10 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 37) {
     if (!MigrateToVersion38(db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 38) {
+    if (!MigrateToVersion39(db, meta_table))
       return false;
   }
   // Add similar if () blocks for new versions here.

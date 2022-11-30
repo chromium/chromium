@@ -8,6 +8,7 @@
 
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/event_trigger_data.h"
@@ -62,11 +63,15 @@ TriggerRegistration::Parse(base::Value::Dict registration,
       ParseUint64(registration, "aggregatable_deduplication_key");
   bool debug_reporting = ParseDebugReporting(registration);
 
-  return TriggerRegistration(std::move(reporting_origin), std::move(*filters),
-                             std::move(*not_filters), debug_key,
-                             aggregatable_dedup_key, std::move(*event_triggers),
-                             std::move(*aggregatable_trigger_data),
-                             std::move(*aggregatable_values), debug_reporting);
+  // TODO(crbug.com/1394029): Parse aggregation_coordinator_identifier field
+  // from response header.
+
+  return TriggerRegistration(
+      std::move(reporting_origin), std::move(*filters), std::move(*not_filters),
+      debug_key, aggregatable_dedup_key, std::move(*event_triggers),
+      std::move(*aggregatable_trigger_data), std::move(*aggregatable_values),
+      debug_reporting,
+      aggregation_service::mojom::AggregationCoordinator::kDefault);
 }
 
 TriggerRegistration::TriggerRegistration(SuitableOrigin reporting_origin)
@@ -81,7 +86,8 @@ TriggerRegistration::TriggerRegistration(
     EventTriggerDataList event_triggers,
     AggregatableTriggerDataList aggregatable_trigger_data,
     AggregatableValues aggregatable_values,
-    bool debug_reporting)
+    bool debug_reporting,
+    aggregation_service::mojom::AggregationCoordinator aggregation_coordinator)
     : reporting_origin(std::move(reporting_origin)),
       filters(std::move(filters)),
       not_filters(std::move(not_filters)),
@@ -90,7 +96,8 @@ TriggerRegistration::TriggerRegistration(
       event_triggers(std::move(event_triggers)),
       aggregatable_trigger_data(aggregatable_trigger_data),
       aggregatable_values(std::move(aggregatable_values)),
-      debug_reporting(debug_reporting) {}
+      debug_reporting(debug_reporting),
+      aggregation_coordinator(aggregation_coordinator) {}
 
 TriggerRegistration::~TriggerRegistration() = default;
 

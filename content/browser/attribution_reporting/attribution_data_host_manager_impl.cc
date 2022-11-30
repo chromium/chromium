@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/constants.h"
@@ -516,13 +517,17 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
           std::move(event_triggers));
   DCHECK(event_trigger_data_list);
 
+  // TODO(crbug.com/1394029): Parse aggregation_coordinator_identifier field
+  // from response header.
+
   AttributionTrigger trigger(
       attribution_reporting::TriggerRegistration(
           std::move(data->reporting_origin), std::move(*filters),
           std::move(*not_filters), data->debug_key,
           data->aggregatable_dedup_key, std::move(*event_trigger_data_list),
           std::move(*aggregatable_trigger_data),
-          std::move(*aggregatable_values), data->debug_reporting),
+          std::move(*aggregatable_values), data->debug_reporting,
+          ::aggregation_service::mojom::AggregationCoordinator::kDefault),
       /*destination_origin=*/context.context_origin,
       context.is_within_fenced_frame);
 

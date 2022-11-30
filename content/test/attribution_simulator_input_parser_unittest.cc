@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/values.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -415,7 +416,9 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                           attribution_reporting::AggregatableTriggerDataList(),
                           /*aggregatable_values=*/
                           attribution_reporting::AggregatableValues(),
-                          /*debug_reporting=*/false),
+                          /*debug_reporting=*/false,
+                          ::aggregation_service::mojom::AggregationCoordinator::
+                              kDefault),
                       /*destination_origin=*/
                       *SuitableOrigin::Deserialize("https://a.d1.test"),
                       /*is_within_fenced_frame=*/false),
@@ -438,7 +441,9 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                           attribution_reporting::AggregatableTriggerDataList(),
                           /*aggregatable_values=*/
                           attribution_reporting::AggregatableValues(),
-                          /*debug_reporting=*/false),
+                          /*debug_reporting=*/false,
+                          ::aggregation_service::mojom::AggregationCoordinator::
+                              kDefault),
                       /*destination_origin=*/
                       *SuitableOrigin::Deserialize("https://a.d2.test"),
                       /*is_within_fenced_frame=*/false),
@@ -469,7 +474,9 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                           /*aggregatable_values=*/
                           *attribution_reporting::AggregatableValues::Create(
                               {{"a", 1}}),
-                          /*debug_reporting=*/true),
+                          /*debug_reporting=*/true,
+                          ::aggregation_service::mojom::AggregationCoordinator::
+                              kDefault),
                       /*destination_origin=*/
                       *SuitableOrigin::Deserialize("https://a.d2.test"),
                       /*is_within_fenced_frame=*/false),

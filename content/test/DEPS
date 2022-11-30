@@ -50,6 +50,7 @@ specific_include_rules = {
     "+components/attribution_reporting",
   ],
   "attribution_simulator_input_parser_unittest.cc": [
+    "+components/aggregation_service",
     "+components/attribution_reporting",
   ],
   "gpu_browsertest_helpers.cc": [
